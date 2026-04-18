@@ -1,0 +1,182 @@
+/* ============================================================
+   MODERN CSS RESET
+   Social Nexo — Reset Global v1.0
+   Based on Josh Comeau's CSS Reset + custom additions
+   ============================================================ */
+
+/* ── Box sizing ───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ── Root defaults ────────────────────────────────────────── */
+:root {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  color-scheme: light dark;
+  tab-size: 4;
+}
+
+/* ── Remove default margins ───────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Body ─────────────────────────────────────────────────── */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--surface-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: var(--line-height-normal);
+  transition: background-color var(--duration-slow) var(--ease-in-out),
+              color var(--duration-slow) var(--ease-in-out);
+}
+
+/* ── Typography ───────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+  overflow-wrap: break-word;
+}
+
+p, li, blockquote {
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: var(--line-height-relaxed);
+}
+
+/* ── Links ────────────────────────────────────────────────── */
+a {
+  color: var(--text-brand);
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+a:hover {
+  color: var(--interactive-primary-hover);
+  text-decoration: underline;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--border-brand);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Lists ────────────────────────────────────────────────── */
+ol, ul {
+  list-style: none;
+}
+
+/* ── Media ────────────────────────────────────────────────── */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  font-style: italic; /* alt text style */
+}
+
+/* ── Form elements ────────────────────────────────────────── */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+textarea {
+  resize: vertical;
+}
+
+fieldset {
+  border: none;
+}
+
+/* ── Focus management ─────────────────────────────────────── */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--border-brand);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Selection ────────────────────────────────────────────── */
+::selection {
+  background-color: var(--color-brand-200);
+  color: var(--color-brand-900);
+}
+
+[data-theme='dark'] ::selection,
+.dark ::selection {
+  background-color: rgba(61, 98, 245, 0.3);
+  color: var(--color-brand-100);
+}
+
+/* ── Scrollbar ────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: var(--radius-full);
+  transition: background var(--duration-base) var(--ease-in-out);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* ── Vue app root ─────────────────────────────────────────── */
+#app {
+  min-height: 100%;
+  isolation: isolate;
+}
+
+/* ── Reduced motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
