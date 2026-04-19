@@ -16,30 +16,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import PostList from './PostList.vue';
 import type { PostDisplay } from './PostCard.vue';
-import { useFeedStore } from '@/presentation/stores/feed'; // asumiendo su existencia
+import { usePostsStore } from '@/application/stores/posts.store';
 
-const feedStore = useFeedStore();
-const posts = ref<PostDisplay[]>([]);
-const loading = ref(false);
+const postsStore = usePostsStore();
+const posts = computed(() => postsStore.feed);
+const loading = computed(() => postsStore.loading);
 const loadTrigger = ref<HTMLElement | null>(null);
 
 let observer: IntersectionObserver;
 
 const loadMore = async () => {
-  if (loading.value) return;
-  loading.value = true;
   try {
-    const newPosts = await feedStore.fetchNextPage();
-    if (newPosts && newPosts.length > 0) {
-      posts.value = [...posts.value, ...newPosts];
-    }
+    await postsStore.fetchFeed();
   } catch (err) {
     console.error('Error fetching feed', err);
-  } finally {
-    loading.value = false;
   }
 };
 

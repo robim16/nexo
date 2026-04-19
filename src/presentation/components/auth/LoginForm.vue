@@ -29,7 +29,7 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 // Import mock/future store
-import { useAuthStore } from '@/presentation/stores/auth';
+import { useAuthStore } from '@/application/stores/auth.store';
 import BaseInput from '@/presentation/components/common/BaseInput.vue';
 import BaseButton from '@/presentation/components/common/BaseButton.vue';
 
@@ -46,7 +46,7 @@ const handleSubmit = async () => {
   if (loading.value) return;
   loading.value = true;
   try {
-    await authStore.login(form.email, form.password);
+    await authStore.login({ email: form.email, password: form.password });
     router.push({ name: 'Home' });
   } catch (error) {
     console.error('Login failed', error);

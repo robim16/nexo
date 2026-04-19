@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * BaseInput — Componente base de campo de texto
+ * BaseInput — Componente base de campo de texto (Nexo Lumina Edition)
  * Sin lógica de negocio. Solo presentación y estados.
  */
 import { ref, computed, useId } from 'vue'
@@ -213,7 +213,7 @@ function onInput(event: Event) {
 .base-input-wrapper {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1-5);
+  gap: var(--space-2);
 }
 
 .base-input-wrapper--full {
@@ -225,14 +225,15 @@ function onInput(event: Event) {
   display: flex;
   align-items: center;
   gap: var(--space-1);
+  font-family: var(--font-display);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   line-height: var(--line-height-tight);
 }
 
 .base-input__required {
-  color: var(--color-error-500);
+  color: var(--color-primary);
   font-size: var(--font-size-sm);
 }
 
@@ -241,44 +242,39 @@ function onInput(event: Event) {
   position: relative;
   display: flex;
   align-items: center;
-  background-color: var(--input-bg);
-  border: 1.5px solid var(--input-border);
-  border-radius: var(--radius-lg);
-  transition:
-    border-color var(--duration-base) var(--ease-in-out),
-    box-shadow var(--duration-base) var(--ease-in-out),
-    background-color var(--duration-base) var(--ease-in-out);
+  background-color: var(--surface-sunken);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--input-radius);
+  transition: var(--transition-base);
+  backdrop-filter: var(--backdrop-blur);
 }
 
 /* Sizes */
-.base-input__field--sm { min-height: var(--input-height-sm); }
-.base-input__field--md { min-height: var(--input-height-md); }
-.base-input__field--lg { min-height: var(--input-height-lg); }
+.base-input__field--sm { min-height: 2.5rem; }
+.base-input__field--md { min-height: 3rem; }
+.base-input__field--lg { min-height: 3.5rem; }
 
 /* States */
 .base-input__field--focused {
-  border-color: var(--input-border-focus);
-  box-shadow: var(--input-shadow-focus);
+  border-color: var(--color-secondary);
+  background-color: var(--surface-glass);
+  box-shadow: var(--glow-secondary);
 }
 
 .base-input__field--error {
-  border-color: var(--color-error-500);
-  box-shadow: var(--shadow-error);
+  border-color: var(--color-error);
+  box-shadow: 0 0 15px rgba(255, 61, 113, 0.2);
 }
 
 .base-input__field--disabled {
-  opacity: 0.55;
+  opacity: 0.4;
   cursor: not-allowed;
-  background-color: var(--surface-sunken);
+  filter: grayscale(1);
 }
 
 .base-input__field--readonly {
-  background-color: var(--surface-sunken);
-}
-
-/* Textarea */
-.base-input__field:has(.base-input__control--textarea) {
-  align-items: flex-start;
+  background-color: transparent;
+  border-style: dashed;
 }
 
 /* ── Control ────────────────────────────────────────────────── */
@@ -291,28 +287,18 @@ function onInput(event: Event) {
   outline: none;
   font-size: var(--font-size-sm);
   color: var(--text-primary);
-  line-height: var(--line-height-relaxed);
+  font-family: var(--font-sans);
 }
-
-.base-input__field--sm .base-input__control { padding-inline: var(--space-3); font-size: var(--font-size-xs); }
-.base-input__field--lg .base-input__control { padding-inline: var(--space-5); font-size: var(--font-size-base); }
 
 .base-input__control::placeholder {
-  color: var(--text-tertiary);
-}
-
-.base-input__control:disabled {
-  cursor: not-allowed;
+  color: var(--text-disabled);
 }
 
 .base-input__control--textarea {
   padding-block: var(--space-3);
   resize: vertical;
-  min-height: 5rem;
+  min-height: 6rem;
 }
-
-/* Adjust padding when leading icon present */
-.base-input__icon--leading ~ .base-input__control { padding-left: 0; }
 
 /* ── Icons ──────────────────────────────────────────────────── */
 .base-input__icon {
@@ -320,15 +306,20 @@ function onInput(event: Event) {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--icon-secondary);
+  color: var(--text-tertiary);
+  transition: color var(--duration-base);
 }
 
-.base-input__icon--leading { padding-left: var(--space-3); }
-.base-input__icon--trailing { padding-right: var(--space-3); }
+.base-input__field--focused .base-input__icon {
+  color: var(--color-secondary);
+}
+
+.base-input__icon--leading { padding-left: var(--space-4); }
+.base-input__icon--trailing { padding-right: var(--space-4); }
 
 .base-input__icon svg {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 /* ── Password toggle ────────────────────────────────────────── */
@@ -338,13 +329,10 @@ function onInput(event: Event) {
   cursor: pointer;
   padding: var(--space-1);
   border-radius: var(--radius-md);
-  transition: color var(--duration-base) var(--ease-in-out),
-              background-color var(--duration-base) var(--ease-in-out);
 }
 
 .base-input__toggle:hover {
   color: var(--text-primary);
-  background-color: var(--interactive-secondary-hover);
 }
 
 /* ── Bottom row ─────────────────────────────────────────────── */
@@ -353,47 +341,32 @@ function onInput(event: Event) {
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-2);
-  min-height: 1rem;
+  min-height: 1.25rem;
 }
 
-/* ── Hint / Error ────────────────────────────────────────────── */
 .base-input__hint {
   font-size: var(--font-size-xs);
   color: var(--text-tertiary);
-  line-height: var(--line-height-snug);
 }
 
 .base-input__error {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-1-5);
   font-size: var(--font-size-xs);
-  color: var(--color-error-500);
+  color: var(--color-error);
   font-weight: var(--font-weight-medium);
-  animation: slide-down 0.2s var(--ease-out);
+  animation: slide-up 0.3s var(--ease-out);
 }
 
-.base-input__error svg {
-  width: 0.875rem;
-  height: 0.875rem;
-  flex-shrink: 0;
-}
-
-/* ── Char counter ────────────────────────────────────────────── */
 .base-input__counter {
   font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-  white-space: nowrap;
+  color: var(--text-disabled);
   font-variant-numeric: tabular-nums;
 }
 
-.base-input__counter--over {
-  color: var(--color-error-500);
-  font-weight: var(--font-weight-medium);
-}
-
-@keyframes slide-down {
-  from { opacity: 0; transform: translateY(-4px); }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 </style>

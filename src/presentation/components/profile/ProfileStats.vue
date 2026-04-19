@@ -1,28 +1,26 @@
 <template>
-  <div class="profile-stats">
-    <div class="stat-item">
-      <span class="stat-value">{{ formatNumber(stats.posts) }}</span>
-      <span class="stat-label">Publicaciones</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value">{{ formatNumber(stats.followers) }}</span>
-      <span class="stat-label">Seguidores</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value">{{ formatNumber(stats.following) }}</span>
-      <span class="stat-label">Siguiendo</span>
+  <div class="profile-stats glass">
+    <div class="stat-item" v-for="item in statList" :key="item.label">
+      <span class="stat-value">{{ formatNumber(item.value) }}</span>
+      <span class="stat-label">{{ item.label }}</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { computed, defineProps } from 'vue';
 
 const props = defineProps<{
   stats?: { posts: number, followers: number, following: number };
 }>();
 
 const stats = props.stats || { posts: 42, followers: 1337, following: 404 };
+
+const statList = computed(() => [
+  { label: 'Posts', value: stats.posts },
+  { label: 'Followers', value: stats.followers },
+  { label: 'Following', value: stats.following }
+]);
 
 const formatNumber = (num: number) => {
   if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -34,30 +32,53 @@ const formatNumber = (num: number) => {
 <style scoped>
 .profile-stats {
   display: flex;
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--color-surface);
-  gap: var(--spacing-xl);
+  justify-content: space-around;
+  padding: var(--space-6) var(--space-8);
+  margin: var(--space-4) 0;
+  border-radius: var(--radius-2xl);
+  background: var(--surface-glass);
 }
 
 .stat-item {
   display: flex;
-  gap: var(--spacing-xs);
-  align-items: baseline;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
   cursor: pointer;
+  transition: var(--transition-base);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-xl);
 }
 
-.stat-item:hover .stat-label {
-  text-decoration: underline;
+.stat-item:hover {
+  background-color: var(--surface-glass-bright);
+  transform: translateY(-2px);
 }
 
 .stat-value {
-  font-weight: var(--font-weight-black);
-  color: var(--color-text);
-  font-size: var(--font-size-lg);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+  font-size: var(--font-size-xl);
+  text-shadow: 0 0 10px rgba(var(--color-secondary-rgb), 0.3);
 }
 
 .stat-label {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  font-weight: var(--font-weight-semibold);
+}
+
+@media (max-width: 640px) {
+  .profile-stats {
+    padding: var(--space-4);
+    gap: var(--space-2);
+  }
+  
+  .stat-value {
+    font-size: var(--font-size-lg);
+  }
 }
 </style>

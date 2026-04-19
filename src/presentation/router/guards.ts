@@ -1,6 +1,6 @@
 import type { Router } from 'vue-router';
 // Importaremos el store asumiendo que el Agente 3 usó convenciones estándar de Pinia
-import { useAuthStore } from '@/presentation/stores/auth'; // Asegurar esta ruta
+import { useAuthStore } from '@/application/stores/auth.store';
 
 export function setupGuards(router: Router) {
   router.beforeEach(async (to, from, next) => {
@@ -9,7 +9,7 @@ export function setupGuards(router: Router) {
     
     // Si la app está comprobando el estado inicial auth (ej. Firebase onAuthStateChanged)
     if (!authStore.isInitialized) {
-       await authStore.initialize(); 
+       await authStore.initAuth(); 
     }
 
     const isAuthenticated = authStore.isAuthenticated;

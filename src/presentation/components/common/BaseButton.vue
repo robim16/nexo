@@ -1,12 +1,12 @@
 <script setup lang="ts">
 /**
- * BaseButton — Componente base de botón
+ * BaseButton — Componente base de botón (Nexo Lumina Edition)
  * Sin lógica de negocio. Solo presentación y estados.
  */
 
 interface Props {
   /** Variante visual */
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success' | 'outline' | 'gradient'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success' | 'outline' | 'gradient' | 'glass'
   /** Tamaño del botón */
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   /** Estado de carga */
@@ -98,181 +98,173 @@ defineEmits<{
   justify-content: center;
   gap: var(--space-2);
   font-family: var(--font-sans);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   line-height: 1;
   white-space: nowrap;
-  border: 1.5px solid transparent;
-  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  border-radius: var(--btn-radius);
   cursor: pointer;
   user-select: none;
-  transition:
-    background-color var(--duration-base) var(--ease-in-out),
-    border-color var(--duration-base) var(--ease-in-out),
-    color var(--duration-base) var(--ease-in-out),
-    box-shadow var(--duration-base) var(--ease-in-out),
-    transform var(--duration-fast) var(--ease-spring),
-    opacity var(--duration-base) var(--ease-in-out);
+  transition: var(--transition-base);
   -webkit-tap-highlight-color: transparent;
   text-decoration: none;
   outline: none;
 }
 
 .base-btn:focus-visible {
-  outline: 2px solid var(--border-brand);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
 .base-btn:not(:disabled):active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 /* ── Sizes ──────────────────────────────────────────────────── */
 .base-btn--xs {
-  height: var(--btn-height-xs);
-  padding-inline: var(--space-2-5);
-  font-size: var(--font-size-xs);
+  height: 2rem;
+  padding-inline: var(--space-3);
+  font-size: var(--font-size-2xs);
   border-radius: var(--radius-md);
-  gap: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
 }
 .base-btn--sm {
-  height: var(--btn-height-sm);
-  padding-inline: var(--space-3-5);
-  font-size: var(--font-size-sm);
+  height: 2.5rem;
+  padding-inline: var(--space-4);
+  font-size: var(--font-size-xs);
 }
 .base-btn--md {
-  height: var(--btn-height-md);
-  padding-inline: var(--space-5);
+  height: 3rem;
+  padding-inline: var(--space-6);
   font-size: var(--font-size-sm);
 }
 .base-btn--lg {
-  height: var(--btn-height-lg);
-  padding-inline: var(--space-6);
+  height: 3.5rem;
+  padding-inline: var(--space-8);
   font-size: var(--font-size-base);
 }
 .base-btn--xl {
-  height: var(--btn-height-xl);
-  padding-inline: var(--space-8);
+  height: 4rem;
+  padding-inline: var(--space-12);
   font-size: var(--font-size-md);
 }
 
-/* ── Pill modifier ──────────────────────────────────────────── */
+/* ── Modifiers ─────────────────────────────────────────────── */
 .base-btn--pill { border-radius: var(--radius-full); }
-
-/* ── Full width ─────────────────────────────────────────────── */
 .base-btn--full { width: 100%; }
-
-/* ── Icon only ──────────────────────────────────────────────── */
 .base-btn--icon-only { padding: 0; aspect-ratio: 1; }
 
 /* ── Variants ───────────────────────────────────────────────── */
 
-/* Primary */
+/* Primary (Neon Pink) */
 .base-btn--primary {
-  background-color: var(--interactive-primary);
+  background-color: var(--color-primary);
   color: var(--text-inverse);
-  border-color: var(--interactive-primary);
+  box-shadow: var(--glow-primary);
 }
 .base-btn--primary:hover:not(:disabled) {
   background-color: var(--interactive-primary-hover);
-  border-color: var(--interactive-primary-hover);
-  box-shadow: var(--shadow-md), 0 0 0 3px rgba(61, 98, 245, 0.15);
+  box-shadow: 0 0 30px rgba(255, 0, 127, 0.6);
+  transform: translateY(-2px);
 }
 
-/* Secondary */
+/* Secondary (Glass) */
 .base-btn--secondary {
-  background-color: var(--interactive-secondary);
+  background-color: var(--surface-glass-bright);
   color: var(--text-primary);
-  border-color: var(--border-subtle);
+  border-color: var(--surface-glass-border);
+  backdrop-filter: var(--backdrop-blur);
 }
 .base-btn--secondary:hover:not(:disabled) {
-  background-color: var(--interactive-secondary-hover);
-  border-color: var(--border-default);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Glass Variant (Explicit) */
+.base-btn--glass {
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  border-color: rgba(var(--color-primary-rgb), 0.2);
+  backdrop-filter: var(--backdrop-blur);
+}
+.base-btn--glass:hover:not(:disabled) {
+  background: rgba(var(--color-primary-rgb), 0.2);
+  box-shadow: var(--glow-primary);
 }
 
 /* Ghost */
 .base-btn--ghost {
   background-color: transparent;
-  color: var(--text-primary);
-  border-color: transparent;
+  color: var(--text-secondary);
 }
 .base-btn--ghost:hover:not(:disabled) {
-  background-color: var(--interactive-secondary);
-  border-color: var(--border-subtle);
+  background-color: var(--surface-glass-bright);
+  color: var(--text-primary);
 }
 
 /* Outline */
 .base-btn--outline {
   background-color: transparent;
-  color: var(--interactive-primary);
-  border-color: var(--border-brand);
+  color: var(--color-secondary);
+  border-color: var(--color-secondary);
 }
 .base-btn--outline:hover:not(:disabled) {
-  background-color: var(--color-brand-50);
-  box-shadow: 0 0 0 3px rgba(61, 98, 245, 0.1);
+  background-color: rgba(0, 251, 251, 0.05);
+  box-shadow: var(--glow-secondary);
 }
 
 /* Danger */
 .base-btn--danger {
-  background-color: var(--interactive-danger);
+  background-color: var(--color-error);
   color: var(--text-inverse);
-  border-color: var(--interactive-danger);
 }
 .base-btn--danger:hover:not(:disabled) {
-  background-color: var(--interactive-danger-hover);
-  border-color: var(--interactive-danger-hover);
-  box-shadow: var(--shadow-md), 0 0 0 3px rgba(239, 68, 68, 0.15);
+  filter: brightness(1.1);
+  box-shadow: 0 0 20px rgba(255, 61, 113, 0.4);
 }
 
 /* Success */
 .base-btn--success {
-  background-color: var(--color-success-500);
+  background-color: var(--color-success);
   color: var(--text-inverse);
-  border-color: var(--color-success-500);
 }
 .base-btn--success:hover:not(:disabled) {
-  background-color: var(--color-success-700);
-  border-color: var(--color-success-700);
-  box-shadow: var(--shadow-md), 0 0 0 3px rgba(34, 197, 94, 0.15);
+  filter: brightness(1.1);
+  box-shadow: 0 0 20px rgba(0, 245, 160, 0.4);
 }
 
-/* Gradient */
+/* Gradient (Pink to Cyan) */
 .base-btn--gradient {
-  background: linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   color: var(--text-inverse);
-  border-color: transparent;
+  box-shadow: 0 0 20px rgba(127, 127, 255, 0.3);
 }
 .base-btn--gradient:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--color-brand-600), var(--color-accent-600));
-  box-shadow: var(--shadow-glow-brand);
+  filter: saturate(1.2);
+  box-shadow: 0 0 30px rgba(127, 127, 255, 0.5);
+  transform: translateY(-2px);
 }
 
 /* ── Disabled ───────────────────────────────────────────────── */
 .base-btn:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
-  box-shadow: none;
+  filter: grayscale(0.5);
 }
 
-/* ── Loading state ──────────────────────────────────────────── */
+/* ── Loading ────────────────────────────────────────────────── */
 .base-btn--loading {
   cursor: wait;
 }
 
-/* ── Spinner ────────────────────────────────────────────────── */
 .base-btn__spinner {
-  width: 1em;
-  height: 1em;
-  flex-shrink: 0;
+  width: 1.25em;
+  height: 1.25em;
 }
 
 .base-btn__spinner svg {
-  width: 100%;
-  height: 100%;
-  animation: spin 0.75s linear infinite;
-}
-
-.base-btn__spinner-circle {
-  transform-origin: center;
+  animation: spin 0.8s linear infinite;
 }
 
 /* ── Icon ───────────────────────────────────────────────────── */
@@ -280,19 +272,7 @@ defineEmits<{
 .base-btn__trailing {
   display: inline-flex;
   align-items: center;
-  flex-shrink: 0;
-  font-size: 1.1em;
-}
-
-/* ── Label ──────────────────────────────────────────────────── */
-.base-btn__label {
-  display: inline-flex;
-  align-items: center;
-}
-
-/* ── Dark mode overrides ────────────────────────────────────── */
-.dark .base-btn--outline:hover:not(:disabled) {
-  background-color: rgba(61, 98, 245, 0.1);
+  font-size: 1.2em;
 }
 
 @keyframes spin {

@@ -8,15 +8,28 @@
     </header>
 
     <div class="feed-section">
-      <!-- Reusing PostList since Explore may not need heavy VirtualScroll if paginated differently -->
-      <PostList />
+      <PostList 
+        :items="postsStore.feed" 
+        :loading="postsStore.loading"
+        @like="postsStore.toggleLike"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
+import { usePostsStore } from '@/application/stores/posts.store';
 import BaseInput from '@/presentation/components/common/BaseInput.vue';
 import PostList from '@/presentation/components/feed/PostList.vue';
+
+const postsStore = usePostsStore();
+
+onMounted(() => {
+  if (postsStore.feed.length === 0) {
+    postsStore.fetchFeed();
+  }
+});
 </script>
 
 <style scoped>

@@ -11,7 +11,7 @@
     </div>
     <div class="auth-layout__content">
       <div class="auth-layout__glass-card">
-        <router-view />
+        <slot />
       </div>
     </div>
   </div>

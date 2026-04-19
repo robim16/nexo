@@ -103,7 +103,8 @@ export class FirebaseAuthService implements IAuthService {
       'auth/email-already-in-use': 'El email ya está registrado',
       'auth/weak-password': 'La contraseña es muy débil',
       'auth/invalid-email': 'Email inválido',
-      'auth/too-many-requests': 'Demasiados intentos. Intenta más tarde'
+      'auth/too-many-requests': 'Demasiados intentos. Intenta más tarde',
+      'auth/network-request-failed': 'Error de red. Verifica tu conexión o reinicia el servidor de desarrollo'
     }
     const message = errorMessages[error.code] || error.message
     return new Error(message)

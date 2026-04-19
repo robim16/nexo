@@ -1,59 +1,124 @@
 <template>
   <div class="default-layout">
-    <aside class="default-layout__sidebar">
-      <div class="sidebar__brand">Nexo</div>
+    <!-- Sidebar Navigation -->
+    <aside class="default-layout__sidebar glass">
+      <div class="sidebar__brand">
+        <span class="brand-text">Nexo</span>
+        <div class="brand-dot"></div>
+      </div>
+      
       <nav class="sidebar__nav">
         <router-link to="/" class="nav-item" active-class="nav-item--active">
-          <span class="icon">🏠</span> Home
+          <span class="nav-icon">🏠</span> 
+          <span class="nav-label">Home</span>
         </router-link>
         <router-link to="/explore" class="nav-item" active-class="nav-item--active">
-          <span class="icon">🔍</span> Explore
+          <span class="nav-icon">🔍</span> 
+          <span class="nav-label">Explore</span>
         </router-link>
         <router-link to="/notifications" class="nav-item" active-class="nav-item--active">
-          <span class="icon">🔔</span> Notifications
+          <span class="nav-icon">🔔</span> 
+          <span class="nav-label">Notifications</span>
         </router-link>
         <router-link to="/profile" class="nav-item" active-class="nav-item--active">
-          <span class="icon">👤</span> Profile
+          <span class="nav-icon">👤</span> 
+          <span class="nav-label">Profile</span>
         </router-link>
         <router-link to="/settings" class="nav-item" active-class="nav-item--active">
-          <span class="icon">⚙️</span> Settings
+          <span class="nav-icon">⚙️</span> 
+          <span class="nav-label">Settings</span>
         </router-link>
       </nav>
       
       <div class="sidebar__footer">
-        <button class="logout-btn" @click="handleLogout">Salir</button>
+        <div class="user-peek">
+          <div 
+            class="peek-avatar" 
+            :style="userAvatar ? { backgroundImage: `url(${userAvatar})` } : {}"
+          ></div>
+          <div class="peek-info">
+            <span class="peek-name">{{ userDisplayName }}</span>
+            <span class="peek-handle">{{ userHandle }}</span>
+          </div>
+        </div>
+        <button class="logout-btn" @click="handleLogout">
+          <span>Logout</span>
+        </button>
       </div>
     </aside>
 
+    <!-- Main Content Area -->
     <main class="default-layout__main">
-      <header class="mobile-header">
+      <header class="mobile-header glass">
         <div class="mobile-brand">Nexo</div>
         <button class="mobile-menu-toggle">☰</button>
       </header>
+      
       <div class="content-container">
-        <router-view />
+        <slot />
       </div>
     </main>
 
+    <!-- Right Sidebar (Widgets) -->
     <aside class="default-layout__rightbar">
-      <div class="rightbar__widget">
-        <h3>Trending</h3>
-        <ul class="trending-list">
-          <li>#Vue3</li>
-          <li>#CleanArchitecture</li>
-          <li>#Firebase</li>
-        </ul>
+      <div class="rightbar__content">
+        <div class="widget glass">
+          <h3 class="widget-title">Trending Ethereal</h3>
+          <ul class="trending-list">
+            <li class="trend-item">
+              <span class="trend-category">Tech</span>
+              <span class="trend-name">#VueLumina</span>
+              <span class="trend-stats">12.5k posts</span>
+            </li>
+            <li class="trend-item">
+              <span class="trend-category">Art</span>
+              <span class="trend-name">#Glassmorphism</span>
+              <span class="trend-stats">8.2k posts</span>
+            </li>
+            <li class="trend-item">
+              <span class="trend-category">Cyber</span>
+              <span class="trend-name">#NexoPulse</span>
+              <span class="trend-stats">5.1k posts</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="widget glass">
+          <h3 class="widget-title">Who to Follow</h3>
+          <div class="follow-list">
+            <!-- Placeholders for future user items -->
+            <div class="follow-item">
+              <div class="follow-avatar"></div>
+              <div class="follow-info">
+                <span class="follow-name">Cyber Artist</span>
+                <span class="follow-handle">@cyber_art</span>
+              </div>
+              <button class="follow-btn">Follow</button>
+            </div>
+          </div>
+        </div>
       </div>
     </aside>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/presentation/stores/auth'; // asumiendo esto del Agente 3
+import { useAuthStore } from '@/application/stores/auth.store';
 
 const router = useRouter();
 const authStore = useAuthStore();
+
+const userDisplayName = computed(() => authStore.user?.displayName || 'Explorer');
+const userHandle = computed(() => {
+  if (authStore.user?.email) {
+    return `@${authStore.user.email.split('@')[0]}`;
+  }
+  return '@guest';
+});
+
+const userAvatar = computed(() => authStore.user?.avatar || null);
 
 const handleLogout = async () => {
   await authStore.logout();
@@ -65,19 +130,23 @@ const handleLogout = async () => {
 .default-layout {
   display: flex;
   min-height: 100vh;
-  background-color: var(--color-background);
-  font-family: var(--font-family-sans);
+  background-color: var(--surface-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
 }
 
+/* ── Sidebar ────────────────────────────────────────────────── */
 .default-layout__sidebar {
   display: none;
-  width: 280px;
-  border-right: 1px solid var(--color-border);
-  background-color: var(--color-surface);
+  width: var(--nav-width);
   flex-direction: column;
   position: sticky;
   top: 0;
   height: 100vh;
+  padding: var(--space-8) var(--space-6);
+  z-index: 50;
+  border: none;
+  background: var(--surface-glass);
 }
 
 @media (min-width: 768px) {
@@ -87,80 +156,142 @@ const handleLogout = async () => {
 }
 
 .sidebar__brand {
-  font-size: 2rem;
-  font-weight: var(--font-weight-black);
-  padding: var(--spacing-lg);
-  color: var(--color-primary-600);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-12);
+  padding-left: var(--space-4);
+}
+
+.brand-text {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+  background: linear-gradient(to bottom right, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.3));
+}
+
+.brand-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-full);
+  box-shadow: var(--glow-secondary);
+  margin-top: 1rem;
 }
 
 .sidebar__nav {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 var(--spacing-md);
-  gap: var(--spacing-sm);
+  gap: var(--space-2);
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-lg);
-  color: var(--color-text);
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-xl);
+  color: var(--text-secondary);
   text-decoration: none;
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-lg);
-  transition: background-color 0.2s, color 0.2s;
+  transition: var(--transition-base);
 }
 
 .nav-item:hover {
-  background-color: var(--color-primary-50);
-  color: var(--color-primary-700);
+  background-color: var(--surface-glass-bright);
+  color: var(--text-primary);
+  transform: translateX(4px);
 }
 
 .nav-item--active {
-  background-color: var(--color-primary-100);
-  color: var(--color-primary-800);
-  font-weight: var(--font-weight-bold);
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: inset 0 0 20px rgba(var(--color-primary-rgb), 0.05);
+}
+
+.nav-item--active .nav-icon {
+  filter: drop-shadow(0 0 5px var(--color-primary));
 }
 
 .sidebar__footer {
-  padding: var(--spacing-lg);
+  padding-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.user-peek {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-2xl);
+}
+
+.peek-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #333, #111);
+  border: 2px solid var(--surface-glass-border);
+}
+
+.peek-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.peek-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.peek-handle {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
 }
 
 .logout-btn {
   width: 100%;
-  padding: var(--spacing-sm);
+  padding: var(--space-3);
   background: transparent;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  color: var(--color-error);
+  border: 1px solid rgba(255, 61, 113, 0.2);
+  border-radius: var(--radius-xl);
   cursor: pointer;
-  font-weight: var(--font-weight-medium);
-  transition: all 0.2s;
+  font-weight: var(--font-weight-semibold);
+  transition: var(--transition-base);
 }
 
 .logout-btn:hover {
-  background: var(--color-error);
-  color: white;
-  border-color: var(--color-error);
+  background-color: rgba(255, 61, 113, 0.1);
+  box-shadow: 0 0 15px rgba(255, 61, 113, 0.1);
 }
 
+/* ── Main ───────────────────────────────────────────────────── */
 .default-layout__main {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  position: relative;
 }
 
 .mobile-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-surface);
+  padding: var(--space-4);
+  background-color: var(--surface-glass);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -173,31 +304,33 @@ const handleLogout = async () => {
 }
 
 .mobile-brand {
+  font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary-600);
+  color: var(--color-primary);
 }
 
 .mobile-menu-toggle {
   background: transparent;
   border: none;
   font-size: 1.5rem;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
 .content-container {
   flex: 1;
-  margin: 0 auto;
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
 }
 
+/* ── Rightbar ───────────────────────────────────────────────── */
 .default-layout__rightbar {
   display: none;
-  width: 320px;
-  border-left: 1px solid var(--color-border);
-  background-color: var(--color-background);
-  padding: var(--spacing-lg);
+  width: 350px;
+  padding: var(--space-8) var(--space-6);
   position: sticky;
   top: 0;
   height: 100vh;
@@ -209,36 +342,96 @@ const handleLogout = async () => {
   }
 }
 
-.rightbar__widget {
-  background: var(--color-surface);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-md);
-  border: 1px solid var(--color-border);
+.rightbar__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
 }
 
-.rightbar__widget h3 {
-  margin-top: 0;
-  margin-bottom: var(--spacing-md);
-  font-weight: var(--font-weight-bold);
+.widget {
+  padding: var(--space-6);
+  border-radius: var(--radius-3xl);
+  background: var(--surface-glass);
+}
+
+.widget-title {
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
 }
 
 .trending-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: var(--space-4);
 }
 
-.trending-list li {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-md);
+.trend-item {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-base);
+}
+
+.trend-item:hover {
+  background-color: var(--surface-glass-bright);
+}
+
+.trend-category {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.trend-name {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.trend-stats {
+  font-size: var(--font-size-2xs);
+  color: var(--text-disabled);
+}
+
+.follow-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.follow-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: #222;
+}
+
+.follow-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.follow-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.follow-handle {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.follow-btn {
+  padding: var(--space-1) var(--space-4);
+  background-color: var(--text-primary);
+  color: var(--surface-base);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
 }
 
-.trending-list li:hover {
-  text-decoration: underline;
-  color: var(--color-primary-600);
-}
 </style>
