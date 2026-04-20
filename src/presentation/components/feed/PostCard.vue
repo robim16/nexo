@@ -2,7 +2,7 @@
   <BaseCard variant="glass" padding="none" class="post-card" interactive>
     <header class="post-card__header">
       <div class="header-left">
-        <BaseAvatar :src="post.authorAvatar || ''" :alt="post.authorName" size="md" class="author-avatar" />
+        <BaseAvatar :src="post.authorAvatar" :name="post.authorName" size="md" class="author-avatar" />
         <div class="post-card__meta">
           <h4 class="author-name">{{ post.authorName }}</h4>
           <span class="post-date">{{ formatDate(post.createdAt) }}</span>

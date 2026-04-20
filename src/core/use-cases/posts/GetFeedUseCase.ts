@@ -4,6 +4,7 @@
  */
 import { IPostRepository } from '../../ports/repositories/IPostRepository'
 import { IFollowRepository } from '../../ports/repositories/IFollowRepository'
+import { IUserRepository } from '../../ports/repositories/IUserRepository'
 import { Post } from '../../entities/Post'
 import { UserId } from '../../value-objects/UserId'
 import { PostId } from '../../value-objects/PostId'
@@ -25,7 +26,8 @@ const DEFAULT_FEED_LIMIT = 20
 export class GetFeedUseCase {
   constructor(
     private readonly postRepository: IPostRepository,
-    private readonly followRepository: IFollowRepository
+    private readonly followRepository: IFollowRepository,
+    private readonly userRepository: IUserRepository
   ) {}
 
   async execute(dto: GetFeedDTO): Promise<GetFeedResult> {
@@ -49,7 +51,19 @@ export class GetFeedUseCase {
       lastPostId,
     })
 
-    // 4. Determinar si hay más páginas
+    // 4. Enriquecer posts con información del autor
+    const authorIds = [...new Set(posts.map(p => p.authorId))];
+    const authors = await this.userRepository.findManyByIds(authorIds);
+    const authorMap = new Map(authors.map(u => [u.id.value, u]));
+
+    for (const post of posts) {
+      const author = authorMap.get(post.authorId.value);
+      if (author) {
+        post.setAuthorInfo(author.displayName.value, author.avatar);
+      }
+    }
+
+    // 5. Determinar si hay más páginas
     const hasMore = posts.length > limit
     const result = hasMore ? posts.slice(0, limit) : posts
 

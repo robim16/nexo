@@ -19,6 +19,8 @@ const MAX_IMAGE_SIZE_MB = 10
 export interface PostPlainObject {
   id: string
   authorId: string
+  authorName?: string
+  authorAvatar?: string | null
   content: string
   hashtags: string[]
   mentions: string[]
@@ -43,6 +45,8 @@ export interface CreatePostData {
 export interface ReconstitutePostData {
   id: string
   authorId: string
+  authorName?: string
+  authorAvatar?: string | null
   content: string
   images: string[]
   likes: string[]
@@ -68,7 +72,9 @@ export class Post {
     private _visibility: PostVisibility,
     public readonly createdAt: Timestamp,
     private _updatedAt: Timestamp,
-    private _isEdited: boolean
+    private _isEdited: boolean,
+    private _authorName?: string,
+    private _authorAvatar?: string | null
   ) {}
 
   // ─── Getters ──────────────────────────────────────────────────────────────
@@ -84,6 +90,8 @@ export class Post {
   get isEdited(): boolean { return this._isEdited }
   get hashtags(): readonly string[] { return this._content.hashtags }
   get mentions(): readonly string[] { return this._content.mentions }
+  get authorName(): string | undefined { return this._authorName }
+  get authorAvatar(): string | null | undefined { return this._authorAvatar }
 
   // ─── Comportamiento de Negocio ────────────────────────────────────────────
 
@@ -166,6 +174,15 @@ export class Post {
     this._updatedAt = Timestamp.now()
   }
 
+  /**
+   * Adjunta información del autor al post.
+   * Útil para la capa de presentación.
+   */
+  setAuthorInfo(name: string, avatar: string | null): void {
+    this._authorName = name
+    this._authorAvatar = avatar
+  }
+
   // ─── Reglas de Negocio (Queries) ─────────────────────────────────────────
 
   isAuthor(userId: UserId): boolean {
@@ -226,7 +243,9 @@ export class Post {
       PostVisibility.reconstitute(data.visibility),
       Timestamp.reconstitute(data.createdAt),
       Timestamp.reconstitute(data.updatedAt),
-      data.isEdited
+      data.isEdited,
+      data.authorName,
+      data.authorAvatar
     )
   }
 
@@ -236,6 +255,8 @@ export class Post {
     return {
       id: this.id.value,
       authorId: this.authorId.value,
+      authorName: this._authorName,
+      authorAvatar: this._authorAvatar,
       content: this._content.value,
       hashtags: [...this._content.hashtags],
       mentions: [...this._content.mentions],

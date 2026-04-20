@@ -32,10 +32,12 @@
       
       <div class="sidebar__footer">
         <div class="user-peek">
-          <div 
-            class="peek-avatar" 
-            :style="userAvatar ? { backgroundImage: `url(${userAvatar})` } : {}"
-          ></div>
+          <BaseAvatar 
+            :src="userAvatar" 
+            :name="userDisplayName" 
+            size="md" 
+            class="peek-avatar"
+          />
           <div class="peek-info">
             <span class="peek-name">{{ userDisplayName }}</span>
             <span class="peek-handle">{{ userHandle }}</span>
@@ -88,7 +90,7 @@
           <div class="follow-list">
             <!-- Placeholders for future user items -->
             <div class="follow-item">
-              <div class="follow-avatar"></div>
+              <BaseAvatar name="Cyber Artist" size="sm" class="follow-avatar" />
               <div class="follow-info">
                 <span class="follow-name">Cyber Artist</span>
                 <span class="follow-handle">@cyber_art</span>
@@ -106,6 +108,7 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/application/stores/auth.store';
+import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -237,10 +240,6 @@ const handleLogout = async () => {
 }
 
 .peek-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #333, #111);
   border: 2px solid var(--surface-glass-border);
 }
 
@@ -401,10 +400,7 @@ const handleLogout = async () => {
 }
 
 .follow-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
-  background: #222;
+  border: 1px solid var(--surface-glass-border);
 }
 
 .follow-info {

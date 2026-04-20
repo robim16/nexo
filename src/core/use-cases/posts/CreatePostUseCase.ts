@@ -87,6 +87,9 @@ export class CreatePostUseCase {
       images: imageUrls,
       visibility,
     })
+    
+    // Adjuntar info del autor para la UI
+    post.setAuthorInfo(user.displayName.value, user.avatar);
 
     // 8. Persistir post
     await this.postRepository.save(post)

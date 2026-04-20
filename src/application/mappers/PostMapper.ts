@@ -19,7 +19,9 @@ export class PostMapper {
     return Post.reconstitute({
       ...plain,
       createdAt: new Date(plain.createdAt),
-      updatedAt: new Date(plain.updatedAt)
+      updatedAt: new Date(plain.updatedAt),
+      authorName: plain.authorName,
+      authorAvatar: plain.authorAvatar
     });
   }
 
