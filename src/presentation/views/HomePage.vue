@@ -1,15 +1,20 @@
 <template>
   <div class="home-page">
-    <header class="page-header">
-      <h1 class="page-title">Inicio</h1>
+    <header class="page-header glass">
+      <h1 class="page-title">Feed</h1>
+      <div class="header-actions">
+        <!-- Optional actions can go here -->
+      </div>
     </header>
     
-    <div class="create-post-section">
-      <CreatePostDialog />
-    </div>
+    <div class="page-content">
+      <div class="create-post-section">
+        <CreatePostDialog />
+      </div>
 
-    <div class="feed-section">
-      <VirtualFeed />
+      <div class="feed-section">
+        <VirtualFeed />
+      </div>
     </div>
   </div>
 </template>
@@ -23,38 +28,54 @@ import VirtualFeed from '@/presentation/components/feed/VirtualFeed.vue';
 .home-page {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 .page-header {
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
+  padding: var(--space-6) var(--space-8);
   position: sticky;
   top: 0;
-  z-index: 10;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.85); /* fallback si falta token */
-}
-
-@media (prefers-color-scheme: dark) {
-  .page-header {
-    background: rgba(30, 41, 59, 0.85);
-  }
+  z-index: 20;
+  background: var(--surface-glass);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .page-title {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: var(--font-weight-black);
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+  filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.2));
+}
+
+.page-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-8) 0;
 }
 
 .create-post-section {
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
+  padding: 0 var(--space-4);
 }
 
 .feed-section {
   flex: 1;
-  background-color: var(--color-background);
+}
+
+/* ── Mobile Overrides ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .page-header {
+    padding: var(--space-4) var(--space-6);
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
 }
 </style>

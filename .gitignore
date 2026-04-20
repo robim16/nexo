@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 
 # Firebase
+service-account.json
 .firebase/
 firebase-export/
 
@@ -39,3 +40,4 @@ test-results/
 
 # Agent temp files
 .agent/scratch/
+service-account.json

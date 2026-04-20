@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * BaseCard — Componente base de tarjeta
+ * BaseCard — Componente base de tarjeta (Nexo Lumina Edition)
  * Sin lógica de negocio. Contenedor visual reutilizable.
  */
 
@@ -14,7 +14,7 @@ interface Props {
   /** Clickeable (agrega cursor pointer) */
   clickable?: boolean
   /** Radius del borde */
-  radius?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+  radius?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
   /** Tag HTML */
   as?: string
 }
@@ -24,7 +24,7 @@ withDefaults(defineProps<BaseCardProps>(), {
   padding: 'md',
   interactive: false,
   clickable: false,
-  radius: 'xl',
+  radius: '2xl',
   as: 'div',
 })
 
@@ -74,29 +74,24 @@ defineEmits<{
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition:
-    box-shadow var(--duration-slow) var(--ease-in-out),
-    transform var(--duration-slow) var(--ease-spring),
-    border-color var(--duration-base) var(--ease-in-out),
-    background-color var(--duration-slow) var(--ease-in-out);
+  transition: var(--transition-base);
+  border: 1px solid transparent;
 }
 
 /* ── Variants ───────────────────────────────────────────────── */
 .base-card--default {
-  background-color: var(--card-bg);
-  border: 1px solid var(--card-border);
-  box-shadow: var(--card-shadow);
+  background-color: var(--surface-elevated);
+  box-shadow: var(--shadow-sm);
 }
 
 .base-card--elevated {
-  background-color: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background-color: var(--surface-elevated);
   box-shadow: var(--shadow-lg);
 }
 
 .base-card--outlined {
   background-color: transparent;
-  border: 1.5px solid var(--border-default);
+  border-color: var(--border-default);
   box-shadow: none;
 }
 
@@ -107,10 +102,10 @@ defineEmits<{
 }
 
 .base-card--glass {
-  background: var(--surface-glass);
+  background: var(--card-glass);
   backdrop-filter: var(--backdrop-blur);
   -webkit-backdrop-filter: var(--backdrop-blur);
-  border: 1px solid var(--surface-glass-border);
+  border-color: var(--surface-glass-border);
   box-shadow: var(--shadow-md);
 }
 
@@ -120,6 +115,7 @@ defineEmits<{
 .base-card--r-lg  { border-radius: var(--radius-lg); }
 .base-card--r-xl  { border-radius: var(--radius-xl); }
 .base-card--r-2xl { border-radius: var(--radius-2xl); }
+.base-card--r-3xl { border-radius: var(--radius-3xl); }
 
 /* ── Padding ────────────────────────────────────────────────── */
 .base-card--p-none .base-card__header,
@@ -132,7 +128,7 @@ defineEmits<{
 
 .base-card--p-md .base-card__header,
 .base-card--p-md .base-card__body,
-.base-card--p-md .base-card__footer { padding: var(--space-5); }
+.base-card--p-md .base-card__footer { padding: var(--space-4); }
 
 .base-card--p-lg .base-card__header,
 .base-card--p-lg .base-card__body,
@@ -142,13 +138,15 @@ defineEmits<{
 .base-card--p-xl .base-card__body,
 .base-card--p-xl .base-card__footer { padding: var(--space-8); }
 
-/* ── Sections ───────────────────────────────────────────────── */
+/* ── Sections (No-Line Principle) ────────────────────────── */
 .base-card__header {
-  border-bottom: 1px solid var(--border-subtle);
+  /* No divider lines, use tonal shifts or spacing */
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .base-card__footer {
-  border-top: 1px solid var(--border-subtle);
+  /* No divider lines, use tonal shifts or spacing */
+  background-color: rgba(255, 255, 255, 0.02);
   margin-top: auto;
 }
 
@@ -159,22 +157,17 @@ defineEmits<{
 /* ── Interactive ────────────────────────────────────────────── */
 .base-card--interactive:hover,
 .base-card--clickable:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-2px);
-  border-color: var(--border-default);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg), var(--glow-primary);
+  border-color: rgba(255, 0, 127, 0.2);
+  background-color: rgba(var(--color-primary-rgb), 0.05);
 }
 
 .base-card--interactive:active,
 .base-card--clickable:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), var(--glow-primary);
 }
 
 .base-card--clickable { cursor: pointer; }
-
-/* ── Glass dark mode ────────────────────────────────────────── */
-.dark .base-card--glass {
-  background: var(--surface-glass);
-  border-color: var(--surface-glass-border);
-}
 </style>

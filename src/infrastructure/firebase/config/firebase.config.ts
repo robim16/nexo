@@ -54,11 +54,17 @@ export const analytics: Analytics | null =
 // Configuración de emuladores (solo en desarrollo)
 if (import.meta.env.DEV) {
   const USE_EMULATORS = import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true'
+  
+  console.log('🔥 Firebase Config:', {
+    projectId: firebaseConfig.projectId,
+    useEmulators: USE_EMULATORS,
+    env: import.meta.env.MODE
+  })
 
   if (USE_EMULATORS) {
     console.log('🔧 Usando Emuladores de Firebase')
     connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true })
-    connectFirestoreEmulator(db, 'localhost', 8080)
+    connectFirestoreEmulator(db, 'localhost', 8081)
     connectStorageEmulator(storage, 'localhost', 9199)
     connectFunctionsEmulator(functions, 'localhost', 5001)
   }

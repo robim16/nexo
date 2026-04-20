@@ -128,11 +128,11 @@
 .text-tertiary   { color: var(--text-tertiary); }
 .text-disabled   { color: var(--text-disabled); }
 .text-inverse    { color: var(--text-inverse); }
-.text-brand      { color: var(--text-brand); }
-.text-accent     { color: var(--text-accent); }
-.text-success    { color: var(--color-success-500); }
-.text-warning    { color: var(--color-warning-500); }
-.text-error      { color: var(--color-error-500); }
+.text-brand      { color: var(--color-primary); }
+.text-accent     { color: var(--color-secondary); }
+.text-success    { color: #00ffaa; }
+.text-warning    { color: #ffcc00; }
+.text-error      { color: var(--color-error); }
 
 /* ── Truncation ───────────────────────────────────────────── */
 .truncate {
@@ -225,34 +225,34 @@
   background: var(--surface-glass);
   backdrop-filter: var(--backdrop-blur);
   -webkit-backdrop-filter: var(--backdrop-blur);
-  border: 1px solid var(--surface-glass-border);
+  border: none;
 }
 
 .glass-sm {
   background: var(--surface-glass);
   backdrop-filter: var(--backdrop-blur-sm);
   -webkit-backdrop-filter: var(--backdrop-blur-sm);
-  border: 1px solid var(--surface-glass-border);
+  border: none;
 }
 
 .glass-lg {
   background: var(--surface-glass);
   backdrop-filter: var(--backdrop-blur-lg);
   -webkit-backdrop-filter: var(--backdrop-blur-lg);
-  border: 1px solid var(--surface-glass-border);
+  border: none;
 }
 
 /* ── Gradient helpers ─────────────────────────────────────── */
 .gradient-brand {
-  background: linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
 }
 
 .gradient-brand-subtle {
-  background: linear-gradient(135deg, var(--color-brand-50), var(--color-accent-50));
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.1), rgba(var(--color-secondary-rgb), 0.1));
 }
 
 .gradient-text-brand {
-  background: linear-gradient(135deg, var(--color-brand-500), var(--color-accent-500));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
