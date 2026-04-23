@@ -29,10 +29,20 @@ export const useAuthStore = defineStore('auth', () => {
     if (isInitialized.value) return;
     
     const authService = container.get<IAuthService>('IAuthService');
+    // Importación local para evitar dependencias circulares si las hubiera
+    const { IUserRepository } = await import('../../core/ports/repositories/IUserRepository').catch(() => ({ IUserRepository: null }));
+    const userRepository = container.get<any>('IUserRepository');
     
-    authService.onAuthStateChanged((domainUser) => {
+    authService.onAuthStateChanged(async (domainUser) => {
       if (domainUser) {
-        user.value = UserMapper.toPlain(domainUser);
+        try {
+          // Obtener el usuario completo de la base de datos (con avatar, contadores, etc.)
+          const fullUser = await userRepository.findById(domainUser.id);
+          user.value = UserMapper.toPlain(fullUser || domainUser);
+        } catch (err) {
+          console.error("Error fetching full user profile:", err);
+          user.value = UserMapper.toPlain(domainUser);
+        }
       } else {
         user.value = null;
       }

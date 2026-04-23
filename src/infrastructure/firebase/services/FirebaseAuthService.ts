@@ -90,6 +90,7 @@ export class FirebaseAuthService implements IAuthService {
 
   private mapFirebaseUserToDomain(firebaseUser: FirebaseUser): User {
     return User.create({
+      id: firebaseUser.uid,
       email: firebaseUser.email!,
       displayName: firebaseUser.displayName || 'Usuario',
       bio: ''

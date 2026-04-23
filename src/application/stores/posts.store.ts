@@ -51,15 +51,15 @@ export const usePostsStore = defineStore('posts', () => {
       });
 
       if (refresh) {
-        feed.value = PostMapper.toPlainList(result);
+        feed.value = PostMapper.toPlainList(result.posts);
       } else {
-        const newPosts = PostMapper.toPlainList(result);
+        const newPosts = PostMapper.toPlainList(result.posts);
         // Evitar duplicados
         const existingIds = new Set(feed.value.map(p => p.id));
         feed.value.push(...newPosts.filter(p => !existingIds.has(p.id)));
       }
 
-      hasMore.value = result.length === 10;
+      hasMore.value = result.hasMore;
     } catch (err: any) {
       error.value = err.message || 'Error al cargar el feed';
     } finally {
@@ -79,13 +79,13 @@ export const usePostsStore = defineStore('posts', () => {
       const userId = authStore.currentUserId;
       if (!userId) throw new Error('Usuario no autenticado');
 
-      const domainPost = await useCase.execute({
+      const result = await useCase.execute({
         userId,
         content: input.content,
         // images: input.images // Asumiendo que ya son URLs o Files
       });
 
-      const plainPost = PostMapper.toPlain(domainPost);
+      const plainPost = PostMapper.toPlain(result.post);
       feed.value.unshift(plainPost);
       return plainPost;
     } catch (err: any) {
@@ -140,7 +140,7 @@ export const usePostsStore = defineStore('posts', () => {
 
     const useCase = container.get<DeletePostUseCase>('DeletePostUseCase');
     try {
-      await useCase.execute({ postId, userId });
+      await useCase.execute({ postId, requesterId: userId });
       feed.value = feed.value.filter(p => p.id !== postId);
     } catch (err: any) {
       error.value = err.message || 'Error al eliminar la publicación';

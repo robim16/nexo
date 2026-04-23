@@ -141,6 +141,14 @@
   --nav-width: 280px;
   --header-height: 72px;
 
+  /* ── Avatars ─────────────────────────────────────────────── */
+  --avatar-size-xs:  24px;
+  --avatar-size-sm:  32px;
+  --avatar-size-md:  40px;
+  --avatar-size-lg:  48px;
+  --avatar-size-xl:  64px;
+  --avatar-size-2xl: 96px;
+
   /* ── Component Defaults ─────────────────────────────────── */
   --card-bg:      var(--surface-elevated);
   --card-glass:   rgba(19, 19, 19, 0.6);

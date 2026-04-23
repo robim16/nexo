@@ -18,7 +18,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import PostList from './PostList.vue';
-import type { PostDisplay } from './PostCard.vue';
 import { usePostsStore } from '@/application/stores/posts.store';
 
 const postsStore = usePostsStore();
@@ -60,23 +59,13 @@ onUnmounted(() => {
   }
 });
 
+// Delegate like/unlike to store (it handles optimistic updates)
 const handleLike = (id: string) => {
-  // Optimistic UI update
-  const post = posts.value.find(p => p.id === id);
-  if (post) {
-    post.isLiked = true;
-    post.likeCount++;
-  }
-  // feedStore.likePost(id);
+  postsStore.toggleLike(id);
 };
 
 const handleUnlike = (id: string) => {
-  const post = posts.value.find(p => p.id === id);
-  if (post) {
-    post.isLiked = false;
-    post.likeCount = Math.max(0, post.likeCount - 1);
-  }
-  // feedStore.unlikePost(id);
+  postsStore.toggleLike(id);
 };
 </script>
 

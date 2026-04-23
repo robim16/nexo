@@ -1,6 +1,6 @@
 <template>
   <div class="profile-page">
-    <header class="page-header glass">
+    <header class="page-header">
       <div class="header-content">
         <BaseButton variant="glass" size="sm" class="back-btn" @click="$router.back()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -44,8 +44,10 @@
               :loading="postsStore.loading"
               @like="postsStore.toggleLike"
             />
-            <div v-else class="empty-state glass">
-              <span class="empty-icon">✨</span>
+            <div v-else class="empty-state">
+              <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
               <p>Nothing to see here yet.</p>
             </div>
           </transition>
@@ -107,20 +109,20 @@ onMounted(() => {
 }
 
 .page-header {
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-6) var(--space-4);
+  background: rgba(10, 10, 11, 0.8);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border-bottom: 1px solid var(--surface-glass-border);
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--surface-glass);
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  gap: var(--space-6);
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
+  gap: var(--space-4);
 }
 
 .back-btn {
@@ -146,7 +148,7 @@ onMounted(() => {
 .page-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--font-size-lg);
+  font-size: 1.25rem;
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
 }
@@ -157,9 +159,8 @@ onMounted(() => {
 }
 
 .profile-container {
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .stats-wrapper {
@@ -234,9 +235,10 @@ onMounted(() => {
 }
 
 .empty-icon {
-  font-size: 3rem;
+  width: 48px;
+  height: 48px;
   margin-bottom: var(--space-4);
-  opacity: 0.5;
+  color: var(--text-disabled);
 }
 
 /* Animations */

@@ -4,18 +4,13 @@
  * Garantiza formato UUID v4 válido e inmutabilidad.
  */
 export class UserId {
-  private static readonly UUID_REGEX =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
   private constructor(public readonly value: string) {}
 
-  /** Crea un UserId desde un string existente, validando el formato UUID */
+  /** Crea un UserId desde un string existente */
   static fromString(id: string): UserId {
     if (!id || id.trim().length === 0) {
       throw new Error('UserId no puede estar vacío')
-    }
-    if (!UserId.UUID_REGEX.test(id)) {
-      throw new Error(`UserId inválido: "${id}" no es un UUID v4 válido`)
     }
     return new UserId(id)
   }

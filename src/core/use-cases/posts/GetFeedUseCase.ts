@@ -37,7 +37,11 @@ export class GetFeedUseCase {
     // 1. Obtener IDs de usuarios que sigue
     const followingIds = await this.followRepository.getFollowingIds(userId)
 
-    // Si no sigue a nadie, feed vacío
+    // Agregamos el ID del usuario al principio para que también vea sus propios posts
+    // y no sea cortado por el límite de 10 del 'in' query de Firebase
+    followingIds.unshift(userId.value)
+
+    // Si no sigue a nadie (ni a sí mismo, aunque arriba lo agregamos), feed vacío
     if (followingIds.length === 0) {
       return { posts: [], hasMore: false }
     }

@@ -87,7 +87,7 @@ container.register('LoginUseCase', new LoginUseCase(authService, userRepository,
 container.register('LogoutUseCase', new LogoutUseCase(authService, eventBus));
 container.register('RegisterUseCase', new RegisterUseCase(authService, userRepository, eventBus));
 
-container.register('CreatePostUseCase', new CreatePostUseCase(postRepository, storageService, eventBus));
+container.register('CreatePostUseCase', new CreatePostUseCase(postRepository, userRepository, storageService, eventBus));
 container.register('GetFeedUseCase', new GetFeedUseCase(postRepository, followRepository, userRepository));
 container.register('LikePostUseCase', new LikePostUseCase(postRepository, eventBus));
 container.register('DeletePostUseCase', new DeletePostUseCase(postRepository, eventBus));

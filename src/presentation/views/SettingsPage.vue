@@ -1,6 +1,6 @@
 <template>
   <div class="settings-page">
-    <header class="page-header glass">
+    <header class="page-header">
       <div class="header-content">
         <h1 class="page-title">Settings</h1>
         <p class="page-subtitle">Configure your Nexo experience</p>
@@ -11,7 +11,11 @@
       <!-- Profile Section -->
       <section class="settings-section glass">
         <div class="section-header">
-          <div class="section-icon">👤</div>
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
           <h3 class="section-title">Profile Settings</h3>
         </div>
         
@@ -45,7 +49,11 @@
       <!-- Appearance Section -->
       <section class="settings-section glass">
         <div class="section-header">
-          <div class="section-icon">✨</div>
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
           <h3 class="section-title">Appearance</h3>
         </div>
         
@@ -70,7 +78,11 @@
       <!-- Privacy & Security -->
       <section class="settings-section glass">
         <div class="section-header">
-          <div class="section-icon">🔒</div>
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
           <h3 class="section-title">Privacy & Security</h3>
         </div>
         
@@ -97,7 +109,11 @@
       <!-- Danger Zone -->
       <section class="settings-section danger-glass">
         <div class="section-header">
-          <div class="section-icon">⚠️</div>
+          <div class="section-icon text-error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
           <h3 class="section-title danger-text">Danger Zone</h3>
         </div>
         
@@ -139,41 +155,40 @@ const themes = [
 }
 
 .page-header {
-  padding: var(--space-8) var(--space-6);
-  background: var(--surface-glass);
-  margin-bottom: var(--space-8);
+  padding: var(--space-6) var(--space-4);
+  background: rgba(10, 10, 11, 0.8);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border-bottom: 1px solid var(--surface-glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .header-content {
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
+  margin-bottom: var(--space-1);
 }
 
 .page-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 2.5rem;
+  font-size: 1.75rem;
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--letter-spacing-tight);
   color: var(--text-primary);
-  filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.2));
 }
 
 .page-subtitle {
-  margin: var(--space-2) 0 0;
+  margin: 2px 0 0;
   color: var(--text-tertiary);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-xs);
 }
 
 .settings-container {
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
-  padding: 0 var(--space-4) var(--space-12);
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-2);
 }
 
 .settings-section {
@@ -190,14 +205,23 @@ const themes = [
 }
 
 .section-icon {
-  font-size: 1.5rem;
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: rgba(255, 255, 255, 0.03);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
+  color: var(--color-primary);
+}
+
+.section-icon.text-error {
+  color: var(--color-error);
+}
+
+.section-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 .section-title {
