@@ -66,4 +66,9 @@ export const useUIStore = defineStore('ui', () => {
     openModal,
     closeModal
   };
+}, {
+  persist: {
+    pick: ['theme', 'isSidebarOpen'],
+    storage: localStorage
+  }
 });

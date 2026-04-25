@@ -10,6 +10,8 @@ export interface NotificationDTO {
   type: string;
   message: string;
   fromUserId: string;
+  actorName: string;
+  actorAvatar?: string;
   postId?: string;
   isRead: boolean;
   createdAt: string;
@@ -41,14 +43,16 @@ export const useNotificationsStore = defineStore('notifications', () => {
       const result = await useCase.execute({ userId });
       
       // Mapear a DTO simple para la UI
-      notifications.value = result.map(n => ({
-        id: n.id.value,
-        type: n.type,
-        message: n.message,
-        fromUserId: n.fromUserId.value,
-        postId: n.postId?.value,
-        isRead: n.isRead,
-        createdAt: n.createdAt.toISOString()
+      notifications.value = result.notifications.map(n => ({
+        id: n.notification.id.value,
+        type: n.notification.type,
+        message: n.notification.message,
+        fromUserId: n.notification.actorId.value,
+        actorName: n.actor.displayName,
+        actorAvatar: n.actor.avatarUrl || undefined,
+        postId: n.notification.postId?.value,
+        isRead: n.notification.isRead,
+        createdAt: n.notification.createdAt.toISOString()
       }));
     } catch (err: any) {
       error.value = err.message || 'Error al cargar notificaciones';
@@ -61,9 +65,12 @@ export const useNotificationsStore = defineStore('notifications', () => {
    * Marca una notificación como leída.
    */
   async function markAsRead(notificationId: string) {
+    const userId = authStore.currentUserId;
+    if (!userId) return;
+
     const useCase = container.get<MarkNotificationReadUseCase>('MarkNotificationReadUseCase');
     try {
-      await useCase.execute({ notificationId });
+      await useCase.execute({ userId, notificationId });
       
       const notification = notifications.value.find(n => n.id === notificationId);
       if (notification) {
@@ -71,6 +78,25 @@ export const useNotificationsStore = defineStore('notifications', () => {
       }
     } catch (err: any) {
       error.value = err.message || 'Error al marcar notificación';
+    }
+  }
+
+  /**
+   * Marca todas las notificaciones como leídas.
+   */
+  async function markAllAsRead() {
+    const userId = authStore.currentUserId;
+    if (!userId) return;
+
+    const useCase = container.get<MarkNotificationReadUseCase>('MarkNotificationReadUseCase');
+    try {
+      await useCase.execute({ userId });
+      
+      notifications.value.forEach(n => {
+        n.isRead = true;
+      });
+    } catch (err: any) {
+      error.value = err.message || 'Error al marcar notificaciones';
     }
   }
 

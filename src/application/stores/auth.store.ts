@@ -22,32 +22,39 @@ export const useAuthStore = defineStore('auth', () => {
 
   // --- Acciones ---
 
+  let initPromise: Promise<void> | null = null;
+
   /**
    * Inicializa el listener de autenticación de Firebase.
+   * Retorna una promesa que se resuelve cuando se ha verificado el estado inicial.
    */
-  async function initAuth() {
-    if (isInitialized.value) return;
+  function initAuth(): Promise<void> {
+    if (isInitialized.value) return Promise.resolve();
+    if (initPromise) return initPromise;
     
-    const authService = container.get<IAuthService>('IAuthService');
-    // Importación local para evitar dependencias circulares si las hubiera
-    const { IUserRepository } = await import('../../core/ports/repositories/IUserRepository').catch(() => ({ IUserRepository: null }));
-    const userRepository = container.get<any>('IUserRepository');
-    
-    authService.onAuthStateChanged(async (domainUser) => {
-      if (domainUser) {
-        try {
-          // Obtener el usuario completo de la base de datos (con avatar, contadores, etc.)
-          const fullUser = await userRepository.findById(domainUser.id);
-          user.value = UserMapper.toPlain(fullUser || domainUser);
-        } catch (err) {
-          console.error("Error fetching full user profile:", err);
-          user.value = UserMapper.toPlain(domainUser);
+    initPromise = new Promise((resolve) => {
+      const authService = container.get<IAuthService>('IAuthService');
+      const userRepository = container.get<any>('IUserRepository');
+      
+      authService.onAuthStateChanged(async (domainUser) => {
+        if (domainUser) {
+          try {
+            const fullUser = await userRepository.findById(domainUser.id);
+            user.value = UserMapper.toPlain(fullUser || domainUser);
+          } catch (err) {
+            console.error("Error fetching full user profile:", err);
+            user.value = UserMapper.toPlain(domainUser);
+          }
+        } else {
+          user.value = null;
         }
-      } else {
-        user.value = null;
-      }
-      isInitialized.value = true;
+        
+        isInitialized.value = true;
+        resolve();
+      });
     });
+
+    return initPromise;
   }
 
   /**

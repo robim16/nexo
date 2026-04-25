@@ -86,12 +86,22 @@
             Trending
           </h3>
           <ul class="trending-list">
-            <li v-for="(trend, i) in trends" :key="i" class="trend-item">
+            <li v-if="postsStore.loadingTrends" v-for="i in 3" :key="'skeleton-'+i" class="trend-item skeleton">
+              <div class="trend-rank-skeleton"></div>
+              <div class="trend-body-skeleton">
+                <div class="trend-name-skeleton"></div>
+                <div class="trend-stats-skeleton"></div>
+              </div>
+            </li>
+            <li v-else v-for="(trend, i) in trends" :key="trend.tag" class="trend-item">
               <span class="trend-rank">#{{ i + 1 }}</span>
               <div class="trend-body">
                 <span class="trend-name">{{ trend.tag }}</span>
                 <span class="trend-stats">{{ trend.count }} posts</span>
               </div>
+            </li>
+            <li v-if="!postsStore.loadingTrends && (!trends || trends.length === 0)" class="empty-trends">
+              No trends today
             </li>
           </ul>
         </div>
@@ -103,13 +113,16 @@
             Who to Follow
           </h3>
           <div class="follow-list">
-            <div v-for="(user, i) in suggestedUsers" :key="i" class="follow-item">
-              <BaseAvatar :name="user.name" size="sm" class="follow-avatar" />
+            <div v-for="user in suggestedUsers" :key="user.id" class="follow-item">
+              <BaseAvatar :src="user.avatar" :name="user.displayName" size="sm" class="follow-avatar" />
               <div class="follow-info">
-                <span class="follow-name">{{ user.name }}</span>
-                <span class="follow-handle">@{{ user.handle }}</span>
+                <span class="follow-name">{{ user.displayName }}</span>
+                <span class="follow-handle">@{{ user.email.split('@')[0] }}</span>
               </div>
-              <button class="follow-btn">Follow</button>
+              <button class="follow-btn" @click="handleFollow(user.id)">Follow</button>
+            </div>
+            <div v-if="!suggestedUsers || suggestedUsers.length === 0" class="empty-suggestions">
+              No new suggestions
             </div>
           </div>
         </div>
@@ -126,13 +139,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/application/stores/auth.store';
+import { useUsersStore } from '@/application/stores/users.store';
+import { usePostsStore } from '@/application/stores/posts.store';
 import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const usersStore = useUsersStore();
+const postsStore = usePostsStore();
 const mobileMenuOpen = ref(false);
 
 const userDisplayName = computed(() => authStore.user?.displayName || 'Explorer');
@@ -161,18 +178,25 @@ const navItems: NavItem[] = [
   { to: '/settings', label: 'Settings', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>' },
 ];
 
-const trends = [
-  { tag: '#VueLumina', count: '12.5k' },
-  { tag: '#Glassmorphism', count: '8.2k' },
-  { tag: '#NexoPulse', count: '5.1k' },
-  { tag: '#DarkMode', count: '3.8k' },
-];
+const trends = computed(() => postsStore.trendingTags || []);
 
-const suggestedUsers = [
-  { name: 'Cyber Artist', handle: 'cyber_art' },
-  { name: 'Neon Waves', handle: 'neon_w' },
-  { name: 'Pixel Storm', handle: 'px_storm' },
-];
+const suggestedUsers = computed(() => usersStore.suggestedUsers || []);
+
+const handleFollow = async (userId: string) => {
+  await usersStore.followUser(userId);
+  await usersStore.fetchSuggestedUsers(); // Refresh suggestions
+};
+
+onMounted(() => {
+  usersStore.fetchSuggestedUsers();
+  postsStore.fetchTrendingTags();
+});
+
+watch(() => authStore.currentUserId, (newId) => {
+  if (newId) {
+    usersStore.fetchSuggestedUsers();
+  }
+});
 
 const handleLogout = async () => {
   await authStore.logout();
@@ -598,6 +622,59 @@ const handleLogout = async () => {
   color: var(--text-tertiary);
 }
 
+.empty-trends {
+  padding: var(--space-4);
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--surface-glass-border);
+}
+
+/* Skeletons */
+.trend-item.skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+
+.trend-rank-skeleton {
+  width: 24px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.5s infinite;
+}
+
+.trend-body-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.trend-name-skeleton {
+  width: 60%;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.5s infinite;
+}
+
+.trend-stats-skeleton {
+  width: 40%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-xs);
+  animation: pulse 1.5s infinite 0.2s;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.5; }
+}
+
 .follow-list {
   display: flex;
   flex-direction: column;
@@ -658,6 +735,16 @@ const handleLogout = async () => {
 .follow-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 0 14px rgba(var(--color-primary-rgb), 0.4);
+}
+
+.empty-suggestions {
+  padding: var(--space-4);
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--surface-glass-border);
 }
 
 /* ── Mobile Overlay ─────────────────────────────────────────── */

@@ -11,7 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, defineProps, computed } from 'vue';
+import { useUsersStore } from '@/application/stores/users.store';
+import { useAuthStore } from '@/application/stores/auth.store';
 import BaseButton from '@/presentation/components/common/BaseButton.vue';
 
 const props = withDefaults(defineProps<{
@@ -22,23 +24,33 @@ const props = withDefaults(defineProps<{
   size: 'md'
 });
 
-const emit = defineEmits(['update:following']);
-
-const isFollowing = ref(props.initialIsFollowing || false);
+const usersStore = useUsersStore();
+const authStore = useAuthStore();
 const loading = ref(false);
 
+const isFollowing = computed(() => {
+  // Si es el perfil actual que estamos viendo en ProfilePage, usar el estado global
+  if (usersStore.profiles[props.userId]) {
+    // Aquí hay un pequeño dilema: si estamos en una lista, queremos el estado de esa persona específica.
+    // Pero por ahora, usemos el isFollowingProfile si coincide con el ID, o asumamos que la prop es correcta
+    return usersStore.isFollowingProfile && props.userId === usersStore.profiles[props.userId]?.id 
+      ? true 
+      : props.initialIsFollowing;
+  }
+  return props.initialIsFollowing;
+});
+
 const toggleFollow = async () => {
-  if (loading.value) return;
+  if (loading.value || !authStore.isAuthenticated) return;
   
   loading.value = true;
   try {
-    // optimistic
-    isFollowing.value = !isFollowing.value;
-    emit('update:following', isFollowing.value);
+    if (isFollowing.value) {
+      await usersStore.unfollowUser(props.userId);
+    } else {
+      await usersStore.followUser(props.userId);
+    }
   } catch (error) {
-    // revert
-    isFollowing.value = !isFollowing.value;
-    emit('update:following', isFollowing.value);
     console.error('Follow action failed', error);
   } finally {
     loading.value = false;

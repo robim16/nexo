@@ -47,36 +47,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useNotificationsStore } from '@/application/stores/notifications.store';
 import NotificationItem from './NotificationItem.vue';
-import type { AppNotification } from './NotificationItem.vue';
 import BaseButton from '@/presentation/components/common/BaseButton.vue';
 
 const router = useRouter();
-const loading = ref(true);
-const notifications = ref<AppNotification[]>([]);
+const notificationsStore = useNotificationsStore();
+const { notifications, loading } = storeToRefs(notificationsStore);
 
-onMounted(() => {
-  // Mock data for visual completeness
-  setTimeout(() => {
-    notifications.value = [
-      { id: '1', type: 'LIKE', actorName: 'Maria Lumina', read: false, createdAt: new Date(Date.now() - 120000) },
-      { id: '2', type: 'FOLLOW', actorName: 'Cyber Carlos', read: true, createdAt: new Date(Date.now() - 86400000) },
-      { id: '3', type: 'COMMENT', actorName: 'Echo Ghost', read: false, createdAt: new Date(Date.now() - 1200000) },
-    ];
-    loading.value = false;
-  }, 1000);
+onMounted(async () => {
+  await notificationsStore.fetchNotifications();
 });
 
-const markAllAsRead = () => {
-  notifications.value.forEach(n => n.read = true);
+const markAllAsRead = async () => {
+  await notificationsStore.markAllAsRead();
 };
 
-const handleNotificationClick = (notification: AppNotification) => {
-  notification.read = true;
+const handleNotificationClick = async (notification: any) => {
+  await notificationsStore.markAsRead(notification.id);
+  
   if (notification.type === 'FOLLOW') {
-    router.push(`/profile/${notification.actorName}`);
+    router.push(`/profile/${notification.fromUserId}`);
+  } else if (notification.postId) {
+    router.push(`/post/${notification.postId}`);
   }
 };
 </script>

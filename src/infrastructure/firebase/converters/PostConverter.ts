@@ -45,7 +45,15 @@ export class PostConverter implements FirestoreDataConverter<Post> {
   }
 
   fromFirestore(snapshot: QueryDocumentSnapshot, options?: SnapshotOptions): Post {
-    const data = snapshot.data(options) as FirebasePostData
+    const data = snapshot.data(options) as any
+
+    const toDate = (ts: any): Date => {
+      if (!ts) return new Date()
+      if (typeof ts.toDate === 'function') return ts.toDate()
+      if (ts instanceof Date) return ts
+      if (ts.seconds) return new Date(ts.seconds * 1000)
+      return new Date(ts)
+    }
 
     return Post.reconstitute({
       id: data.id,
@@ -57,8 +65,8 @@ export class PostConverter implements FirestoreDataConverter<Post> {
       commentsCount: data.commentsCount || 0,
       sharesCount: data.sharesCount || 0,
       visibility: data.visibility || 'PUBLIC',
-      createdAt: data.createdAt.toDate(),
-      updatedAt: data.updatedAt.toDate(),
+      createdAt: toDate(data.createdAt),
+      updatedAt: toDate(data.updatedAt),
       isEdited: data.isEdited || false
     })
   }

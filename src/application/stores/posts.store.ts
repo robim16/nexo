@@ -29,6 +29,38 @@ export const usePostsStore = defineStore('posts', () => {
   // --- Acciones ---
 
   /**
+   * Carga las publicaciones de un usuario específico.
+   */
+  async function fetchUserPosts(userId: string, refresh = true) {
+    if (loading.value && !refresh) return;
+
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const useCase = container.get<any>('GetUserPostsUseCase');
+      const result = await useCase.execute({
+        userId,
+        limit: 20
+      });
+
+      if (refresh) {
+        feed.value = PostMapper.toPlainList(result.posts);
+      } else {
+        const newPosts = PostMapper.toPlainList(result.posts);
+        const existingIds = new Set(feed.value.map(p => p.id));
+        feed.value.push(...newPosts.filter((p: any) => !existingIds.has(p.id)));
+      }
+      
+      hasMore.value = result.hasMore;
+    } catch (err: any) {
+      error.value = err.message || 'Error al cargar las publicaciones del usuario';
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  /**
    * Carga el feed de publicaciones.
    */
   async function fetchFeed(refresh = false) {
@@ -87,6 +119,12 @@ export const usePostsStore = defineStore('posts', () => {
 
       const plainPost = PostMapper.toPlain(result.post);
       feed.value.unshift(plainPost);
+      
+      // Actualizar tendencias si el post es público
+      if (plainPost.visibility === 'public') {
+        fetchTrendingTags();
+      }
+      
       return plainPost;
     } catch (err: any) {
       error.value = err.message || 'Error al crear la publicación';
@@ -131,6 +169,9 @@ export const usePostsStore = defineStore('posts', () => {
     }
   }
 
+  const trendingTags = ref<{ tag: string; count: number }[]>([]);
+  const loadingTrends = ref(false);
+
   /**
    * Elimina una publicación.
    */
@@ -148,12 +189,31 @@ export const usePostsStore = defineStore('posts', () => {
     }
   }
 
+  /**
+   * Carga los hashtags populares.
+   */
+  async function fetchTrendingTags() {
+    loadingTrends.value = true;
+    try {
+      const useCase = container.get<any>('GetTrendingHashtagsUseCase');
+      trendingTags.value = await useCase.execute({ limit: 5 });
+    } catch (err) {
+      console.error('Error fetching trends:', err);
+    } finally {
+      loadingTrends.value = false;
+    }
+  }
+
   return {
     feed: sortedFeed,
+    trendingTags,
     loading,
+    loadingTrends,
     error,
     hasMore,
     fetchFeed,
+    fetchUserPosts,
+    fetchTrendingTags,
     createPost,
     toggleLike,
     deletePost

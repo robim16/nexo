@@ -1,7 +1,7 @@
 <template>
   <div 
     class="notification-item" 
-    :class="{ 'unread': !notification.read, 'interactive': true }"
+    :class="{ 'unread': !notification.isRead, 'interactive': true }"
   >
     <div class="actor-visual">
       <BaseAvatar 
@@ -23,7 +23,7 @@
       <span class="notification-time">{{ formatTime(notification.createdAt) }}</span>
     </div>
 
-    <div v-if="!notification.read" class="unread-pulse"></div>
+    <div v-if="!notification.isRead" class="unread-pulse"></div>
   </div>
 </template>
 
@@ -33,12 +33,13 @@ import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
 
 export interface AppNotification {
   id: string;
-  type: 'LIKE' | 'COMMENT' | 'FOLLOW';
+  type: string;
   actorName: string;
   actorAvatar?: string;
   createdAt: Date | string | number;
-  read: boolean;
-  targetId?: string; // post id or user id
+  isRead: boolean;
+  postId?: string;
+  fromUserId?: string;
 }
 
 const props = defineProps<{
@@ -50,6 +51,8 @@ const actionText = computed(() => {
     case 'LIKE': return 'liked your pulse.';
     case 'COMMENT': return 'commented on your pulse.';
     case 'FOLLOW': return 'is now following you.';
+    case 'MENTION': return 'mentioned you in a pulse.';
+    case 'SHARE': return 'shared your pulse.';
     default: return 'interacted with you.';
   }
 });
@@ -59,6 +62,8 @@ const typeIcon = computed(() => {
     case 'LIKE': return '❤️';
     case 'COMMENT': return '💬';
     case 'FOLLOW': return '👤';
+    case 'MENTION': return '🏷️';
+    case 'SHARE': return '🔄';
     default: return '✨';
   }
 });

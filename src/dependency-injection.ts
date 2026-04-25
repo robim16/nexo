@@ -52,12 +52,16 @@ import { LogoutUseCase } from './core/use-cases/auth/LogoutUseCase';
 import { RegisterUseCase } from './core/use-cases/auth/RegisterUseCase';
 import { CreatePostUseCase } from './core/use-cases/posts/CreatePostUseCase';
 import { GetFeedUseCase } from './core/use-cases/posts/GetFeedUseCase';
+import { GetUserPostsUseCase } from './core/use-cases/posts/GetUserPostsUseCase';
 import { LikePostUseCase } from './core/use-cases/posts/LikePostUseCase';
 import { DeletePostUseCase } from './core/use-cases/posts/DeletePostUseCase';
 import { EditPostUseCase } from './core/use-cases/posts/EditPostUseCase';
+import { GetTrendingHashtagsUseCase } from './core/use-cases/posts/GetTrendingHashtagsUseCase';
 import { FollowUserUseCase } from './core/use-cases/social/FollowUserUseCase';
 import { UnfollowUserUseCase } from './core/use-cases/social/UnfollowUserUseCase';
 import { GetFollowersUseCase } from './core/use-cases/social/GetFollowersUseCase';
+import { GetFollowingUseCase } from './core/use-cases/social/GetFollowingUseCase';
+import { GetSuggestedUsersUseCase } from './core/use-cases/social/GetSuggestedUsersUseCase';
 import { GetNotificationsUseCase } from './core/use-cases/notifications/GetNotificationsUseCase';
 import { MarkNotificationReadUseCase } from './core/use-cases/notifications/MarkNotificationReadUseCase';
 
@@ -89,15 +93,19 @@ container.register('RegisterUseCase', new RegisterUseCase(authService, userRepos
 
 container.register('CreatePostUseCase', new CreatePostUseCase(postRepository, userRepository, storageService, eventBus));
 container.register('GetFeedUseCase', new GetFeedUseCase(postRepository, followRepository, userRepository));
+container.register('GetUserPostsUseCase', new GetUserPostsUseCase(postRepository, userRepository));
 container.register('LikePostUseCase', new LikePostUseCase(postRepository, eventBus));
-container.register('DeletePostUseCase', new DeletePostUseCase(postRepository, eventBus));
+container.register('DeletePostUseCase', new DeletePostUseCase(postRepository, userRepository, storageService, eventBus));
 container.register('EditPostUseCase', new EditPostUseCase(postRepository, eventBus));
+container.register('GetTrendingHashtagsUseCase', new GetTrendingHashtagsUseCase(postRepository));
 
-container.register('FollowUserUseCase', new FollowUserUseCase(followRepository, userRepository, eventBus));
+container.register('FollowUserUseCase', new FollowUserUseCase(followRepository, userRepository, notificationRepository, eventBus));
 container.register('UnfollowUserUseCase', new UnfollowUserUseCase(followRepository, userRepository, eventBus));
-container.register('GetFollowersUseCase', new GetFollowersUseCase(followRepository));
+container.register('GetFollowersUseCase', new GetFollowersUseCase(followRepository, userRepository));
+container.register('GetFollowingUseCase', new GetFollowingUseCase(followRepository, userRepository));
+container.register('GetSuggestedUsersUseCase', new GetSuggestedUsersUseCase(userRepository, followRepository));
 
-container.register('GetNotificationsUseCase', new GetNotificationsUseCase(notificationRepository));
+container.register('GetNotificationsUseCase', new GetNotificationsUseCase(notificationRepository, userRepository));
 container.register('MarkNotificationReadUseCase', new MarkNotificationReadUseCase(notificationRepository));
 
 export default container;

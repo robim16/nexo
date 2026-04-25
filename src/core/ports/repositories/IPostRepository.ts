@@ -18,7 +18,7 @@ export interface FeedOptions {
 
 export interface IPostRepository extends IBaseRepository<Post, PostId> {
   /** Obtiene los posts de un autor específico */
-  findByAuthor(authorId: UserId, limit?: number): Promise<Post[]>
+  findByAuthor(authorId: UserId, options?: FeedOptions): Promise<Post[]>
 
   /**
    * Obtiene el feed para un usuario basado en los IDs de los usuarios que sigue.
@@ -49,4 +49,10 @@ export interface IPostRepository extends IBaseRepository<Post, PostId> {
    * Retorna una función para cancelar la suscripción.
    */
   subscribeToFeed(followingIds: string[], callback: (posts: Post[]) => void): Unsubscribe
+
+  /** Cuenta las publicaciones de un usuario */
+  countPosts(userId: UserId): Promise<number>
+
+  /** Obtiene los hashtags más populares */
+  getTrendingHashtags(limit?: number): Promise<{ tag: string; count: number }[]>
 }
