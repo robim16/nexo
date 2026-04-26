@@ -51,8 +51,11 @@
                 :items="postsStore.feed" 
                 :loading="postsStore.loading"
                 @like="postsStore.toggleLike"
+                @comment="handleComment"
               />
             </div>
+            
+
             
             <div v-else-if="activeTab === 'followers'" class="user-list">
               <UserListItem 
@@ -83,6 +86,13 @@
               <p>Nothing to see here yet.</p>
             </div>
           </transition>
+          <CommentDialog 
+            :is-open="isCommentDialogOpen"
+            :post-id="activePostId"
+            :loading="isCommenting"
+            @close="isCommentDialogOpen = false"
+            @submit="submitComment"
+          />
         </div>
       </div>
     </div>
@@ -95,15 +105,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { usePostsStore } from '@/application/stores/posts.store';
 import { useAuthStore } from '@/application/stores/auth.store';
 import { useUsersStore } from '@/application/stores/users.store';
+import { useCommentsStore } from '@/application/stores/comments.store';
 import ProfileHeader from '@/presentation/components/profile/ProfileHeader.vue';
 import ProfileStats from '@/presentation/components/profile/ProfileStats.vue';
 import UserListItem from '@/presentation/components/profile/UserListItem.vue';
 import PostList from '@/presentation/components/feed/PostList.vue';
+import CommentDialog from '@/presentation/components/feed/CommentDialog.vue';
 import BaseButton from '@/presentation/components/common/BaseButton.vue';
 import LoadingSpinner from '@/presentation/components/common/LoadingSpinner.vue';
 
@@ -111,9 +123,14 @@ const route = useRoute();
 const postsStore = usePostsStore();
 const authStore = useAuthStore();
 const usersStore = useUsersStore();
+const commentsStore = useCommentsStore();
 
 const activeTab = ref('posts');
 const loading = ref(true);
+
+const isCommentDialogOpen = ref(false);
+const isCommenting = ref(false);
+const activePostId = ref<string | null>(null);
 
 const userId = computed(() => (route.params.id as string) || authStore.currentUserId);
 
@@ -143,6 +160,37 @@ const handleStatClick = (statId: string) => {
   }
 };
 
+const handleComment = (id: string) => {
+  activePostId.value = id;
+  isCommentDialogOpen.value = true;
+};
+
+const submitComment = async (content: string) => {
+  if (!activePostId.value) return;
+  
+  isCommenting.value = true;
+  try {
+    await commentsStore.addComment(activePostId.value, content);
+    isCommentDialogOpen.value = false;
+  } catch (err) {
+    console.error('Error submitting comment', err);
+  } finally {
+    isCommenting.value = false;
+  }
+};
+
+onMounted(() => {
+  loadProfileData();
+});
+
+
+onUnmounted(() => {
+  if (userId.value) {
+    usersStore.unsubscribeFromProfile(userId.value);
+  }
+  postsStore.unsubscribe();
+});
+
 const loadProfileData = async () => {
   if (!userId.value) {
     loading.value = false;
@@ -151,11 +199,12 @@ const loadProfileData = async () => {
 
   loading.value = true;
   try {
-    // 1. Cargar perfil
+    // 1. Cargar perfil inicial y suscribirse
     await usersStore.fetchProfile(userId.value);
+    usersStore.subscribeToProfile(userId.value);
     
-    // 2. Cargar feed del usuario
-    await postsStore.fetchUserPosts(userId.value);
+    // 2. Suscribirse a posts del usuario
+    postsStore.subscribeToUserPosts(userId.value);
     
     // 3. Verificar si lo seguimos
     if (!isOwnProfile.value) {
@@ -178,12 +227,11 @@ watch(activeTab, (newTab) => {
 });
 
 // Recargar si cambia el ID en la ruta
-watch(() => route.params.id, () => {
+watch(() => route.params.id, (newId, oldId) => {
+  if (oldId) {
+    usersStore.unsubscribeFromProfile(oldId as string);
+  }
   activeTab.value = 'posts';
-  loadProfileData();
-});
-
-onMounted(() => {
   loadProfileData();
 });
 </script>

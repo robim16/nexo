@@ -50,6 +50,11 @@ export interface IPostRepository extends IBaseRepository<Post, PostId> {
    */
   subscribeToFeed(followingIds: string[], callback: (posts: Post[]) => void): Unsubscribe
 
+  /**
+   * Suscripción en tiempo real a las publicaciones de un usuario específico.
+   */
+  subscribeToUserPosts(userId: UserId, callback: (posts: Post[]) => void): Unsubscribe
+
   /** Cuenta las publicaciones de un usuario */
   countPosts(userId: UserId): Promise<number>
 

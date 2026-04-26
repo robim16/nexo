@@ -4,6 +4,7 @@ import type { GetNotificationsUseCase } from '../../core/use-cases/notifications
 import type { MarkNotificationReadUseCase } from '../../core/use-cases/notifications/MarkNotificationReadUseCase';
 import { container } from '../../dependency-injection';
 import { useAuthStore } from './auth.store';
+import { UserId } from '../../core/value-objects/UserId';
 
 export interface NotificationDTO {
   id: string;
@@ -24,11 +25,61 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const notifications = ref<NotificationDTO[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
+  const notificationSubscription = ref<(() => void) | null>(null);
 
   // --- Getters ---
   const unreadCount = computed(() => notifications.value.filter(n => !n.isRead).length);
 
   // --- Acciones ---
+
+  /**
+   * Suscribe a las notificaciones en tiempo real.
+   */
+  async function subscribeToNotifications() {
+    if (notificationSubscription.value) notificationSubscription.value();
+
+    const userId = authStore.currentUserId;
+    if (!userId) return;
+
+    try {
+      const repository = container.get<any>('INotificationRepository');
+      const userRepository = container.get<any>('IUserRepository');
+
+      const unsubscribe = repository.subscribeToRecipient(UserId.reconstitute(userId), async (domainNotifications: any[]) => {
+        // Para cada notificación, necesitamos el actor (usuario).
+        // En una implementación real, podríamos optimizar esto.
+        const mapped = await Promise.all(domainNotifications.map(async (n) => {
+          const actor = await userRepository.findById(n.actorId);
+          return {
+            id: n.id.value,
+            type: n.type,
+            message: n.message,
+            fromUserId: n.actorId.value,
+            actorName: actor?.displayName || 'Unknown User',
+            actorAvatar: actor?.avatarUrl || undefined,
+            postId: n.postId?.value,
+            isRead: n.isRead,
+            createdAt: n.createdAt.toISOString()
+          };
+        }));
+        notifications.value = mapped;
+      });
+
+      notificationSubscription.value = unsubscribe;
+    } catch (err) {
+      console.error('Error subscribing to notifications:', err);
+    }
+  }
+
+  /**
+   * Cancela la suscripción.
+   */
+  function unsubscribe() {
+    if (notificationSubscription.value) {
+      notificationSubscription.value();
+      notificationSubscription.value = null;
+    }
+  }
 
   /**
    * Carga las notificaciones del usuario.
@@ -106,6 +157,9 @@ export const useNotificationsStore = defineStore('notifications', () => {
     error,
     unreadCount,
     fetchNotifications,
-    markAsRead
+    markAsRead,
+    markAllAsRead,
+    subscribeToNotifications,
+    unsubscribe
   };
 });

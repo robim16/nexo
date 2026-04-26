@@ -6,6 +6,7 @@ import { IBaseRepository } from './IBaseRepository'
 import { User } from '../../entities/User'
 import { UserId } from '../../value-objects/UserId'
 import { Email } from '../../value-objects/Email'
+import { Unsubscribe } from './IPostRepository'
 
 export interface IUserRepository extends IBaseRepository<User, UserId> {
   /** Busca un usuario por su dirección de email */
@@ -29,4 +30,9 @@ export interface IUserRepository extends IBaseRepository<User, UserId> {
       postsCount?: number
     }
   ): Promise<void>
+
+  /**
+   * Suscripción en tiempo real a un usuario específico.
+   */
+  subscribeToUser(userId: UserId, callback: (user: User | null) => void): Unsubscribe
 }

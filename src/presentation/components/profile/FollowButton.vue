@@ -29,14 +29,19 @@ const authStore = useAuthStore();
 const loading = ref(false);
 
 const isFollowing = computed(() => {
-  // Si es el perfil actual que estamos viendo en ProfilePage, usar el estado global
-  if (usersStore.profiles[props.userId]) {
-    // Aquí hay un pequeño dilema: si estamos en una lista, queremos el estado de esa persona específica.
-    // Pero por ahora, usemos el isFollowingProfile si coincide con el ID, o asumamos que la prop es correcta
-    return usersStore.isFollowingProfile && props.userId === usersStore.profiles[props.userId]?.id 
-      ? true 
-      : props.initialIsFollowing;
+  // El usuario actual no se sigue a sí mismo
+  if (authStore.user?.id === props.userId) return false;
+
+  // Si tenemos el ID en nuestra lista local de seguidos del usuario autenticado, esa es la fuente de verdad definitiva
+  if (usersStore.myFollowingIds.includes(props.userId)) {
+    return true;
   }
+
+  // Si no está en la lista pero es el perfil principal que estamos viendo y ya comprobamos el estado
+  if (usersStore.profiles[props.userId] && usersStore.isFollowingProfile && props.userId === usersStore.profiles[props.userId]?.id) {
+    return true;
+  }
+
   return props.initialIsFollowing;
 });
 

@@ -189,6 +189,7 @@ const handleFollow = async (userId: string) => {
 
 onMounted(() => {
   usersStore.fetchSuggestedUsers();
+  usersStore.fetchMyFollowingIds();
   postsStore.fetchTrendingTags();
 });
 

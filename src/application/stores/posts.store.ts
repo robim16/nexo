@@ -10,6 +10,7 @@ import { container } from '../../dependency-injection';
 import { PostMapper } from '../mappers/PostMapper';
 import { CreatePostSchema, type CreatePostInput } from '../validators/PostValidator';
 import { useAuthStore } from './auth.store';
+import { UserId } from '../../core/value-objects/UserId';
 
 export const usePostsStore = defineStore('posts', () => {
   const authStore = useAuthStore();
@@ -20,6 +21,7 @@ export const usePostsStore = defineStore('posts', () => {
   const error = ref<string | null>(null);
   const hasMore = ref(true);
   const lastDoc = ref<any>(null); // Para paginación Firebase
+  const feedSubscription = ref<(() => void) | null>(null);
 
   // --- Getters ---
   const sortedFeed = computed(() => 
@@ -27,6 +29,63 @@ export const usePostsStore = defineStore('posts', () => {
   );
 
   // --- Acciones ---
+
+  /**
+   * Suscribe al feed de publicaciones en tiempo real.
+   */
+  async function subscribeToFeed() {
+    if (feedSubscription.value) feedSubscription.value();
+
+    try {
+      const postRepository = container.get<any>('IPostRepository');
+      const followRepository = container.get<any>('IFollowRepository');
+      const userId = authStore.currentUserId;
+      
+      if (!userId) return;
+
+      const followingIds = await followRepository.getFollowingIds(UserId.reconstitute(userId));
+      // Incluir al propio usuario en su feed
+      const allIds = [...followingIds, userId];
+
+      const unsubscribe = postRepository.subscribeToFeed(allIds, (posts: any[]) => {
+        feed.value = PostMapper.toPlainList(posts);
+        hasMore.value = false; // El modo suscripción usualmente carga los más recientes
+      });
+
+      feedSubscription.value = unsubscribe;
+    } catch (err) {
+      console.error('Error subscribing to feed:', err);
+    }
+  }
+
+  /**
+   * Suscribe a las publicaciones de un usuario específico en tiempo real.
+   */
+  function subscribeToUserPosts(userId: string) {
+    if (feedSubscription.value) feedSubscription.value();
+
+    try {
+      const postRepository = container.get<any>('IPostRepository');
+      const unsubscribe = postRepository.subscribeToUserPosts(UserId.reconstitute(userId), (posts: any[]) => {
+        feed.value = PostMapper.toPlainList(posts);
+        hasMore.value = false;
+      });
+
+      feedSubscription.value = unsubscribe;
+    } catch (err) {
+      console.error('Error subscribing to user posts:', err);
+    }
+  }
+
+  /**
+   * Cancela la suscripción actual.
+   */
+  function unsubscribe() {
+    if (feedSubscription.value) {
+      feedSubscription.value();
+      feedSubscription.value = null;
+    }
+  }
 
   /**
    * Carga las publicaciones de un usuario específico.
@@ -169,6 +228,16 @@ export const usePostsStore = defineStore('posts', () => {
     }
   }
 
+  /**
+   * Incrementa el contador de comentarios localmente.
+   */
+  function incrementCommentsCount(postId: string) {
+    const postIndex = feed.value.findIndex(p => p.id === postId);
+    if (postIndex !== -1) {
+      feed.value[postIndex].commentsCount++;
+    }
+  }
+
   const trendingTags = ref<{ tag: string; count: number }[]>([]);
   const loadingTrends = ref(false);
 
@@ -216,6 +285,10 @@ export const usePostsStore = defineStore('posts', () => {
     fetchTrendingTags,
     createPost,
     toggleLike,
-    deletePost
+    incrementCommentsCount,
+    deletePost,
+    subscribeToFeed,
+    subscribeToUserPosts,
+    unsubscribe
   };
 });

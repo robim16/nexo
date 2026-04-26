@@ -18,6 +18,15 @@
         :items="postsStore.feed" 
         :loading="postsStore.loading"
         @like="postsStore.toggleLike"
+        @comment="handleComment"
+      />
+      
+      <CommentDialog 
+        :is-open="isCommentDialogOpen"
+        :post-id="activePostId"
+        :loading="isCommenting"
+        @close="isCommentDialogOpen = false"
+        @submit="submitComment"
       />
     </div>
   </div>
@@ -25,11 +34,37 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { usePostsStore } from '@/application/stores/posts.store';
 import BaseInput from '@/presentation/components/common/BaseInput.vue';
 import PostList from '@/presentation/components/feed/PostList.vue';
+import CommentDialog from '@/presentation/components/feed/CommentDialog.vue';
+import { useCommentsStore } from '@/application/stores/comments.store';
+import { ref } from 'vue';
 
 const postsStore = usePostsStore();
+const commentsStore = useCommentsStore();
+
+const isCommentDialogOpen = ref(false);
+const isCommenting = ref(false);
+const activePostId = ref<string | null>(null);
+
+const handleComment = (id: string) => {
+  activePostId.value = id;
+  isCommentDialogOpen.value = true;
+};
+
+const submitComment = async (content: string) => {
+  if (!activePostId.value) return;
+  
+  isCommenting.value = true;
+  try {
+    await commentsStore.addComment(activePostId.value, content);
+    isCommentDialogOpen.value = false;
+  } catch (err) {
+    console.error('Error submitting comment', err);
+  } finally {
+    isCommenting.value = false;
+  }
+};
 
 onMounted(() => {
   if (postsStore.feed.length === 0) {

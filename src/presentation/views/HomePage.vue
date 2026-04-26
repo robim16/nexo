@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import CreatePostDialog from '@/presentation/components/feed/CreatePostDialog.vue';
 import VirtualFeed from '@/presentation/components/feed/VirtualFeed.vue';
 import { usePostsStore } from '@/application/stores/posts.store';
@@ -35,10 +35,18 @@ import { usePostsStore } from '@/application/stores/posts.store';
 const postsStore = usePostsStore();
 const isRefreshing = ref(false);
 
+onMounted(() => {
+  postsStore.subscribeToFeed();
+});
+
+onUnmounted(() => {
+  postsStore.unsubscribe();
+});
+
 const refreshFeed = async () => {
   isRefreshing.value = true;
   try {
-    await postsStore.fetchFeed(true);
+    await postsStore.subscribeToFeed();
   } finally {
     setTimeout(() => { isRefreshing.value = false }, 600);
   }

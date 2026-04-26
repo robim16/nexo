@@ -43,6 +43,7 @@ import { FirebaseUserRepository } from './infrastructure/firebase/repositories/F
 import { FirebasePostRepository } from './infrastructure/firebase/repositories/FirebasePostRepository';
 import { FirebaseFollowRepository } from './infrastructure/firebase/repositories/FirebaseFollowRepository';
 import { FirebaseNotificationRepository } from './infrastructure/firebase/repositories/FirebaseNotificationRepository';
+import { FirebaseCommentRepository } from './infrastructure/firebase/repositories/FirebaseCommentRepository';
 import { FirebaseAuthService } from './infrastructure/firebase/services/FirebaseAuthService';
 import { FirebaseStorageService } from './infrastructure/firebase/services/FirebaseStorageService';
 
@@ -54,6 +55,8 @@ import { CreatePostUseCase } from './core/use-cases/posts/CreatePostUseCase';
 import { GetFeedUseCase } from './core/use-cases/posts/GetFeedUseCase';
 import { GetUserPostsUseCase } from './core/use-cases/posts/GetUserPostsUseCase';
 import { LikePostUseCase } from './core/use-cases/posts/LikePostUseCase';
+import { AddCommentUseCase } from './core/use-cases/posts/AddCommentUseCase';
+import { GetCommentsUseCase } from './core/use-cases/posts/GetCommentsUseCase';
 import { DeletePostUseCase } from './core/use-cases/posts/DeletePostUseCase';
 import { EditPostUseCase } from './core/use-cases/posts/EditPostUseCase';
 import { GetTrendingHashtagsUseCase } from './core/use-cases/posts/GetTrendingHashtagsUseCase';
@@ -74,6 +77,7 @@ const userRepository = new FirebaseUserRepository();
 const postRepository = new FirebasePostRepository();
 const followRepository = new FirebaseFollowRepository();
 const notificationRepository = new FirebaseNotificationRepository();
+const commentRepository = new FirebaseCommentRepository();
 
 // ——— Registro de Dependencias ———
 
@@ -85,6 +89,7 @@ container.register('IUserRepository', userRepository);
 container.register('IPostRepository', postRepository);
 container.register('IFollowRepository', followRepository);
 container.register('INotificationRepository', notificationRepository);
+container.register('ICommentRepository', commentRepository);
 
 // Casos de Uso (Inyección manual en constructor)
 container.register('LoginUseCase', new LoginUseCase(authService, userRepository, eventBus));
@@ -94,7 +99,9 @@ container.register('RegisterUseCase', new RegisterUseCase(authService, userRepos
 container.register('CreatePostUseCase', new CreatePostUseCase(postRepository, userRepository, storageService, eventBus));
 container.register('GetFeedUseCase', new GetFeedUseCase(postRepository, followRepository, userRepository));
 container.register('GetUserPostsUseCase', new GetUserPostsUseCase(postRepository, userRepository));
-container.register('LikePostUseCase', new LikePostUseCase(postRepository, eventBus));
+container.register('LikePostUseCase', new LikePostUseCase(postRepository, notificationRepository, eventBus));
+container.register('AddCommentUseCase', new AddCommentUseCase(commentRepository, postRepository, notificationRepository, eventBus));
+container.register('GetCommentsUseCase', new GetCommentsUseCase(commentRepository, userRepository));
 container.register('DeletePostUseCase', new DeletePostUseCase(postRepository, userRepository, storageService, eventBus));
 container.register('EditPostUseCase', new EditPostUseCase(postRepository, eventBus));
 container.register('GetTrendingHashtagsUseCase', new GetTrendingHashtagsUseCase(postRepository));

@@ -206,6 +206,27 @@ export class FirebasePostRepository
     )
   }
 
+  subscribeToUserPosts(userId: UserId, callback: (posts: Post[]) => void): Unsubscribe {
+    const q = query(
+      this.collection,
+      where('authorId', '==', userId.value),
+      orderBy('createdAt', 'desc'),
+      fbLimit(50)
+    )
+
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const posts = snapshot.docs.map(doc => doc.data() as Post)
+        callback(posts)
+      },
+      (error) => {
+        this.handleError('subscribeToUserPosts', error)
+        callback([])
+      }
+    )
+  }
+
   async countPosts(userId: UserId): Promise<number> {
     try {
       const q = query(this.collection, where('authorId', '==', userId.value))

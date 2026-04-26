@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/application/stores/notifications.store';
@@ -58,8 +58,12 @@ const router = useRouter();
 const notificationsStore = useNotificationsStore();
 const { notifications, loading } = storeToRefs(notificationsStore);
 
-onMounted(async () => {
-  await notificationsStore.fetchNotifications();
+onMounted(() => {
+  notificationsStore.subscribeToNotifications();
+});
+
+onUnmounted(() => {
+  notificationsStore.unsubscribe();
 });
 
 const markAllAsRead = async () => {

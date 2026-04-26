@@ -65,7 +65,7 @@ const formatNumber = (num: number) => {
   font-weight: var(--font-weight-bold);
   color: var(--color-secondary);
   font-size: var(--font-size-xl);
-  text-shadow: 0 0 10px rgba(var(--color-secondary-rgb), 0.3);
+  text-shadow: 0 0 15px rgba(var(--color-secondary-rgb), 0.5), 0 0 5px rgba(var(--color-secondary-rgb), 0.3);
 }
 
 .stat-label {

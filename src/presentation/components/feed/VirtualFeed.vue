@@ -6,24 +6,40 @@
       :skeletonCount="3"
       @like="handleLike"
       @unlike="handleUnlike"
+      @comment="handleComment"
     >
       <template #append>
         <!-- The load trigger for Infinite Scroll -->
         <div ref="loadTrigger" class="infinite-scroll-trigger"></div>
       </template>
     </PostList>
+
+    <CommentDialog 
+      :is-open="isCommentDialogOpen"
+      :post-id="activePostId"
+      :loading="isCommenting"
+      @close="isCommentDialogOpen = false"
+      @submit="submitComment"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import PostList from './PostList.vue';
+import CommentDialog from './CommentDialog.vue';
 import { usePostsStore } from '@/application/stores/posts.store';
+import { useCommentsStore } from '@/application/stores/comments.store';
 
 const postsStore = usePostsStore();
+const commentsStore = useCommentsStore();
 const posts = computed(() => postsStore.feed);
 const loading = computed(() => postsStore.loading);
 const loadTrigger = ref<HTMLElement | null>(null);
+
+const isCommentDialogOpen = ref(false);
+const isCommenting = ref(false);
+const activePostId = ref<string | null>(null);
 
 let observer: IntersectionObserver;
 
@@ -66,6 +82,25 @@ const handleLike = (id: string) => {
 
 const handleUnlike = (id: string) => {
   postsStore.toggleLike(id);
+};
+
+const handleComment = (id: string) => {
+  activePostId.value = id;
+  isCommentDialogOpen.value = true;
+};
+
+const submitComment = async (content: string) => {
+  if (!activePostId.value) return;
+  
+  isCommenting.value = true;
+  try {
+    await commentsStore.addComment(activePostId.value, content);
+    isCommentDialogOpen.value = false;
+  } catch (err) {
+    console.error('Error submitting comment', err);
+  } finally {
+    isCommenting.value = false;
+  }
 };
 </script>
 

@@ -20,9 +20,66 @@ export const useUsersStore = defineStore('users', () => {
   const followers = ref<UserPlainObject[]>([]);
   const following = ref<UserPlainObject[]>([]);
   const isFollowingProfile = ref(false);
+  const myFollowingIds = ref<string[]>([]);
   const error = ref<string | null>(null);
+  const profileSubscriptions = ref<Record<string, () => void>>({});
 
   // --- Acciones ---
+
+  /**
+   * Suscribe a los cambios de un perfil en tiempo real.
+   */
+  function subscribeToProfile(userId: string) {
+    // Si ya estamos suscritos, no hacer nada
+    if (profileSubscriptions.value[userId]) return;
+
+    try {
+      const userRepository = container.get<IUserRepository>('IUserRepository');
+      const domainId = UserId.reconstitute(userId);
+
+      const unsubscribe = userRepository.subscribeToUser(domainId, (domainUser) => {
+        if (domainUser) {
+          const plainUser = UserMapper.toPlain(domainUser);
+          
+          // Mantener los contadores que ya tenemos si el documento no los tiene actualizados
+          // o simplemente confiar en el documento si la infraestructura los actualiza ahí.
+          // En este proyecto, updateCounters actualiza el documento de usuario.
+          
+          profiles.value[userId] = {
+            ...profiles.value[userId],
+            ...plainUser
+          };
+
+          // Si es el usuario actual, actualizar también el auth store
+          if (authStore.user?.id === userId) {
+            Object.assign(authStore.user, plainUser);
+          }
+        }
+      });
+
+      profileSubscriptions.value[userId] = unsubscribe;
+    } catch (err) {
+      console.error(`Error subscribing to profile ${userId}:`, err);
+    }
+  }
+
+  /**
+   * Cancela la suscripción a un perfil.
+   */
+  function unsubscribeFromProfile(userId: string) {
+    if (profileSubscriptions.value[userId]) {
+      profileSubscriptions.value[userId]();
+      delete profileSubscriptions.value[userId];
+    }
+  }
+
+  /**
+   * Cancela todas las suscripciones de perfiles.
+   */
+  function clearProfileSubscriptions() {
+    Object.values(profileSubscriptions.value).forEach(unsub => unsub());
+    profileSubscriptions.value = {};
+  }
 
   /**
    * Obtiene el perfil de un usuario por ID.
@@ -53,6 +110,17 @@ export const useUsersStore = defineStore('users', () => {
       plainUser.postsCount = postsCount;
 
       profiles.value[userId] = plainUser;
+      
+      // Sincronizar los contadores en Firestore si son diferentes (reparación de datos)
+      if (domainUser.followersCount !== followersCount || 
+          domainUser.followingCount !== followingCount || 
+          domainUser.postsCount !== postsCount) {
+        userRepository.updateCounters(domainId, { 
+          followersCount: followersCount - (domainUser.followersCount || 0),
+          followingCount: followingCount - (domainUser.followingCount || 0),
+          postsCount: postsCount - (domainUser.postsCount || 0)
+        }).catch(err => console.error('Error repairing counters:', err));
+      }
       
       // Si es el usuario actual, actualizar también el auth store para coherencia
       if (authStore.user?.id === userId) {
@@ -102,9 +170,6 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
-  /**
-   * Verifica si el usuario actual sigue a otro.
-   */
   async function checkIsFollowing(targetUserId: string) {
     const currentUserId = authStore.currentUserId;
     if (!currentUserId || currentUserId === targetUserId) {
@@ -115,11 +180,37 @@ export const useUsersStore = defineStore('users', () => {
     try {
       const repository = container.get<any>('IFollowRepository');
       const result = await repository.isFollowing(UserId.reconstitute(currentUserId), UserId.reconstitute(targetUserId));
+      
+      // Update local cache
+      if (result) {
+        if (!myFollowingIds.value.includes(targetUserId)) {
+          myFollowingIds.value.push(targetUserId);
+        }
+      } else {
+        myFollowingIds.value = myFollowingIds.value.filter(id => id !== targetUserId);
+      }
+      
       isFollowingProfile.value = result;
       return result;
     } catch (err) {
       console.error('Error checking follow status:', err);
       return false;
+    }
+  }
+
+  /**
+   * Carga todos los IDs que el usuario actual sigue.
+   */
+  async function fetchMyFollowingIds() {
+    const currentUserId = authStore.currentUserId;
+    if (!currentUserId) return;
+
+    try {
+      const repository = container.get<any>('IFollowRepository');
+      const ids = await repository.getFollowingIds(UserId.reconstitute(currentUserId));
+      myFollowingIds.value = ids;
+    } catch (err) {
+      console.error('Error fetching my following IDs:', err);
     }
   }
 
@@ -140,6 +231,9 @@ export const useUsersStore = defineStore('users', () => {
       }
       if (authStore.user) {
         authStore.user.followingCount++;
+      }
+      if (!myFollowingIds.value.includes(targetUserId)) {
+        myFollowingIds.value.push(targetUserId);
       }
       isFollowingProfile.value = true;
     } catch (err: any) {
@@ -166,6 +260,7 @@ export const useUsersStore = defineStore('users', () => {
       if (authStore.user) {
         authStore.user.followingCount = Math.max(0, authStore.user.followingCount - 1);
       }
+      myFollowingIds.value = myFollowingIds.value.filter(id => id !== targetUserId);
       isFollowingProfile.value = false;
     } catch (err: any) {
       error.value = err.message || 'Error al dejar de seguir al usuario';
@@ -196,13 +291,18 @@ export const useUsersStore = defineStore('users', () => {
     followers,
     following,
     isFollowingProfile,
+    myFollowingIds,
     error,
     fetchProfile,
     fetchFollowers,
     fetchFollowing,
     checkIsFollowing,
+    fetchMyFollowingIds,
     followUser,
     unfollowUser,
-    fetchSuggestedUsers
+    fetchSuggestedUsers,
+    subscribeToProfile,
+    unsubscribeFromProfile,
+    clearProfileSubscriptions
   };
 });
