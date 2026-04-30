@@ -8,7 +8,7 @@ import { PostId } from '../value-objects/PostId'
 import { Timestamp } from '../value-objects/Timestamp'
 
 /** Tipos de evento que generan notificaciones */
-export type NotificationType = 'FOLLOW' | 'LIKE' | 'COMMENT' | 'MENTION' | 'SHARE'
+export type NotificationType = 'FOLLOW' | 'LIKE' | 'COMMENT' | 'MENTION' | 'SHARE' | 'REACTION_FOLLOWED'
 
 export interface NotificationPlainObject {
   id: string
@@ -135,6 +135,7 @@ export class Notification {
       COMMENT: 'comentó en tu publicación',
       MENTION: 'te mencionó en una publicación',
       SHARE: 'compartió tu publicación',
+      REACTION_FOLLOWED: 'reaccionó a una publicación',
     }
     return messages[type]
   }

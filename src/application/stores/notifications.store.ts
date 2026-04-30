@@ -103,7 +103,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
         actorAvatar: n.actor.avatarUrl || undefined,
         postId: n.notification.postId?.value,
         isRead: n.notification.isRead,
-        createdAt: n.notification.createdAt.toISOString()
+        createdAt: n.notification.createdAt.toISO()
       }));
     } catch (err: any) {
       error.value = err.message || 'Error al cargar notificaciones';

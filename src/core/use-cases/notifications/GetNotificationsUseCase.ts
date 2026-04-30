@@ -58,8 +58,8 @@ export class GetNotificationsUseCase {
       return {
         notification: n,
         actor: {
-          displayName: actor?.displayName ?? 'Usuario desconocido',
-          avatarUrl: actor?.avatarUrl ?? null
+          displayName: actor?.displayName.value ?? 'Usuario desconocido',
+          avatarUrl: actor?.avatar ?? null
         }
       }
     })

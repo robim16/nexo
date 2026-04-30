@@ -8,12 +8,27 @@
     <div class="profile-header__info glass">
       <div class="header-main-row">
         <div class="avatar-wrapper">
-          <BaseAvatar 
-            :src="user.avatar || ''" 
-            :alt="user.displayName" 
-            size="xl" 
-            class="profile-avatar"
-          />
+          <div class="avatar-container" @click="triggerAvatarUpload" :class="{ 'clickable': isOwnProfile }">
+            <BaseAvatar 
+              :src="user.avatar || ''" 
+              :alt="user.displayName" 
+              size="xl" 
+              class="profile-avatar"
+              :class="{ 'uploading': isUploadingAvatar }"
+            />
+            <div v-if="isOwnProfile" class="avatar-overlay" :class="{ 'active': isUploadingAvatar }">
+              <span v-if="isUploadingAvatar">{{ uploadProgress }}%</span>
+              <span v-else>📷</span>
+            </div>
+            <input 
+              v-if="isOwnProfile"
+              type="file" 
+              ref="avatarInput" 
+              accept="image/*" 
+              style="display: none" 
+              @change="handleAvatarSelected" 
+            />
+          </div>
           <div class="avatar-glow"></div>
         </div>
         
@@ -56,7 +71,8 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { ref, defineProps } from 'vue';
+import { useUsersStore } from '@/application/stores/users.store';
 import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
 import BaseButton from '@/presentation/components/common/BaseButton.vue';
 import FollowButton from './FollowButton.vue';
@@ -66,6 +82,45 @@ const props = defineProps<{
   isOwnProfile?: boolean;
   isFollowing?: boolean;
 }>();
+
+const usersStore = useUsersStore();
+
+const avatarInput = ref<HTMLInputElement | null>(null);
+const isUploadingAvatar = ref(false);
+const uploadProgress = ref(0);
+
+const triggerAvatarUpload = () => {
+  if (props.isOwnProfile && !isUploadingAvatar.value) {
+    avatarInput.value?.click();
+  }
+};
+
+const handleAvatarSelected = async (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (!target.files || target.files.length === 0) return;
+  
+  const file = target.files[0];
+  if (file.size > 5 * 1024 * 1024) {
+    alert('El avatar debe pesar menos de 5MB');
+    return;
+  }
+  
+  isUploadingAvatar.value = true;
+  uploadProgress.value = 0;
+  
+  try {
+    await usersStore.updateAvatar(file, (percent) => {
+      uploadProgress.value = percent;
+    });
+  } catch (error) {
+    console.error('Failed to update avatar:', error);
+    alert('Error al actualizar el avatar');
+  } finally {
+    isUploadingAvatar.value = false;
+    uploadProgress.value = 0;
+    target.value = '';
+  }
+};
 
 // mock data if user not provided
 const user = props.user || {
@@ -148,6 +203,42 @@ const formatJoinDate = (date: any) => {
   z-index: 2;
   border: 4px solid var(--surface-glass-border);
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.2s ease;
+}
+
+.profile-avatar.uploading {
+  opacity: 0.5;
+}
+
+.avatar-container {
+  position: relative;
+  display: inline-block;
+  border-radius: var(--radius-full);
+}
+
+.avatar-container.clickable {
+  cursor: pointer;
+}
+
+.avatar-overlay {
+  position: absolute;
+  inset: 4px; /* inside the border */
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: white;
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  z-index: 3;
+}
+
+.avatar-container.clickable:hover .avatar-overlay,
+.avatar-overlay.active {
+  opacity: 1;
 }
 
 .avatar-glow {

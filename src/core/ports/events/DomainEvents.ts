@@ -23,6 +23,7 @@ export const DomainEvents = {
   POST_LIKED: 'POST_LIKED',
   POST_UNLIKED: 'POST_UNLIKED',
   POST_SHARED: 'POST_SHARED',
+  POST_COMMENTED: 'POST_COMMENTED',
   POST_VISIBILITY_CHANGED: 'POST_VISIBILITY_CHANGED',
 
   // ─── Comentarios ───────────────────────────────────────────────────────────

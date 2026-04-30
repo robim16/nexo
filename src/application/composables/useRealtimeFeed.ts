@@ -26,7 +26,7 @@ export function useRealtimeFeed() {
         const plainPosts = PostMapper.toPlainList(domainPosts);
         // Actualizar el store con los nuevos datos en tiempo real
         // En una implementación real, esto podría ser un append inteligente o reemplazo de IDs existentes
-        store.feed = plainPosts;
+        (store as any)._feed = plainPosts;
       });
     }
   };

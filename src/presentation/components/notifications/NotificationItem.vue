@@ -53,6 +53,7 @@ const actionText = computed(() => {
     case 'FOLLOW': return 'is now following you.';
     case 'MENTION': return 'mentioned you in a pulse.';
     case 'SHARE': return 'shared your pulse.';
+    case 'REACTION_FOLLOWED': return 'reacted to a pulse.';
     default: return 'interacted with you.';
   }
 });
@@ -64,6 +65,7 @@ const typeIcon = computed(() => {
     case 'FOLLOW': return '👤';
     case 'MENTION': return '🏷️';
     case 'SHARE': return '🔄';
+    case 'REACTION_FOLLOWED': return '⚡';
     default: return '✨';
   }
 });

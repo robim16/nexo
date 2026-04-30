@@ -159,7 +159,7 @@ export const useAuthStore = defineStore('auth', () => {
   };
 }, {
   persist: {
-    pick: ['user'],
+    paths: ['user'],
     storage: localStorage
   }
 });

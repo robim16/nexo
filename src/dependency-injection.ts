@@ -45,7 +45,8 @@ import { FirebaseFollowRepository } from './infrastructure/firebase/repositories
 import { FirebaseNotificationRepository } from './infrastructure/firebase/repositories/FirebaseNotificationRepository';
 import { FirebaseCommentRepository } from './infrastructure/firebase/repositories/FirebaseCommentRepository';
 import { FirebaseAuthService } from './infrastructure/firebase/services/FirebaseAuthService';
-import { FirebaseStorageService } from './infrastructure/firebase/services/FirebaseStorageService';
+import { CloudinaryStorageService } from './infrastructure/cloudinary/CloudinaryStorageService';
+import { FirebaseStorageService as _FirebaseStorageService } from './infrastructure/firebase/services/FirebaseStorageService'; // kept for reference
 
 // ——— Importar Casos de Uso ———
 import { LoginUseCase } from './core/use-cases/auth/LoginUseCase';
@@ -67,11 +68,12 @@ import { GetFollowingUseCase } from './core/use-cases/social/GetFollowingUseCase
 import { GetSuggestedUsersUseCase } from './core/use-cases/social/GetSuggestedUsersUseCase';
 import { GetNotificationsUseCase } from './core/use-cases/notifications/GetNotificationsUseCase';
 import { MarkNotificationReadUseCase } from './core/use-cases/notifications/MarkNotificationReadUseCase';
+import { UpdateUserProfileUseCase } from './core/use-cases/social/UpdateUserProfileUseCase';
 
 // ——— Inicializar Instancias de Infraestructura ———
 const eventBus = new InMemoryEventBus();
 const authService = new FirebaseAuthService();
-const storageService = new FirebaseStorageService();
+const storageService = new CloudinaryStorageService();
 
 const userRepository = new FirebaseUserRepository();
 const postRepository = new FirebasePostRepository();
@@ -99,8 +101,8 @@ container.register('RegisterUseCase', new RegisterUseCase(authService, userRepos
 container.register('CreatePostUseCase', new CreatePostUseCase(postRepository, userRepository, storageService, eventBus));
 container.register('GetFeedUseCase', new GetFeedUseCase(postRepository, followRepository, userRepository));
 container.register('GetUserPostsUseCase', new GetUserPostsUseCase(postRepository, userRepository));
-container.register('LikePostUseCase', new LikePostUseCase(postRepository, notificationRepository, eventBus));
-container.register('AddCommentUseCase', new AddCommentUseCase(commentRepository, postRepository, notificationRepository, eventBus));
+container.register('LikePostUseCase', new LikePostUseCase(postRepository, notificationRepository, followRepository, eventBus));
+container.register('AddCommentUseCase', new AddCommentUseCase(commentRepository, postRepository, notificationRepository, followRepository, eventBus));
 container.register('GetCommentsUseCase', new GetCommentsUseCase(commentRepository, userRepository));
 container.register('DeletePostUseCase', new DeletePostUseCase(postRepository, userRepository, storageService, eventBus));
 container.register('EditPostUseCase', new EditPostUseCase(postRepository, eventBus));
@@ -113,6 +115,7 @@ container.register('GetFollowingUseCase', new GetFollowingUseCase(followReposito
 container.register('GetSuggestedUsersUseCase', new GetSuggestedUsersUseCase(userRepository, followRepository));
 
 container.register('GetNotificationsUseCase', new GetNotificationsUseCase(notificationRepository, userRepository));
-container.register('MarkNotificationReadUseCase', new MarkNotificationReadUseCase(notificationRepository));
+container.register('MarkNotificationReadUseCase', new MarkNotificationReadUseCase(notificationRepository, eventBus));
+container.register('UpdateUserProfileUseCase', new UpdateUserProfileUseCase(userRepository, storageService));
 
 export default container;

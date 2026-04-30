@@ -20,6 +20,12 @@
 
     <div class="post-card__content">
       <p>{{ post.content }}</p>
+      
+      <div v-if="post.images && post.images.length > 0" class="post-card__images" :class="`grid-${Math.min(post.images.length, 4)}`">
+        <div v-for="(img, idx) in post.images.slice(0, 4)" :key="idx" class="post-image-wrapper">
+          <img :src="img" alt="Post image" class="post-image" loading="lazy" />
+        </div>
+      </div>
     </div>
 
     <footer class="post-card__actions">
@@ -68,6 +74,7 @@ export interface PostDisplay {
   authorName?: string;
   authorAvatar?: string | null;
   content: string;
+  images?: string[];
   createdAt: Date | string | number;
   likes: string[];
   likesCount: number;
@@ -218,6 +225,50 @@ const formatDate = (date: Date | string | number) => {
 
 .post-card__content p {
   margin: 0;
+}
+
+.post-card__images {
+  margin-top: var(--space-3);
+  display: grid;
+  gap: var(--space-1);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.grid-1 {
+  grid-template-columns: 1fr;
+}
+.grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+.grid-3 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 150px 150px;
+}
+.grid-3 .post-image-wrapper:nth-child(1) {
+  grid-row: span 2;
+}
+.grid-4 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 150px 150px;
+}
+
+.post-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  background: var(--surface-base);
+}
+
+.post-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
 .post-card__actions {

@@ -284,6 +284,46 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
+  /**
+   * Actualiza el avatar del usuario autenticado.
+   */
+  async function updateAvatar(file: File, onProgress?: (percent: number) => void) {
+    const currentUserId = authStore.currentUserId;
+    if (!currentUserId) throw new Error('Usuario no autenticado');
+
+    // No ponemos loading global para no bloquear toda la UI si se puede evitar,
+    // pero si se necesita, descomentar:
+    // loading.value = true;
+    error.value = null;
+
+    try {
+      const useCase = container.get<any>('UpdateUserProfileUseCase');
+      const result = await useCase.execute({
+        userId: currentUserId,
+        avatarFile: file,
+        onUploadProgress: onProgress
+      });
+
+      if (result.avatarUrl) {
+        // Actualizar el perfil en memoria si existe
+        if (profiles.value[currentUserId]) {
+          profiles.value[currentUserId].avatar = result.avatarUrl;
+        }
+        // Actualizar el usuario del Auth store
+        if (authStore.user) {
+          authStore.user.avatar = result.avatarUrl;
+        }
+      }
+      return result.avatarUrl;
+    } catch (err: any) {
+      error.value = err.message || 'Error al actualizar el avatar';
+      throw err;
+    } finally {
+      // si usamos loading.value = true;
+      // loading.value = false;
+    }
+  }
+
   return {
     profiles,
     loading,
@@ -301,6 +341,7 @@ export const useUsersStore = defineStore('users', () => {
     followUser,
     unfollowUser,
     fetchSuggestedUsers,
+    updateAvatar,
     subscribeToProfile,
     unsubscribeFromProfile,
     clearProfileSubscriptions

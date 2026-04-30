@@ -17,16 +17,27 @@
           {{ content.length }}/500
         </div>
       </div>
+        </div>
+
+    
+    <div v-if="selectedImages.length > 0" class="image-previews">
+      <div v-for="(img, index) in imagePreviews" :key="index" class="preview-item">
+        <img :src="img" alt="preview" />
+        <button class="remove-btn" @click="removeImage(index)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
     </div>
     
     <Transition name="actions">
-      <div v-if="isFocused || content.trim()" class="create-post__actions">
+      <div v-if="isFocused || content.trim() || selectedImages.length > 0" class="create-post__actions">
         <div class="action-tools">
-          <button class="tool-btn" title="Add Image">
+          <button class="tool-btn" title="Add Image" @click="triggerImageUpload">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
             </svg>
           </button>
+          <input type="file" ref="fileInput" accept="image/*" multiple style="display: none" @change="handleFileSelected" />
           <button class="tool-btn" title="Add GIF">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/><line x1="17" y1="17" x2="22" y2="17"/>
@@ -42,7 +53,7 @@
         <BaseButton 
           variant="primary" 
           size="md"
-          :disabled="!content.trim() || isSubmitting || content.length > 500"
+          :disabled="(!content.trim() && selectedImages.length === 0) || isSubmitting || content.length > 500"
           @click="submitPost"
         >
           <span class="btn-content">
@@ -71,13 +82,52 @@ const isSubmitting = ref(false);
 const isFocused = ref(false);
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 
+const fileInput = ref<HTMLInputElement | null>(null);
+const selectedImages = ref<File[]>([]);
+const imagePreviews = ref<string[]>([]);
+
 const userAvatar = authStore.user?.avatar || '';
 const userName = authStore.user?.displayName || 'You';
 
 const handleBlur = () => {
-  if (!content.value.trim()) {
+  if (!content.value.trim() && selectedImages.value.length === 0) {
     isFocused.value = false;
   }
+};
+
+const triggerImageUpload = () => {
+  fileInput.value?.click();
+};
+
+const handleFileSelected = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (!target.files) return;
+  
+  const files = Array.from(target.files);
+  const remainingSlots = 4 - selectedImages.value.length;
+  const filesToAdd = files.slice(0, remainingSlots);
+  
+  filesToAdd.forEach(file => {
+    if (file.size > 10 * 1024 * 1024) {
+      alert(`El archivo ${file.name} es muy grande. Máximo 10MB.`);
+      return;
+    }
+    selectedImages.value.push(file);
+    imagePreviews.value.push(URL.createObjectURL(file));
+  });
+  
+  if (target.files.length > remainingSlots) {
+    alert(`Solo puedes subir hasta 4 imágenes por publicación.`);
+  }
+  
+  target.value = '';
+  isFocused.value = true;
+};
+
+const removeImage = (index: number) => {
+  URL.revokeObjectURL(imagePreviews.value[index]);
+  selectedImages.value.splice(index, 1);
+  imagePreviews.value.splice(index, 1);
 };
 
 const autoResize = (e: Event) => {
@@ -87,12 +137,19 @@ const autoResize = (e: Event) => {
 };
 
 const submitPost = async () => {
-  if (!content.value.trim() || isSubmitting.value) return;
+  if ((!content.value.trim() && selectedImages.value.length === 0) || isSubmitting.value) return;
   
   isSubmitting.value = true;
   try {
-    await postsStore.createPost({ content: content.value, visibility: 'public' });
+    await postsStore.createPost({ 
+      content: content.value, 
+      visibility: 'public',
+      images: selectedImages.value
+    });
     content.value = '';
+    imagePreviews.value.forEach(url => URL.revokeObjectURL(url));
+    selectedImages.value = [];
+    imagePreviews.value = [];
     isFocused.value = false;
     // Reset textarea height
     await nextTick();
@@ -120,6 +177,51 @@ const submitPost = async () => {
   border-color: rgba(var(--color-primary-rgb), 0.25);
   background: rgba(19, 19, 19, 0.7);
   box-shadow: 0 0 30px rgba(var(--color-primary-rgb), 0.06);
+}
+
+.image-previews {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding-left: calc(var(--space-10) + var(--space-3)); /* Align with textarea */
+  flex-wrap: wrap;
+}
+
+.preview-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--surface-glass-border);
+}
+
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.remove-btn:hover {
+  background: var(--color-error);
 }
 
 .create-post__input-area {

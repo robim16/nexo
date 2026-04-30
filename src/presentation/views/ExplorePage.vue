@@ -38,6 +38,7 @@ import BaseInput from '@/presentation/components/common/BaseInput.vue';
 import PostList from '@/presentation/components/feed/PostList.vue';
 import CommentDialog from '@/presentation/components/feed/CommentDialog.vue';
 import { useCommentsStore } from '@/application/stores/comments.store';
+import { usePostsStore } from '@/application/stores/posts.store';
 import { ref } from 'vue';
 
 const postsStore = usePostsStore();

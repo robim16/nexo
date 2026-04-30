@@ -173,7 +173,8 @@ export const usePostsStore = defineStore('posts', () => {
       const result = await useCase.execute({
         userId,
         content: input.content,
-        // images: input.images // Asumiendo que ya son URLs o Files
+        images: input.images,
+        visibility: input.visibility
       });
 
       const plainPost = PostMapper.toPlain(result.post);

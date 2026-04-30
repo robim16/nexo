@@ -12,6 +12,9 @@ export interface INotificationRepository {
   /** Persiste una nueva notificación */
   save(notification: Notification): Promise<void>
 
+  /** Persiste múltiples notificaciones de forma eficiente */
+  saveMany(notifications: Notification[]): Promise<void>
+
   /** Busca una notificación por ID */
   findById(id: NotificationId): Promise<Notification | null>
 

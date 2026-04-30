@@ -7,7 +7,7 @@ import { z } from 'zod';
 export const CreatePostSchema = z.object({
   content: z.string().min(1, 'El contenido no puede estar vacío').max(1000, 'El contenido es muy largo'),
   visibility: z.enum(['public', 'private', 'followers']).default('public'),
-  images: z.array(z.string().url()).max(4, 'Máximo 4 imágenes').optional(),
+  images: z.array(z.instanceof(File)).max(4, 'Máximo 4 imágenes').optional(),
 });
 
 export const UpdatePostSchema = CreatePostSchema.partial();
