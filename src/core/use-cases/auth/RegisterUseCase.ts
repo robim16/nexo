@@ -51,6 +51,7 @@ export class RegisterUseCase {
 
     // 5. Crear entidad de dominio completa
     const user = User.create({
+      id: authUser.id.value,
       email: email.value,
       displayName: displayName.value,
     })

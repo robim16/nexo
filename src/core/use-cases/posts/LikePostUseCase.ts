@@ -5,6 +5,7 @@
  */
 import { IPostRepository } from '../../ports/repositories/IPostRepository'
 import { INotificationRepository } from '../../ports/repositories/INotificationRepository'
+import { IFollowRepository } from '../../ports/repositories/IFollowRepository'
 import { IEventBus } from '../../ports/events/IEventBus'
 import { DomainEvents, PostLikedPayload } from '../../ports/events/DomainEvents'
 import { Notification } from '../../entities/Notification'
@@ -26,6 +27,7 @@ export class LikePostUseCase {
   constructor(
     private readonly postRepository: IPostRepository,
     private readonly notificationRepository: INotificationRepository,
+    private readonly followRepository: IFollowRepository,
     private readonly eventBus: IEventBus
   ) {}
 
@@ -71,6 +73,21 @@ export class LikePostUseCase {
           postId,
         })
         await this.notificationRepository.save(notification)
+      }
+
+      // 4. Notificar a los seguidores del actor (quien dio like)
+      const followers = await this.followRepository.findFollowers(userId)
+      const followerNotifications = followers
+        .filter(f => !f.followerId.equals(post.authorId)) // No duplicar si el autor ya recibió notificación
+        .map(f => Notification.create({
+          recipientId: f.followerId,
+          actorId: userId,
+          type: 'REACTION_FOLLOWED',
+          postId,
+        }))
+      
+      if (followerNotifications.length > 0) {
+        await this.notificationRepository.saveMany(followerNotifications)
       }
 
       const payload: PostLikedPayload = {

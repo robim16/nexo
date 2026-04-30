@@ -1,7 +1,5 @@
-/**
- * GetNotificationsUseCase — Retorna las notificaciones para un usuario.
- */
 import { INotificationRepository } from '../../ports/repositories/INotificationRepository'
+import { IUserRepository } from '../../ports/repositories/IUserRepository'
 import { Notification } from '../../entities/Notification'
 import { UserId } from '../../value-objects/UserId'
 import { NotificationId } from '../../value-objects/NotificationId'
@@ -12,14 +10,25 @@ export interface GetNotificationsDTO {
   lastNotificationId?: string
 }
 
+export interface EnrichedNotification {
+  notification: Notification
+  actor: {
+    displayName: string
+    avatarUrl: string | null
+  }
+}
+
 export interface GetNotificationsResult {
-  notifications: Notification[]
+  notifications: EnrichedNotification[]
   unreadCount: number
   hasMore: boolean
 }
 
 export class GetNotificationsUseCase {
-  constructor(private readonly notificationRepository: INotificationRepository) {}
+  constructor(
+    private readonly notificationRepository: INotificationRepository,
+    private readonly userRepository: IUserRepository
+  ) {}
 
   async execute(dto: GetNotificationsDTO): Promise<GetNotificationsResult> {
     const userId = UserId.fromString(dto.userId)
@@ -33,8 +42,28 @@ export class GetNotificationsUseCase {
     ])
 
     const hasMore = notifications.length > limit
-    const result = hasMore ? notifications.slice(0, limit) : notifications
+    const rawNotifications = hasMore ? notifications.slice(0, limit) : notifications
 
-    return { notifications: result, unreadCount, hasMore }
+    // Enriquecer con datos de actores (usuarios)
+    if (rawNotifications.length === 0) {
+      return { notifications: [], unreadCount, hasMore }
+    }
+
+    const actorIds = [...new Set(rawNotifications.map(n => n.actorId.value))].map(id => UserId.reconstitute(id))
+    const actors = await this.userRepository.findManyByIds(actorIds)
+    const actorMap = new Map(actors.map(u => [u.id.value, u]))
+
+    const enrichedNotifications: EnrichedNotification[] = rawNotifications.map(n => {
+      const actor = actorMap.get(n.actorId.value)
+      return {
+        notification: n,
+        actor: {
+          displayName: actor?.displayName.value ?? 'Usuario desconocido',
+          avatarUrl: actor?.avatar ?? null
+        }
+      }
+    })
+
+    return { notifications: enrichedNotifications, unreadCount, hasMore }
   }
 }

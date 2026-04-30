@@ -12,6 +12,7 @@ import {
   arrayUnion,
   arrayRemove,
   Timestamp,
+  getCountFromServer,
   onSnapshot
 } from 'firebase/firestore'
 import { collections } from '../config/firebase.config'
@@ -38,14 +39,25 @@ export class FirebasePostRepository
     return entity.id
   }
 
-  async findByAuthor(authorId: UserId, limit: number = 20): Promise<Post[]> {
+  async findByAuthor(authorId: UserId, options?: FeedOptions): Promise<Post[]> {
     try {
-      const q = query(
+      const fetchLimit = options?.limit || 20
+      
+      let q = query(
         this.collection,
         where('authorId', '==', authorId.value),
         orderBy('createdAt', 'desc'),
-        fbLimit(limit)
+        fbLimit(fetchLimit)
       )
+
+      if (options?.lastPostId) {
+        const lastDocRef = doc(this.collection, options.lastPostId.value)
+        const lastDocSnap = await getDoc(lastDocRef)
+        if (lastDocSnap.exists()) {
+          q = query(q, startAfter(lastDocSnap))
+        }
+      }
+
       const snapshot = await getDocs(q)
       return snapshot.docs.map(doc => doc.data() as Post)
     } catch (error) {
@@ -192,5 +204,69 @@ export class FirebasePostRepository
         callback([])
       }
     )
+  }
+
+  subscribeToUserPosts(userId: UserId, callback: (posts: Post[]) => void): Unsubscribe {
+    const q = query(
+      this.collection,
+      where('authorId', '==', userId.value),
+      orderBy('createdAt', 'desc'),
+      fbLimit(50)
+    )
+
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const posts = snapshot.docs.map(doc => doc.data() as Post)
+        callback(posts)
+      },
+      (error) => {
+        this.handleError('subscribeToUserPosts', error)
+        callback([])
+      }
+    )
+  }
+
+  async countPosts(userId: UserId): Promise<number> {
+    try {
+      const q = query(this.collection, where('authorId', '==', userId.value))
+      const snapshot = await getCountFromServer(q)
+      return snapshot.data().count
+    } catch (error) {
+      this.handleError('countPosts', error)
+      return 0
+    }
+  }
+
+  async getTrendingHashtags(limitCount: number = 5): Promise<{ tag: string; count: number }[]> {
+    try {
+      // Obtenemos los últimos 100 posts públicos para calcular tendencias
+      const q = query(
+        this.collection,
+        where('visibility', '==', 'public'),
+        orderBy('createdAt', 'desc'),
+        fbLimit(100)
+      )
+      
+      const snapshot = await getDocs(q)
+      const tagCounts: Record<string, number> = {}
+      
+      snapshot.docs.forEach(doc => {
+        const post = doc.data() as any
+        if (post.hashtags && Array.isArray(post.hashtags)) {
+          post.hashtags.forEach((tag: string) => {
+            tagCounts[tag] = (tagCounts[tag] || 0) + 1
+          })
+        }
+      })
+      
+      return Object.entries(tagCounts)
+        .map(([tag, count]) => ({ tag: `#${tag}`, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, limitCount)
+    } catch (error) {
+      this.handleError('getTrendingHashtags', error)
+      return []
+    }
   }
 }

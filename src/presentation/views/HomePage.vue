@@ -1,27 +1,56 @@
 <template>
   <div class="home-page">
-    <header class="page-header glass">
-      <h1 class="page-title">Feed</h1>
+    <header class="page-header">
+      <div class="header-left">
+        <h1 class="page-title">Feed</h1>
+        <span class="page-subtitle">Your network pulse</span>
+      </div>
       <div class="header-actions">
-        <!-- Optional actions can go here -->
+        <button class="header-btn" title="Refresh feed" @click="refreshFeed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ spinning: isRefreshing }">
+            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
       </div>
     </header>
     
     <div class="page-content">
-      <div class="create-post-section">
+      <section class="create-post-section">
         <CreatePostDialog />
-      </div>
+      </section>
 
-      <div class="feed-section">
+      <section class="feed-section">
         <VirtualFeed />
-      </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
 import CreatePostDialog from '@/presentation/components/feed/CreatePostDialog.vue';
 import VirtualFeed from '@/presentation/components/feed/VirtualFeed.vue';
+import { usePostsStore } from '@/application/stores/posts.store';
+
+const postsStore = usePostsStore();
+const isRefreshing = ref(false);
+
+onMounted(() => {
+  postsStore.subscribeToFeed();
+});
+
+onUnmounted(() => {
+  postsStore.unsubscribe();
+});
+
+const refreshFeed = async () => {
+  isRefreshing.value = true;
+  try {
+    await postsStore.subscribeToFeed();
+  } finally {
+    setTimeout(() => { isRefreshing.value = false }, 600);
+  }
+};
 </script>
 
 <style scoped>
@@ -32,50 +61,102 @@ import VirtualFeed from '@/presentation/components/feed/VirtualFeed.vue';
 }
 
 .page-header {
-  padding: var(--space-6) var(--space-8);
+  padding: var(--space-6) var(--space-4);
   position: sticky;
   top: 0;
   z-index: 20;
-  background: var(--surface-glass);
-  border: none;
+  background: rgba(10, 10, 11, 0.8);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border-bottom: 1px solid var(--surface-glass-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+.header-left {
+  display: flex;
+  flex-direction: column;
+}
+
 .page-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--letter-spacing-tight);
   color: var(--text-primary);
-  filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.2));
+}
+
+.page-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.header-btn {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.header-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.header-btn:hover {
+  background: rgba(var(--color-primary-rgb), 0.1);
+  border-color: rgba(var(--color-primary-rgb), 0.3);
+  color: var(--color-primary);
+}
+
+.header-btn svg.spinning {
+  animation: spin 0.6s linear;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .page-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
-  padding: var(--space-8) 0;
+  gap: var(--space-4);
+  padding: var(--space-6) 0;
 }
 
 .create-post-section {
-  padding: 0 var(--space-4);
+  padding: 0 var(--space-2);
 }
 
 .feed-section {
   flex: 1;
+  padding: 0 var(--space-2);
 }
 
-/* ── Mobile Overrides ────────────────────────────────────── */
+/* ── Mobile ────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .page-header {
-    padding: var(--space-4) var(--space-6);
+    padding: var(--space-4);
   }
   
   .page-title {
-    font-size: 1.5rem;
+    font-size: 1.375rem;
   }
 }
 </style>

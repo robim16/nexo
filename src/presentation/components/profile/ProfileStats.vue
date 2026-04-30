@@ -1,6 +1,6 @@
 <template>
   <div class="profile-stats glass">
-    <div class="stat-item" v-for="item in statList" :key="item.label">
+    <div class="stat-item" v-for="item in statList" :key="item.label" @click="handleStatClick(item.id)">
       <span class="stat-value">{{ formatNumber(item.value) }}</span>
       <span class="stat-label">{{ item.label }}</span>
     </div>
@@ -8,21 +8,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps } from 'vue';
+import { computed, defineProps, defineEmits } from 'vue';
 
 const props = defineProps<{
-  stats?: { posts: number, followers: number, following: number };
+  stats: { posts: number, followers: number, following: number };
 }>();
 
-const stats = props.stats || { posts: 42, followers: 1337, following: 404 };
+const emit = defineEmits(['click-stat']);
 
 const statList = computed(() => [
-  { label: 'Posts', value: stats.posts },
-  { label: 'Followers', value: stats.followers },
-  { label: 'Following', value: stats.following }
+  { label: 'Posts', value: props.stats.posts, id: 'posts' },
+  { label: 'Followers', value: props.stats.followers, id: 'followers' },
+  { label: 'Following', value: props.stats.following, id: 'following' }
 ]);
 
+const handleStatClick = (id: string) => {
+  emit('click-stat', id);
+};
+
 const formatNumber = (num: number) => {
+  if (num === undefined || num === null) return '0';
   if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
   if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
   return num.toString();
@@ -60,7 +65,7 @@ const formatNumber = (num: number) => {
   font-weight: var(--font-weight-bold);
   color: var(--color-secondary);
   font-size: var(--font-size-xl);
-  text-shadow: 0 0 10px rgba(var(--color-secondary-rgb), 0.3);
+  text-shadow: 0 0 15px rgba(var(--color-secondary-rgb), 0.5), 0 0 5px rgba(var(--color-secondary-rgb), 0.3);
 }
 
 .stat-label {

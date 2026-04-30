@@ -25,6 +25,7 @@ export interface UserPlainObject {
 }
 
 export interface CreateUserData {
+  id?: string
   email: string
   displayName: string
   bio?: string
@@ -172,7 +173,7 @@ export class User {
   static create(data: CreateUserData): User {
     const now = Timestamp.now()
     return new User(
-      UserId.generate(),
+      data.id ? UserId.reconstitute(data.id) : UserId.generate(),
       Email.create(data.email),
       DisplayName.create(data.displayName),
       Bio.create(data.bio ?? ''),

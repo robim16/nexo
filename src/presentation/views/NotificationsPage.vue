@@ -1,6 +1,6 @@
 <template>
   <div class="notifications-page">
-    <header class="page-header glass">
+    <header class="page-header">
       <div class="header-content">
         <h1 class="page-title">Notifications</h1>
         <p class="page-subtitle">Stay connected with your network pulses</p>
@@ -25,40 +25,37 @@ import NotificationList from '@/presentation/components/notifications/Notificati
 }
 
 .page-header {
-  padding: var(--space-8) var(--space-6);
-  background: var(--surface-glass);
-  margin-bottom: var(--space-8);
+  padding: var(--space-6) var(--space-4);
+  background: rgba(10, 10, 11, 0.8);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border-bottom: 1px solid var(--surface-glass-border);
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 20;
 }
 
 .header-content {
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
+  margin-bottom: var(--space-1);
 }
 
 .page-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 2.5rem;
+  font-size: 1.75rem;
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--letter-spacing-tight);
   color: var(--text-primary);
-  filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.2));
 }
 
 .page-subtitle {
-  margin: var(--space-2) 0 0;
+  margin: 2px 0 0;
+  font-size: var(--font-size-xs);
   color: var(--text-tertiary);
-  font-size: var(--font-size-md);
 }
 
 .notifications-container {
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
-  padding: 0 var(--space-4) var(--space-12);
+  flex: 1;
+  padding: var(--space-6) var(--space-2);
 }
 </style>

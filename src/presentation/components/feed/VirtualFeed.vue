@@ -6,25 +6,40 @@
       :skeletonCount="3"
       @like="handleLike"
       @unlike="handleUnlike"
+      @comment="handleComment"
     >
       <template #append>
         <!-- The load trigger for Infinite Scroll -->
         <div ref="loadTrigger" class="infinite-scroll-trigger"></div>
       </template>
     </PostList>
+
+    <CommentDialog 
+      :is-open="isCommentDialogOpen"
+      :post-id="activePostId"
+      :loading="isCommenting"
+      @close="isCommentDialogOpen = false"
+      @submit="submitComment"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import PostList from './PostList.vue';
-import type { PostDisplay } from './PostCard.vue';
+import CommentDialog from './CommentDialog.vue';
 import { usePostsStore } from '@/application/stores/posts.store';
+import { useCommentsStore } from '@/application/stores/comments.store';
 
 const postsStore = usePostsStore();
+const commentsStore = useCommentsStore();
 const posts = computed(() => postsStore.feed);
 const loading = computed(() => postsStore.loading);
 const loadTrigger = ref<HTMLElement | null>(null);
+
+const isCommentDialogOpen = ref(false);
+const isCommenting = ref(false);
+const activePostId = ref<string | null>(null);
 
 let observer: IntersectionObserver;
 
@@ -60,23 +75,32 @@ onUnmounted(() => {
   }
 });
 
+// Delegate like/unlike to store (it handles optimistic updates)
 const handleLike = (id: string) => {
-  // Optimistic UI update
-  const post = posts.value.find(p => p.id === id);
-  if (post) {
-    post.isLiked = true;
-    post.likeCount++;
-  }
-  // feedStore.likePost(id);
+  postsStore.toggleLike(id);
 };
 
 const handleUnlike = (id: string) => {
-  const post = posts.value.find(p => p.id === id);
-  if (post) {
-    post.isLiked = false;
-    post.likeCount = Math.max(0, post.likeCount - 1);
+  postsStore.toggleLike(id);
+};
+
+const handleComment = (id: string) => {
+  activePostId.value = id;
+  isCommentDialogOpen.value = true;
+};
+
+const submitComment = async (content: string) => {
+  if (!activePostId.value) return;
+  
+  isCommenting.value = true;
+  try {
+    await commentsStore.addComment(activePostId.value, content);
+    isCommentDialogOpen.value = false;
+  } catch (err) {
+    console.error('Error submitting comment', err);
+  } finally {
+    isCommenting.value = false;
   }
-  // feedStore.unlikePost(id);
 };
 </script>
 

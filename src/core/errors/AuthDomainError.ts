@@ -39,10 +39,10 @@ export class AuthDomainError extends DomainError {
     )
   }
 
-  static userNotFound(email: string): AuthDomainError {
+  static userNotFound(identifier: string): AuthDomainError {
     return new AuthDomainError(
       'USER_NOT_FOUND',
-      `No existe ningún usuario con el email "${email}"`
+      `No existe ningún usuario con el identificador "${identifier}"`
     )
   }
 

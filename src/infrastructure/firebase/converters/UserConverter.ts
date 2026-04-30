@@ -41,7 +41,15 @@ export class UserConverter implements FirestoreDataConverter<User> {
   }
 
   fromFirestore(snapshot: QueryDocumentSnapshot, options?: SnapshotOptions): User {
-    const data = snapshot.data(options) as FirebaseUserData
+    const data = snapshot.data(options) as any // Cast to any to handle flexible types
+
+    const toDate = (ts: any): Date => {
+      if (!ts) return new Date()
+      if (typeof ts.toDate === 'function') return ts.toDate()
+      if (ts instanceof Date) return ts
+      if (ts.seconds) return new Date(ts.seconds * 1000)
+      return new Date(ts)
+    }
 
     return User.reconstitute({
       id: data.id,
@@ -52,8 +60,8 @@ export class UserConverter implements FirestoreDataConverter<User> {
       followersCount: data.followersCount || 0,
       followingCount: data.followingCount || 0,
       postsCount: data.postsCount || 0,
-      createdAt: data.createdAt.toDate(),
-      updatedAt: data.updatedAt.toDate(),
+      createdAt: toDate(data.createdAt),
+      updatedAt: toDate(data.updatedAt),
       isVerified: data.isVerified || false,
       isActive: data.isActive ?? true
     })

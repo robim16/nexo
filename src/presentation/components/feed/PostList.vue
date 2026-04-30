@@ -1,7 +1,7 @@
 <template>
   <div class="post-list">
     <template v-if="loading && items.length === 0">
-      <SkeletonLoader v-for="i in skeletonCount" :key="i" type="card" class="mb-md" />
+      <SkeletonLoader v-for="i in skeletonCount" :key="i" type="rect" height="160px" class="mb-md" />
     </template>
     
     <template v-else-if="items.length === 0">

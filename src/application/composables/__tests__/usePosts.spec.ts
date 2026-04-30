@@ -55,9 +55,9 @@ describe('usePosts Composable', () => {
     store.createPost.mockResolvedValue({ id: 'new-post' })
     
     const { createPost } = usePosts()
-    const result = await createPost({ content: 'test content' })
+    const result = await createPost({ content: 'test content', visibility: 'public' })
     
-    expect(store.createPost).toHaveBeenCalledWith({ content: 'test content' })
+    expect(store.createPost).toHaveBeenCalledWith({ content: 'test content', visibility: 'public' })
     expect(result.id).toBe('new-post')
   })
 

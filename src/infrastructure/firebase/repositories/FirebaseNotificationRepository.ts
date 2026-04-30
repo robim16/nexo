@@ -62,6 +62,21 @@ export class FirebaseNotificationRepository
     super(collections.notifications, NotificationConverter)
   }
 
+  async saveMany(notifications: Notification[]): Promise<void> {
+    if (notifications.length === 0) return
+    try {
+      const batch = writeBatch(db)
+      notifications.forEach((notification) => {
+        const docRef = doc(this.collection, notification.id.value)
+        batch.set(docRef, notification)
+      })
+      await batch.commit()
+    } catch (error) {
+      this.handleError('saveMany', error)
+      throw error
+    }
+  }
+
   protected idToString(id: NotificationId): string {
     return id.value
   }

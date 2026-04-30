@@ -13,8 +13,8 @@ export class FeedService {
    */
   async getPersonalizedFeed(userId: string, limit = 10): Promise<PostPlainObject[]> {
     const useCase = container.get<GetFeedUseCase>('GetFeedUseCase');
-    const posts = await useCase.execute({ userId, limit });
-    return PostMapper.toPlainList(posts);
+    const result = await useCase.execute({ userId, limit });
+    return PostMapper.toPlainList(result.posts);
   }
 
   /**

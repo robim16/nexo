@@ -4,6 +4,7 @@ import {
   getDocs,
   deleteDoc,
   doc,
+  getCountFromServer,
   FirestoreDataConverter,
   QueryDocumentSnapshot,
   SnapshotOptions,
@@ -27,12 +28,21 @@ const FollowConverter: FirestoreDataConverter<Follow> = {
     }
   },
   fromFirestore(snapshot: QueryDocumentSnapshot, options?: SnapshotOptions): Follow {
-    const data = snapshot.data(options)
+    const data = snapshot.data(options) as any
+
+    const toDate = (ts: any): Date => {
+      if (!ts) return new Date()
+      if (typeof ts.toDate === 'function') return ts.toDate()
+      if (ts instanceof Date) return ts
+      if (ts.seconds) return new Date(ts.seconds * 1000)
+      return new Date(ts)
+    }
+
     return Follow.reconstitute({
       id: data.id,
       followerId: data.followerId,
       followingId: data.followingId,
-      createdAt: data.createdAt.toDate()
+      createdAt: toDate(data.createdAt)
     })
   }
 }
@@ -124,6 +134,28 @@ export class FirebaseFollowRepository
     } catch (error) {
       this.handleError('getFollowingIds', error)
       return []
+    }
+  }
+
+  async countFollowers(userId: UserId): Promise<number> {
+    try {
+      const q = query(this.collection, where('followingId', '==', userId.value))
+      const snapshot = await getCountFromServer(q)
+      return snapshot.data().count
+    } catch (error) {
+      this.handleError('countFollowers', error)
+      return 0
+    }
+  }
+
+  async countFollowing(userId: UserId): Promise<number> {
+    try {
+      const q = query(this.collection, where('followerId', '==', userId.value))
+      const snapshot = await getCountFromServer(q)
+      return snapshot.data().count
+    } catch (error) {
+      this.handleError('countFollowing', error)
+      return 0
     }
   }
 }

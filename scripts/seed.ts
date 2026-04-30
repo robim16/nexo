@@ -119,8 +119,8 @@ async function seed() {
         displayName: u.displayName,
         bio: u.bio,
         avatar: u.avatar,
-        followersCount: 10 + Math.floor(Math.random() * 50),
-        followingCount: 5 + Math.floor(Math.random() * 20),
+        followersCount: 0,
+        followingCount: 0,
         postsCount: posts.filter(p => p.authorId === u.uid).length,
         createdAt: admin.firestore.Timestamp.now(),
         updatedAt: admin.firestore.Timestamp.now(),
@@ -170,6 +170,36 @@ async function seed() {
           })
         }
       }
+    }
+
+    // 3. Crear Seguimientos Reales
+    console.log('🤝 Creando relaciones de seguimiento...')
+    const follows = [
+      { followerId: 'user_1', followingId: 'user_2' },
+      { followerId: 'user_1', followingId: 'user_3' },
+      { followerId: 'user_2', followingId: 'user_1' },
+      { followerId: 'user_3', followingId: 'user_1' }
+    ]
+
+    for (const f of follows) {
+      const followId = uuidv4()
+      await db.collection('follows').doc(followId).set({
+        id: followId,
+        followerId: f.followerId,
+        followingId: f.followingId,
+        createdAt: admin.firestore.Timestamp.now()
+      })
+    }
+
+    // Actualizar contadores de usuarios basados en los follows reales
+    // (Aunque los repositorios ahora los cuentan dinámicamente, mantenemos consistencia en los docs)
+    for (const u of users) {
+      const followersCount = follows.filter(f => f.followingId === u.uid).length
+      const followingCount = follows.filter(f => f.followerId === u.uid).length
+      await db.collection('users').doc(u.uid).update({
+        followersCount,
+        followingCount
+      })
     }
 
     console.log('✅ Siembra en la nube completada con éxito.')

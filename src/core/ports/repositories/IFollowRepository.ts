@@ -41,4 +41,10 @@ export interface IFollowRepository {
    * Útil para construir el feed.
    */
   getFollowingIds(userId: UserId): Promise<string[]>
+
+  /** Cuenta los seguidores de un usuario */
+  countFollowers(userId: UserId): Promise<number>
+
+  /** Cuenta a cuántos usuarios sigue un usuario */
+  countFollowing(userId: UserId): Promise<number>
 }

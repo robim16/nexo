@@ -1,8 +1,9 @@
-import { query, where, getDocs, limit as fbLimit, documentId, doc } from 'firebase/firestore'
+import { query, where, getDocs, limit as fbLimit, documentId, doc, onSnapshot } from 'firebase/firestore'
 import { collections } from '../config/firebase.config'
 import { firestoreUtils } from '../config/firestore.config'
 import { FirebaseBaseRepository } from './FirebaseBaseRepository'
 import { IUserRepository } from '@/core/ports/repositories/IUserRepository'
+import { Unsubscribe } from '@/core/ports/repositories/IPostRepository'
 import { User } from '@/core/entities/User'
 import { UserId } from '@/core/value-objects/UserId'
 import { Email } from '@/core/value-objects/Email'
@@ -103,6 +104,24 @@ export class FirebaseUserRepository
       this.handleError('updateCounters', error)
       throw error
     }
+  }
+
+  subscribeToUser(userId: UserId, callback: (user: User | null) => void): Unsubscribe {
+    const docRef = doc(this.collection, userId.value)
+    return onSnapshot(
+      docRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          callback(snapshot.data() as User)
+        } else {
+          callback(null)
+        }
+      },
+      (error) => {
+        this.handleError('subscribeToUser', error)
+        callback(null)
+      }
+    )
   }
   
   private chunkArray<T>(arr: T[], size: number): T[][] {

@@ -57,7 +57,8 @@ const avatarColor = computed(() => {
   }
   const idx = Math.abs(hash) % AVATAR_COLORS.length
   return AVATAR_COLORS[idx]
-})
+})//esta función computada se encarga de generar
+//un color aleatorio para el avatar, dependiendo del nombre del usuario
 
 const hasImage = computed(() => !!props.src)
 
