@@ -7,6 +7,7 @@
       @like="handleLike"
       @unlike="handleUnlike"
       @comment="handleComment"
+      @share="handleShare"
     >
       <template #append>
         <!-- The load trigger for Infinite Scroll -->
@@ -87,6 +88,32 @@ const handleUnlike = (id: string) => {
 const handleComment = (id: string) => {
   activePostId.value = id;
   isCommentDialogOpen.value = true;
+};
+
+const handleShare = async (id: string) => {
+  const post = postsStore.feed.find(p => p.id === id);
+  if (!post) return;
+  const url = `${window.location.origin}/post/${id}`;
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: `Post de ${post.authorName || 'Nexo'}`,
+        text: post.content,
+        url,
+      });
+      await postsStore.sharePost(id);
+    } catch (err) {
+      console.error('Error sharing', err);
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(url);
+      alert('Enlace copiado al portapapeles');
+      await postsStore.sharePost(id);
+    } catch (err) {
+      console.error('Error copying to clipboard', err);
+    }
+  }
 };
 
 const submitComment = async (content: string) => {

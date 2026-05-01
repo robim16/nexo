@@ -156,6 +156,18 @@ export class FirebasePostRepository
     }
   }
 
+  async incrementShareCount(postId: PostId): Promise<void> {
+    try {
+      const docRef = doc(this.collection, postId.value)
+      await updateDoc(docRef, {
+        sharesCount: increment(1)
+      })
+    } catch (error) {
+      this.handleError('incrementShareCount', error)
+      throw error
+    }
+  }
+
   subscribeToPost(postId: PostId, callback: (post: Post | null) => void): Unsubscribe {
     const docRef = doc(this.collection, postId.value)
 

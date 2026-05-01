@@ -61,6 +61,8 @@ import { GetCommentsUseCase } from './core/use-cases/posts/GetCommentsUseCase';
 import { DeletePostUseCase } from './core/use-cases/posts/DeletePostUseCase';
 import { EditPostUseCase } from './core/use-cases/posts/EditPostUseCase';
 import { GetTrendingHashtagsUseCase } from './core/use-cases/posts/GetTrendingHashtagsUseCase';
+import { SharePostUseCase } from './core/use-cases/posts/SharePostUseCase';
+import { GetPostByIdUseCase } from './core/use-cases/posts/GetPostByIdUseCase';
 import { FollowUserUseCase } from './core/use-cases/social/FollowUserUseCase';
 import { UnfollowUserUseCase } from './core/use-cases/social/UnfollowUserUseCase';
 import { GetFollowersUseCase } from './core/use-cases/social/GetFollowersUseCase';
@@ -107,6 +109,8 @@ container.register('GetCommentsUseCase', new GetCommentsUseCase(commentRepositor
 container.register('DeletePostUseCase', new DeletePostUseCase(postRepository, userRepository, storageService, eventBus));
 container.register('EditPostUseCase', new EditPostUseCase(postRepository, eventBus));
 container.register('GetTrendingHashtagsUseCase', new GetTrendingHashtagsUseCase(postRepository));
+container.register('SharePostUseCase', new SharePostUseCase(postRepository));
+container.register('GetPostByIdUseCase', new GetPostByIdUseCase(postRepository, userRepository));
 
 container.register('FollowUserUseCase', new FollowUserUseCase(followRepository, userRepository, notificationRepository, eventBus));
 container.register('UnfollowUserUseCase', new UnfollowUserUseCase(followRepository, userRepository, eventBus));
