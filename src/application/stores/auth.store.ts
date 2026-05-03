@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import type { User, UserPlainObject } from '../../core/entities/User';
 import type { LoginUseCase } from '../../core/use-cases/auth/LoginUseCase';
 import type { RegisterUseCase } from '../../core/use-cases/auth/RegisterUseCase';
+import type { UpdatePasswordUseCase } from '../../core/use-cases/auth/UpdatePasswordUseCase';
 import type { LogoutUseCase } from '../../core/use-cases/auth/LogoutUseCase';
 import type { IAuthService } from '../../core/ports/services/IAuthService';
 import { container } from '../../dependency-injection';
@@ -145,6 +146,23 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /**
+   * Actualiza la contraseña del usuario.
+   */
+  async function updatePassword(newPassword: string) {
+    loading.value = true;
+    error.value = null;
+    try {
+      const useCase = container.get<UpdatePasswordUseCase>('UpdatePasswordUseCase');
+      await useCase.execute({ newPassword });
+    } catch (err: any) {
+      error.value = err.message || 'Error al actualizar contraseña';
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     user,
     loading,
@@ -155,7 +173,8 @@ export const useAuthStore = defineStore('auth', () => {
     initAuth,
     login,
     register,
-    logout
+    logout,
+    updatePassword
   };
 }, {
   persist: {

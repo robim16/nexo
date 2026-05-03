@@ -63,7 +63,7 @@ export class AuthDomainError extends DomainError {
   static weakPassword(): AuthDomainError {
     return new AuthDomainError(
       'WEAK_PASSWORD',
-      'La contraseña debe tener al menos 8 caracteres, una mayúscula y un número'
+      'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial'
     )
   }
 

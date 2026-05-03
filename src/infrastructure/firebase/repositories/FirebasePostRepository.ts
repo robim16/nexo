@@ -281,4 +281,35 @@ export class FirebasePostRepository
       return []
     }
   }
+
+  async search(searchQuery: string, limitCount: number = 20): Promise<Post[]> {
+    try {
+      let q;
+      
+      if (searchQuery.startsWith('#')) {
+        // Búsqueda por hashtag exacto
+        const hashtag = searchQuery.substring(1).toLowerCase();
+        q = query(
+          this.collection,
+          where('hashtags', 'array-contains', hashtag),
+          orderBy('createdAt', 'desc'),
+          fbLimit(limitCount)
+        );
+      } else {
+        // Búsqueda por prefijo en el contenido (limitado en Firestore)
+        q = query(
+          this.collection,
+          where('content', '>=', searchQuery),
+          where('content', '<=', searchQuery + '\uf8ff'),
+          fbLimit(limitCount)
+        );
+      }
+
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map(doc => doc.data() as Post);
+    } catch (error) {
+      this.handleError('search', error);
+      return [];
+    }
+  }
 }

@@ -285,43 +285,58 @@ export const useUsersStore = defineStore('users', () => {
   }
 
   /**
-   * Actualiza el avatar del usuario autenticado.
+   * Actualiza el perfil del usuario (avatar, nombre, bio).
    */
-  async function updateAvatar(file: File, onProgress?: (percent: number) => void) {
+  async function updateProfile(data: { 
+    avatarFile?: File, 
+    displayName?: string, 
+    bio?: string,
+    onProgress?: (percent: number) => void 
+  }) {
     const currentUserId = authStore.currentUserId;
     if (!currentUserId) throw new Error('Usuario no autenticado');
 
-    // No ponemos loading global para no bloquear toda la UI si se puede evitar,
-    // pero si se necesita, descomentar:
-    // loading.value = true;
+    loading.value = true;
     error.value = null;
 
     try {
       const useCase = container.get<any>('UpdateUserProfileUseCase');
       const result = await useCase.execute({
         userId: currentUserId,
-        avatarFile: file,
-        onUploadProgress: onProgress
+        avatarFile: data.avatarFile,
+        displayName: data.displayName,
+        bio: data.bio,
+        onUploadProgress: data.onProgress
       });
 
-      if (result.avatarUrl) {
-        // Actualizar el perfil en memoria si existe
-        if (profiles.value[currentUserId]) {
-          profiles.value[currentUserId].avatar = result.avatarUrl;
-        }
-        // Actualizar el usuario del Auth store
-        if (authStore.user) {
-          authStore.user.avatar = result.avatarUrl;
-        }
+      // Actualizar el perfil en memoria si existe
+      if (profiles.value[currentUserId]) {
+        if (result.avatarUrl) profiles.value[currentUserId].avatar = result.avatarUrl;
+        if (data.displayName !== undefined) profiles.value[currentUserId].displayName = data.displayName;
+        if (data.bio !== undefined) profiles.value[currentUserId].bio = data.bio;
       }
-      return result.avatarUrl;
+      
+      // Actualizar el usuario del Auth store
+      if (authStore.user) {
+        if (result.avatarUrl) authStore.user.avatar = result.avatarUrl;
+        if (data.displayName !== undefined) authStore.user.displayName = data.displayName;
+        if (data.bio !== undefined) authStore.user.bio = data.bio;
+      }
+      
+      return result;
     } catch (err: any) {
-      error.value = err.message || 'Error al actualizar el avatar';
+      error.value = err.message || 'Error al actualizar el perfil';
       throw err;
     } finally {
-      // si usamos loading.value = true;
-      // loading.value = false;
+      loading.value = false;
     }
+  }
+
+  /**
+   * Actualiza el avatar del usuario autenticado (legacy/shortcut).
+   */
+  async function updateAvatar(file: File, onProgress?: (percent: number) => void) {
+    return updateProfile({ avatarFile: file, onProgress });
   }
 
   return {
@@ -342,6 +357,7 @@ export const useUsersStore = defineStore('users', () => {
     unfollowUser,
     fetchSuggestedUsers,
     updateAvatar,
+    updateProfile,
     subscribeToProfile,
     unsubscribeFromProfile,
     clearProfileSubscriptions

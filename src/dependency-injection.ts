@@ -52,6 +52,7 @@ import { FirebaseStorageService as _FirebaseStorageService } from './infrastruct
 import { LoginUseCase } from './core/use-cases/auth/LoginUseCase';
 import { LogoutUseCase } from './core/use-cases/auth/LogoutUseCase';
 import { RegisterUseCase } from './core/use-cases/auth/RegisterUseCase';
+import { UpdatePasswordUseCase } from './core/use-cases/auth/UpdatePasswordUseCase';
 import { CreatePostUseCase } from './core/use-cases/posts/CreatePostUseCase';
 import { GetFeedUseCase } from './core/use-cases/posts/GetFeedUseCase';
 import { GetUserPostsUseCase } from './core/use-cases/posts/GetUserPostsUseCase';
@@ -99,6 +100,7 @@ container.register('ICommentRepository', commentRepository);
 container.register('LoginUseCase', new LoginUseCase(authService, userRepository, eventBus));
 container.register('LogoutUseCase', new LogoutUseCase(authService, eventBus));
 container.register('RegisterUseCase', new RegisterUseCase(authService, userRepository, eventBus));
+container.register('UpdatePasswordUseCase', new UpdatePasswordUseCase(authService));
 
 container.register('CreatePostUseCase', new CreatePostUseCase(postRepository, userRepository, storageService, eventBus));
 container.register('GetFeedUseCase', new GetFeedUseCase(postRepository, followRepository, userRepository));
