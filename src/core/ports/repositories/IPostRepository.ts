@@ -38,6 +38,9 @@ export interface IPostRepository extends IBaseRepository<Post, PostId> {
   /** Decrementa el contador de comentarios */
   decrementCommentsCount(postId: PostId): Promise<void>
 
+  /** Incrementa el contador de compartidos (shares) */
+  incrementShareCount(postId: PostId): Promise<void>
+
   /**
    * Suscripción en tiempo real a un post individual.
    * Retorna una función para cancelar la suscripción.
@@ -60,4 +63,7 @@ export interface IPostRepository extends IBaseRepository<Post, PostId> {
 
   /** Obtiene los hashtags más populares */
   getTrendingHashtags(limit?: number): Promise<{ tag: string; count: number }[]>
+
+  /** Busca publicaciones por hashtag o contenido (búsqueda parcial) */
+  search(query: string, limit?: number): Promise<Post[]>
 }

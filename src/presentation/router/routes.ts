@@ -65,6 +65,15 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/post/:id',
+    name: 'SinglePost',
+    component: () => import('@/presentation/views/SinglePostPage.vue'),
+    meta: {
+      requiresAuth: true,
+      layout: 'DefaultLayout',
+    },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     redirect: '/',

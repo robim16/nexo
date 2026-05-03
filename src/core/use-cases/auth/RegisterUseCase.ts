@@ -23,7 +23,7 @@ export interface RegisterResult {
 }
 
 const MIN_PASSWORD_LENGTH = 8
-const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*[0-9]).{8,}$/
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 export class RegisterUseCase {
   constructor(

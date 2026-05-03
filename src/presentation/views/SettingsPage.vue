@@ -20,6 +20,41 @@
         </div>
         
         <div class="section-content">
+          <!-- Avatar Upload -->
+          <div class="avatar-upload-section">
+            <div class="avatar-preview-container" @click="triggerAvatarUpload">
+              <BaseAvatar 
+                :src="avatarPreview || authStore.user?.avatar" 
+                :name="authStore.user?.displayName"
+                size="2xl"
+                class="settings-avatar"
+                :class="{ 'uploading': isUploadingAvatar }"
+              />
+              <div class="avatar-edit-overlay">
+                <span v-if="isUploadingAvatar">{{ uploadProgress }}%</span>
+                <span v-else>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+                  </svg>
+                </span>
+              </div>
+              <input 
+                type="file" 
+                ref="avatarInput" 
+                accept="image/*" 
+                style="display: none" 
+                @change="handleAvatarSelected"
+              />
+            </div>
+            <div class="avatar-info">
+              <h4>Profile Picture</h4>
+              <p>JPG, GIF or PNG. Max size of 5MB.</p>
+              <BaseButton variant="glass" size="sm" @click="triggerAvatarUpload">
+                Change Avatar
+              </BaseButton>
+            </div>
+          </div>
+
           <div class="form-grid">
             <BaseInput 
               label="Display Name" 
@@ -30,6 +65,7 @@
               label="Handle" 
               placeholder="@username" 
               v-model="profileForm.handle"
+              disabled
             />
           </div>
           <div class="form-group">
@@ -40,8 +76,19 @@
               type="textarea"
             />
           </div>
+
+          <div v-if="profileError" class="error-message">{{ profileError }}</div>
+          <div v-if="profileSuccess" class="success-message">Profile updated successfully!</div>
+
           <div class="action-row">
-            <BaseButton variant="primary" size="md">Save Changes</BaseButton>
+            <BaseButton 
+              variant="primary" 
+              size="md" 
+              :loading="usersStore.loading"
+              @click="handleUpdateProfile"
+            >
+              Save Changes
+            </BaseButton>
           </div>
         </div>
       </section>
@@ -106,6 +153,51 @@
         </div>
       </section>
 
+      <!-- Security Section -->
+      <section class="settings-section glass">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3 class="section-title">Security</h3>
+        </div>
+        
+        <div class="section-content">
+          <div class="form-grid">
+            <BaseInput 
+              label="New Password" 
+              type="password"
+              placeholder="Min. 8 chars, mixed case, symbols" 
+              v-model="securityForm.newPassword"
+            />
+            <BaseInput 
+              label="Confirm Password" 
+              type="password"
+              placeholder="Repeat new password" 
+              v-model="securityForm.confirmPassword"
+            />
+          </div>
+          <div v-if="passwordError" class="error-message">
+            {{ passwordError }}
+          </div>
+          <div v-if="passwordSuccess" class="success-message">
+            Password updated successfully!
+          </div>
+          <div class="action-row">
+            <BaseButton 
+              variant="primary" 
+              size="md" 
+              :loading="authStore.loading"
+              @click="handleUpdatePassword"
+            >
+              Update Password
+            </BaseButton>
+          </div>
+        </div>
+      </section>
+
       <!-- Danger Zone -->
       <section class="settings-section danger-glass">
         <div class="section-header">
@@ -129,15 +221,126 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import BaseInput from '@/presentation/components/common/BaseInput.vue';
 import BaseButton from '@/presentation/components/common/BaseButton.vue';
+import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
+import { useAuthStore } from '@/application/stores/auth.store';
+import { useUsersStore } from '@/application/stores/users.store';
+
+const authStore = useAuthStore();
+const usersStore = useUsersStore();
 
 const profileForm = reactive({
-  displayName: 'Lumina Explorer',
-  handle: 'lumina_exp',
-  bio: 'Synthesizing the future of social interaction in the Onyx space.'
+  displayName: '',
+  handle: '',
+  bio: ''
 });
+
+const profileError = ref<string | null>(null);
+const profileSuccess = ref(false);
+
+const avatarInput = ref<HTMLInputElement | null>(null);
+const avatarPreview = ref<string | null>(null);
+const avatarFile = ref<File | null>(null);
+const isUploadingAvatar = ref(false);
+const uploadProgress = ref(0);
+
+onMounted(() => {
+  if (authStore.user) {
+    profileForm.displayName = authStore.user.displayName;
+    const handle = authStore.user.email.split('@')[0];
+    profileForm.handle = `@${handle}`;
+    profileForm.bio = authStore.user.bio || '';
+  }
+});
+
+function triggerAvatarUpload() {
+  avatarInput.value?.click();
+}
+
+function handleAvatarSelected(e: Event) {
+  const target = e.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    const file = target.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      profileError.value = 'Image size must be less than 5MB';
+      return;
+    }
+    
+    avatarFile.value = file;
+    // Create local preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      avatarPreview.value = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+    profileSuccess.value = false;
+  }
+}
+
+async function handleUpdateProfile() {
+  profileError.value = null;
+  profileSuccess.value = false;
+  
+  try {
+    isUploadingAvatar.value = !!avatarFile.value;
+    
+    await usersStore.updateProfile({
+      avatarFile: avatarFile.value || undefined,
+      displayName: profileForm.displayName,
+      bio: profileForm.bio,
+      onProgress: (percent) => {
+        uploadProgress.value = percent;
+      }
+    });
+    
+    profileSuccess.value = true;
+    avatarFile.value = null;
+    avatarPreview.value = null;
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+      profileSuccess.value = false;
+    }, 3000);
+  } catch (err: any) {
+    profileError.value = err.message || 'Error updating profile';
+  } finally {
+    isUploadingAvatar.value = false;
+    uploadProgress.value = 0;
+  }
+}
+
+const securityForm = reactive({
+  newPassword: '',
+  confirmPassword: ''
+});
+
+const passwordError = ref<string | null>(null);
+const passwordSuccess = ref(false);
+
+async function handleUpdatePassword() {
+  passwordError.value = null;
+  passwordSuccess.value = false;
+
+  if (securityForm.newPassword !== securityForm.confirmPassword) {
+    passwordError.value = 'Passwords do not match';
+    return;
+  }
+
+  try {
+    await authStore.updatePassword(securityForm.newPassword);
+    passwordSuccess.value = true;
+    securityForm.newPassword = '';
+    securityForm.confirmPassword = '';
+    
+    setTimeout(() => {
+      passwordSuccess.value = false;
+    }, 3000);
+  } catch (err: any) {
+    passwordError.value = err.message || 'Error updating password';
+  }
+}
 
 const activeTheme = ref('onyx');
 const themes = [
@@ -148,6 +351,70 @@ const themes = [
 </script>
 
 <style scoped>
+/* Previous styles remain, adding new ones for avatar upload */
+.avatar-upload-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  margin-bottom: var(--space-8);
+  padding: var(--space-4);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-2xl);
+}
+
+.avatar-preview-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  cursor: pointer;
+}
+
+.settings-avatar {
+  width: 100%;
+  height: 100%;
+  border: 4px solid var(--surface-glass-border);
+  transition: filter 0.3s ease;
+}
+
+.settings-avatar.uploading {
+  filter: brightness(0.5);
+}
+
+.avatar-edit-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border-radius: var(--radius-full);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+}
+
+.avatar-preview-container:hover .avatar-edit-overlay {
+  opacity: 1;
+}
+
+.avatar-edit-overlay svg {
+  width: 24px;
+  height: 24px;
+}
+
+.avatar-info h4 {
+  margin: 0 0 var(--space-1) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-md);
+}
+
+.avatar-info p {
+  margin: 0 0 var(--space-4) 0;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+}
+
 .settings-page {
   display: flex;
   flex-direction: column;
@@ -405,5 +672,17 @@ const themes = [
   .settings-section {
     padding: var(--space-6);
   }
+}
+
+.error-message {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-2);
+}
+
+.success-message {
+  color: var(--color-success);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-2);
 }
 </style>

@@ -6,6 +6,7 @@ import {
   User as FirebaseUser,
   updateProfile,
   sendPasswordResetEmail,
+  updatePassword,
   sendEmailVerification,
   GoogleAuthProvider,
   signInWithPopup
@@ -57,6 +58,17 @@ export class FirebaseAuthService implements IAuthService {
     try {
       await signOut(auth)
       this.currentFirebaseUser = null
+    } catch (error: any) {
+      throw this.mapAuthError(error)
+    }
+  }
+
+  async updatePassword(newPassword: string): Promise<void> {
+    try {
+      if (!auth.currentUser) {
+        throw new Error('No hay un usuario autenticado')
+      }
+      await updatePassword(auth.currentUser, newPassword)
     } catch (error: any) {
       throw this.mapAuthError(error)
     }

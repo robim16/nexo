@@ -16,15 +16,8 @@ export class SearchService {
    */
   async searchUsers(query: string): Promise<UserPlainObject[]> {
     const repository = container.get<IUserRepository>('IUserRepository');
-    
-    // El repositorio debería tener un método de búsqueda.
-    // Si no lo tiene, simulamos una búsqueda básica o devolvemos vacío.
-    if ((repository as any).search) {
-      const results = await (repository as any).search(query);
-      return UserMapper.toPlainList(results);
-    }
-    
-    return [];
+    const results = await repository.findByDisplayName(query);
+    return UserMapper.toPlainList(results);
   }
 
   /**
@@ -32,13 +25,8 @@ export class SearchService {
    */
   async searchPosts(query: string): Promise<PostPlainObject[]> {
     const repository = container.get<IPostRepository>('IPostRepository');
-    
-    if ((repository as any).search) {
-      const results = await (repository as any).search(query);
-      return PostMapper.toPlainList(results);
-    }
-    
-    return [];
+    const results = await repository.search(query);
+    return PostMapper.toPlainList(results);
   }
 }
 

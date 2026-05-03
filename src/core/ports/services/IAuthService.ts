@@ -54,6 +54,12 @@ export interface IAuthService {
   getCurrentUserId(): string | null
 
   /**
+   * Actualiza la contraseña del usuario actual.
+   * @throws AuthDomainError si la contraseña es débil o requiere re-autenticación
+   */
+  updatePassword(newPassword: string): Promise<void>
+
+  /**
    * Verifica si hay una sesión activa.
    */
   isAuthenticated(): boolean

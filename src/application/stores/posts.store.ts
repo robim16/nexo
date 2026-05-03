@@ -6,6 +6,8 @@ import type { GetFeedUseCase } from '../../core/use-cases/posts/GetFeedUseCase';
 import type { LikePostUseCase } from '../../core/use-cases/posts/LikePostUseCase';
 import type { DeletePostUseCase } from '../../core/use-cases/posts/DeletePostUseCase';
 import type { EditPostUseCase } from '../../core/use-cases/posts/EditPostUseCase';
+import type { SharePostUseCase } from '../../core/use-cases/posts/SharePostUseCase';
+import type { GetPostByIdUseCase } from '../../core/use-cases/posts/GetPostByIdUseCase';
 import { container } from '../../dependency-injection';
 import { PostMapper } from '../mappers/PostMapper';
 import { CreatePostSchema, type CreatePostInput } from '../validators/PostValidator';
@@ -17,6 +19,7 @@ export const usePostsStore = defineStore('posts', () => {
 
   // --- Estado ---
   const feed = ref<PostPlainObject[]>([]);
+  const currentPost = ref<PostPlainObject | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
   const hasMore = ref(true);
@@ -30,15 +33,13 @@ export const usePostsStore = defineStore('posts', () => {
 
   // --- Acciones ---
 
-  /**
-   * Suscribe al feed de publicaciones en tiempo real.
-   */
   async function subscribeToFeed() {
     if (feedSubscription.value) feedSubscription.value();
 
     try {
       const postRepository = container.get<any>('IPostRepository');
       const followRepository = container.get<any>('IFollowRepository');
+      const userRepository = container.get<any>('IUserRepository');
       const userId = authStore.currentUserId;
       
       if (!userId) return;
@@ -47,7 +48,19 @@ export const usePostsStore = defineStore('posts', () => {
       // Incluir al propio usuario en su feed
       const allIds = [...followingIds, userId];
 
-      const unsubscribe = postRepository.subscribeToFeed(allIds, (posts: any[]) => {
+      const unsubscribe = postRepository.subscribeToFeed(allIds, async (posts: any[]) => {
+        // Enriquecer posts con información del autor
+        const authorIds = [...new Set(posts.map((p: any) => p.authorId.value))];
+        const authors = await userRepository.findManyByIds(authorIds.map((id: string) => UserId.reconstitute(id)));
+        const authorMap = new Map<string, any>(authors.map((u: any) => [u.id.value, u]));
+
+        for (const post of posts) {
+          const author = authorMap.get(post.authorId.value);
+          if (author) {
+            post.setAuthorInfo(author.displayName.value, author.avatar);
+          }
+        }
+
         feed.value = PostMapper.toPlainList(posts);
         hasMore.value = false; // El modo suscripción usualmente carga los más recientes
       });
@@ -66,7 +79,18 @@ export const usePostsStore = defineStore('posts', () => {
 
     try {
       const postRepository = container.get<any>('IPostRepository');
-      const unsubscribe = postRepository.subscribeToUserPosts(UserId.reconstitute(userId), (posts: any[]) => {
+      const userRepository = container.get<any>('IUserRepository');
+
+      const unsubscribe = postRepository.subscribeToUserPosts(UserId.reconstitute(userId), async (posts: any[]) => {
+        // Enriquecer posts con información del autor
+        const author = await userRepository.findById(UserId.reconstitute(userId));
+        
+        if (author) {
+          for (const post of posts) {
+            post.setAuthorInfo(author.displayName.value, author.avatar);
+          }
+        }
+
         feed.value = PostMapper.toPlainList(posts);
         hasMore.value = false;
       });
@@ -114,6 +138,38 @@ export const usePostsStore = defineStore('posts', () => {
       hasMore.value = result.hasMore;
     } catch (err: any) {
       error.value = err.message || 'Error al cargar las publicaciones del usuario';
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  /**
+   * Carga una publicación individual por ID.
+   */
+  async function fetchPostById(postId: string) {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      // Check if it's already in the feed
+      const existingPost = feed.value.find(p => p.id === postId);
+      if (existingPost) {
+        currentPost.value = existingPost;
+        return;
+      }
+
+      const useCase = container.get<GetPostByIdUseCase>('GetPostByIdUseCase');
+      const result = await useCase.execute({ postId });
+      
+      if (result.post) {
+        currentPost.value = PostMapper.toPlain(result.post);
+      } else {
+        currentPost.value = null;
+        error.value = 'Publicación no encontrada';
+      }
+    } catch (err: any) {
+      error.value = err.message || 'Error al cargar la publicación';
+      currentPost.value = null;
     } finally {
       loading.value = false;
     }
@@ -239,6 +295,27 @@ export const usePostsStore = defineStore('posts', () => {
     }
   }
 
+  /**
+   * Comparte una publicación, actualizando optimistamente el contador.
+   */
+  async function sharePost(postId: string) {
+    const postIndex = feed.value.findIndex(p => p.id === postId);
+    if (postIndex === -1) return;
+
+    // Actualización optimista
+    feed.value[postIndex].sharesCount++;
+
+    try {
+      const useCase = container.get<SharePostUseCase>('SharePostUseCase');
+      await useCase.execute({ postId });
+    } catch (err) {
+      // Rollback
+      feed.value[postIndex].sharesCount--;
+      console.error('Error sharing post:', err);
+      error.value = 'Error al registrar el share';
+    }
+  }
+
   const trendingTags = ref<{ tag: string; count: number }[]>([]);
   const loadingTrends = ref(false);
 
@@ -276,6 +353,7 @@ export const usePostsStore = defineStore('posts', () => {
 
   return {
     feed: sortedFeed,
+    currentPost,
     trendingTags,
     loading,
     loadingTrends,
@@ -283,10 +361,12 @@ export const usePostsStore = defineStore('posts', () => {
     hasMore,
     fetchFeed,
     fetchUserPosts,
+    fetchPostById,
     fetchTrendingTags,
     createPost,
     toggleLike,
     incrementCommentsCount,
+    sharePost,
     deletePost,
     subscribeToFeed,
     subscribeToUserPosts,

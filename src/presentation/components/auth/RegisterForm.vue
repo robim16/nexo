@@ -20,7 +20,7 @@
       v-model="form.password"
       type="password"
       label="Contraseña"
-      placeholder="Mínimo 8 caracteres"
+      placeholder="Min. 8 caracteres (A-z, 0-9, @$!)"
       wrapper-class="mb-lg"
       required
     />

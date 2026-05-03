@@ -1,5 +1,5 @@
 <template>
-  <article class="post-card">
+  <article class="post-card" @click="goToPost">
     <header class="post-card__header">
       <div class="header-left">
         <BaseAvatar :src="post.authorAvatar" :name="post.authorName" size="md" class="author-avatar" />
@@ -11,7 +11,7 @@
           <span class="post-date">{{ formatDate(post.createdAt) }}</span>
         </div>
       </div>
-      <button class="post-options" aria-label="Post options">
+      <button class="post-options" aria-label="Post options" @click.stop>
         <svg viewBox="0 0 24 24" fill="currentColor">
           <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
         </svg>
@@ -32,7 +32,7 @@
       <button 
         class="action-btn action-btn--like" 
         :class="{ 'action-btn--active': post.isLiked }" 
-        @click="toggleLike"
+        @click.stop="toggleLike"
         :title="post.isLiked ? 'Unlike' : 'Like'"
       >
         <span class="icon-wrap">
@@ -42,20 +42,20 @@
         <span v-if="post.likesCount" class="count">{{ formatCount(post.likesCount) }}</span>
       </button>
       
-      <button class="action-btn action-btn--comment" @click="$emit('comment', post.id)" title="Comment">
+      <button class="action-btn action-btn--comment" @click.stop="$emit('comment', post.id)" title="Comment">
         <span class="icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
         </span>
         <span v-if="post.commentsCount" class="count">{{ formatCount(post.commentsCount) }}</span>
       </button>
 
-      <button class="action-btn action-btn--share" @click="$emit('share', post.id)" title="Share">
+      <button class="action-btn action-btn--share" @click.stop="$emit('share', post.id)" title="Share">
         <span class="icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
         </span>
       </button>
 
-      <button class="action-btn action-btn--bookmark" title="Save">
+      <button class="action-btn action-btn--bookmark" title="Save" @click.stop>
         <span class="icon-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
         </span>
@@ -66,6 +66,7 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
+import { useRouter } from 'vue-router';
 import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
 
 export interface PostDisplay {
@@ -94,6 +95,14 @@ const toggleLike = () => {
     emit('unlike', props.post.id);
   } else {
     emit('like', props.post.id);
+  }
+};
+
+const router = useRouter();
+
+const goToPost = () => {
+  if (router.currentRoute.value.path !== `/post/${props.post.id}`) {
+    router.push(`/post/${props.post.id}`);
   }
 };
 
@@ -128,6 +137,7 @@ const formatDate = (date: Date | string | number) => {
   margin-bottom: var(--space-3);
   transition: var(--transition-base);
   overflow: hidden;
+  cursor: pointer;
 }
 
 .post-card:hover {
