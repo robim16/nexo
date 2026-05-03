@@ -39,16 +39,12 @@ export class InMemoryEventBus implements IEventBus {
     const eventHandlers = this.handlers.get(event.type)
     if (!eventHandlers) return
 
-    const promises = eventHandlers.map((handler) => {
-      return new Promise<void>(async (resolve) => {
-        try {
-          await handler(event)
-        } catch (error) {
-          console.error(`Error procesando evento asíncrono ${event.type}:`, error)
-        } finally {
-          resolve()
-        }
-      })
+    const promises = eventHandlers.map(async (handler) => {
+      try {
+        await handler(event)
+      } catch (error) {
+        console.error(`Error procesando evento asíncrono ${event.type}:`, error)
+      }
     })
 
     await Promise.all(promises)

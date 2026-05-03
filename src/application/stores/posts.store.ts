@@ -52,7 +52,7 @@ export const usePostsStore = defineStore('posts', () => {
         // Enriquecer posts con información del autor
         const authorIds = [...new Set(posts.map((p: any) => p.authorId.value))];
         const authors = await userRepository.findManyByIds(authorIds.map((id: string) => UserId.reconstitute(id)));
-        const authorMap = new Map(authors.map((u: any) => [u.id.value, u]));
+        const authorMap = new Map<string, any>(authors.map((u: any) => [u.id.value, u]));
 
         for (const post of posts) {
           const author = authorMap.get(post.authorId.value);

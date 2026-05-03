@@ -81,7 +81,9 @@ describe('Auth Store (Integration)', () => {
 
     try {
       await authStore.login({ email: 'wrong@test.com', password: 'wrongpassword' })
-    } catch (e) {}
+    } catch (e) {
+      // Error expected as we are testing invalid credentials
+    }
 
     expect(authStore.user).toBeNull()
     expect(authStore.loading).toBe(false)

@@ -249,7 +249,8 @@ const uploadProgress = ref(0);
 onMounted(() => {
   if (authStore.user) {
     profileForm.displayName = authStore.user.displayName;
-    profileForm.handle = authStore.user.handle || authStore.user.displayName.toLowerCase().replace(/\s/g, '');
+    const handle = authStore.user.email.split('@')[0];
+    profileForm.handle = `@${handle}`;
     profileForm.bio = authStore.user.bio || '';
   }
 });

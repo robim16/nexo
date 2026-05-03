@@ -5,7 +5,7 @@ import { ref, watch, onUnmounted } from 'vue';
  * Retrasa la ejecución de un valor hasta que haya pasado un tiempo determinado sin cambios.
  */
 export function useDebounce<T>(value: { value: T }, delay = 500) {
-  const debouncedValue = ref(value.value) as { value: T };
+  const debouncedValue = ref(value.value) as any;
   let timeout: any = null;
 
   const stop = watch(() => value.value, (newVal) => {

@@ -46,7 +46,7 @@
             <span class="peek-handle">{{ userHandle }}</span>
           </div>
         </div>
-        <button class="logout-btn" @click="handleLogout" title="Sign out">
+        <button class="logout-btn" title="Sign out" @click="handleLogout">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
@@ -86,14 +86,16 @@
             Trending
           </h3>
           <ul class="trending-list">
-            <li v-if="postsStore.loadingTrends" v-for="i in 3" :key="'skeleton-'+i" class="trend-item skeleton">
-              <div class="trend-rank-skeleton"></div>
-              <div class="trend-body-skeleton">
-                <div class="trend-name-skeleton"></div>
-                <div class="trend-stats-skeleton"></div>
-              </div>
-            </li>
-            <li v-else v-for="(trend, i) in trends" :key="trend.tag" class="trend-item">
+            <template v-if="postsStore.loadingTrends">
+              <li v-for="i in 3" :key="'skeleton-'+i" class="trend-item skeleton">
+                <div class="trend-rank-skeleton"></div>
+                <div class="trend-body-skeleton">
+                  <div class="trend-name-skeleton"></div>
+                  <div class="trend-stats-skeleton"></div>
+                </div>
+              </li>
+            </template>
+            <li v-for="(trend, i) in trends" v-else :key="trend.tag" class="trend-item">
               <span class="trend-rank">#{{ i + 1 }}</span>
               <div class="trend-body">
                 <span class="trend-name">{{ trend.tag }}</span>

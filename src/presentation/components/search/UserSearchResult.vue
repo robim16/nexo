@@ -2,8 +2,8 @@
   <div class="user-search-result" @click="navigateToProfile">
     <div class="avatar-wrapper">
       <img 
-        v-if="user.avatarUrl" 
-        :src="user.avatarUrl" 
+        v-if="user.avatar" 
+        :src="user.avatar" 
         :alt="user.displayName" 
         class="avatar-img"
       />
@@ -14,7 +14,7 @@
     
     <div class="user-info">
       <div class="display-name">{{ user.displayName }}</div>
-      <div class="username">@{{ user.username || user.displayName.toLowerCase().replace(/\s+/g, '') }}</div>
+      <div class="username">@{{ user.email.split('@')[0] }}</div>
     </div>
 
     <div class="action-wrapper">
