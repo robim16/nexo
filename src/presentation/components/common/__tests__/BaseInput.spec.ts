@@ -16,7 +16,7 @@ describe('BaseInput Component', () => {
     })
     const input = getByRole('textbox')
     await fireEvent.update(input, 'new value')
-    
+
     expect(emitted()).toHaveProperty('update:modelValue')
     expect(emitted()['update:modelValue'][0]).toEqual(['new value'])
   })
@@ -33,13 +33,13 @@ describe('BaseInput Component', () => {
     const { getByLabelText, container } = render(BaseInput, {
       props: { type: 'password', modelValue: '123456' }
     })
-    
+
     const input = container.querySelector('input')
     expect(input).toHaveAttribute('type', 'password')
-    
+
     const toggleBtn = getByLabelText('Mostrar contraseña')
     await fireEvent.click(toggleBtn)
-    
+
     expect(input).toHaveAttribute('type', 'text')
     expect(getByLabelText('Ocultar contraseña')).toBeInTheDocument()
   })

@@ -14,7 +14,7 @@ export class Bio {
     if (trimmed.length > Bio.MAX_LENGTH) {
       throw new Error(
         `La biografía no puede superar ${Bio.MAX_LENGTH} caracteres ` +
-        `(actual: ${trimmed.length})`
+          `(actual: ${trimmed.length})`
       )
     }
 

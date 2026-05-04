@@ -60,8 +60,8 @@ export class DeletePostUseCase {
       timestamp: new Date(),
       payload: {
         postId: dto.postId,
-        authorId: post.authorId.value,
-      },
+        authorId: post.authorId.value
+      }
     })
   }
 }

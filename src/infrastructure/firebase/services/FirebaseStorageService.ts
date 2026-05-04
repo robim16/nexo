@@ -1,14 +1,8 @@
-import {
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-  deleteObject
-} from 'firebase/storage'
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
 import { storage } from '../config/firebase.config'
 import { IStorageService, UploadResult, UploadOptions } from '@/core/ports/services/IStorageService'
 
 export class FirebaseStorageService implements IStorageService {
-  
   async uploadImage(file: File, path: string, options?: UploadOptions): Promise<UploadResult> {
     // Si se necesita re-size usar biblioteca externa. Para la capa de datos subimos directo.
     return this.uploadFile(file, path, options)
@@ -66,7 +60,7 @@ export class FirebaseStorageService implements IStorageService {
   }
 
   async deleteFiles(urlsOrPaths: string[]): Promise<void> {
-    const promises = urlsOrPaths.map(path => this.deleteFile(path))
+    const promises = urlsOrPaths.map((path) => this.deleteFile(path))
     await Promise.allSettled(promises)
   }
 

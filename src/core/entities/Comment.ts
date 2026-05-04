@@ -57,11 +57,21 @@ export class Comment {
 
   // ─── Getters ──────────────────────────────────────────────────────────────
 
-  get content(): PostContent { return this._content }
-  get likes(): readonly string[] { return this._likes }
-  get likesCount(): number { return this._likesCount }
-  get updatedAt(): Timestamp { return this._updatedAt }
-  get isEdited(): boolean { return this._isEdited }
+  get content(): PostContent {
+    return this._content
+  }
+  get likes(): readonly string[] {
+    return this._likes
+  }
+  get likesCount(): number {
+    return this._likesCount
+  }
+  get updatedAt(): Timestamp {
+    return this._updatedAt
+  }
+  get isEdited(): boolean {
+    return this._isEdited
+  }
 
   // ─── Comportamiento de Negocio ────────────────────────────────────────────
 
@@ -92,8 +102,7 @@ export class Comment {
       throw PostDomainError.unauthorizedAction('editar comentario')
     }
 
-    const hoursSinceCreation =
-      (Date.now() - this.createdAt.value.getTime()) / (1000 * 60 * 60)
+    const hoursSinceCreation = (Date.now() - this.createdAt.value.getTime()) / (1000 * 60 * 60)
 
     if (hoursSinceCreation > COMMENT_EDIT_WINDOW_HOURS) {
       throw PostDomainError.editWindowExpired(COMMENT_EDIT_WINDOW_HOURS)
@@ -161,7 +170,7 @@ export class Comment {
       likesCount: this._likesCount,
       createdAt: this.createdAt.toISO(),
       updatedAt: this._updatedAt.toISO(),
-      isEdited: this._isEdited,
+      isEdited: this._isEdited
     }
   }
 }

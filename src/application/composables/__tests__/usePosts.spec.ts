@@ -36,9 +36,9 @@ describe('usePosts Composable', () => {
 
   it('should return reactive references from store', () => {
     store.feed.value = [{ id: 'post-1', content: 'test' }]
-    
+
     const { posts, loading } = usePosts()
-    
+
     expect(posts.value).toHaveLength(1)
     expect(posts.value[0].id).toBe('post-1')
     expect(loading.value).toBe(false)
@@ -47,16 +47,16 @@ describe('usePosts Composable', () => {
   it('should call store fetchFeed when fetchFeed is called', async () => {
     const { fetchFeed } = usePosts()
     await fetchFeed(true)
-    
+
     expect(store.fetchFeed).toHaveBeenCalledWith(true)
   })
 
   it('should call store createPost when createPost is called', async () => {
     store.createPost.mockResolvedValue({ id: 'new-post' })
-    
+
     const { createPost } = usePosts()
     const result = await createPost({ content: 'test content', visibility: 'public' })
-    
+
     expect(store.createPost).toHaveBeenCalledWith({ content: 'test content', visibility: 'public' })
     expect(result.id).toBe('new-post')
   })
@@ -64,14 +64,14 @@ describe('usePosts Composable', () => {
   it('should call store toggleLike when toggleLike is called', async () => {
     const { toggleLike } = usePosts()
     await toggleLike('post-123')
-    
+
     expect(store.toggleLike).toHaveBeenCalledWith('post-123')
   })
 
   it('should call store deletePost when deletePost is called', async () => {
     const { deletePost } = usePosts()
     await deletePost('post-123')
-    
+
     expect(store.deletePost).toHaveBeenCalledWith('post-123')
   })
 })

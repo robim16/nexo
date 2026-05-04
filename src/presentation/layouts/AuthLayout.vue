@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-  // Auth Layout wrapper
+// Auth Layout wrapper
 </script>
 
 <style scoped>
@@ -90,8 +90,12 @@
 }
 
 @keyframes float {
-  0% { transform: translateY(0) scale(1); }
-  100% { transform: translateY(30px) scale(1.1); }
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    transform: translateY(30px) scale(1.1);
+  }
 }
 
 .auth-layout__content {

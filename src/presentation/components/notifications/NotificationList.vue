@@ -2,10 +2,10 @@
   <div class="notification-list">
     <div class="list-header glass">
       <h3 class="header-title">Recent Activity</h3>
-      <BaseButton 
-        v-if="notifications.length > 0" 
-        variant="glass" 
-        size="sm" 
+      <BaseButton
+        v-if="notifications.length > 0"
+        variant="glass"
+        size="sm"
         class="mark-read-btn"
         @click="markAllAsRead"
       >
@@ -23,7 +23,7 @@
           </div>
         </div>
       </template>
-      
+
       <template v-else-if="notifications.length === 0">
         <div class="empty-notifications glass">
           <span class="empty-icon">🔔</span>
@@ -47,38 +47,38 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
-import { useNotificationsStore } from '@/application/stores/notifications.store';
-import NotificationItem from './NotificationItem.vue';
-import BaseButton from '@/presentation/components/common/BaseButton.vue';
+import { onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useNotificationsStore } from '@/application/stores/notifications.store'
+import NotificationItem from './NotificationItem.vue'
+import BaseButton from '@/presentation/components/common/BaseButton.vue'
 
-const router = useRouter();
-const notificationsStore = useNotificationsStore();
-const { notifications, loading } = storeToRefs(notificationsStore);
+const router = useRouter()
+const notificationsStore = useNotificationsStore()
+const { notifications, loading } = storeToRefs(notificationsStore)
 
 onMounted(() => {
-  notificationsStore.subscribeToNotifications();
-});
+  notificationsStore.subscribeToNotifications()
+})
 
 onUnmounted(() => {
-  notificationsStore.unsubscribe();
-});
+  notificationsStore.unsubscribe()
+})
 
 const markAllAsRead = async () => {
-  await notificationsStore.markAllAsRead();
-};
+  await notificationsStore.markAllAsRead()
+}
 
 const handleNotificationClick = async (notification: any) => {
-  await notificationsStore.markAsRead(notification.id);
-  
+  await notificationsStore.markAsRead(notification.id)
+
   if (notification.type === 'FOLLOW') {
-    router.push(`/profile/${notification.fromUserId}`);
+    router.push(`/profile/${notification.fromUserId}`)
   } else if (notification.postId) {
-    router.push(`/post/${notification.postId}`);
+    router.push(`/post/${notification.postId}`)
   }
-};
+}
 </script>
 
 <style scoped>

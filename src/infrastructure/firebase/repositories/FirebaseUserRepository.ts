@@ -1,4 +1,12 @@
-import { query, where, getDocs, limit as fbLimit, documentId, doc, onSnapshot } from 'firebase/firestore'
+import {
+  query,
+  where,
+  getDocs,
+  limit as fbLimit,
+  documentId,
+  doc,
+  onSnapshot
+} from 'firebase/firestore'
 import { collections } from '../config/firebase.config'
 import { firestoreUtils } from '../config/firestore.config'
 import { FirebaseBaseRepository } from './FirebaseBaseRepository'
@@ -48,7 +56,7 @@ export class FirebaseUserRepository
         fbLimit(limit)
       )
       const snapshot = await getDocs(q)
-      return snapshot.docs.map(docSnap => docSnap.data() as User)
+      return snapshot.docs.map((docSnap) => docSnap.data() as User)
     } catch (error) {
       this.handleError('findByDisplayName', error)
       return []
@@ -57,18 +65,21 @@ export class FirebaseUserRepository
 
   async findManyByIds(ids: UserId[]): Promise<User[]> {
     if (!ids || ids.length === 0) return []
-    
+
     try {
       // Firebase limit: 'in' operator supports max 10 elements. Needs batching for more
-      const chunkedIds = this.chunkArray(ids.map(id => id.value), 10)
+      const chunkedIds = this.chunkArray(
+        ids.map((id) => id.value),
+        10
+      )
       const results: User[] = []
-      
+
       for (const chunk of chunkedIds) {
         const q = query(this.collection, where(documentId(), 'in', chunk))
         const snapshot = await getDocs(q)
-        results.push(...snapshot.docs.map(docSnap => docSnap.data() as User))
+        results.push(...snapshot.docs.map((docSnap) => docSnap.data() as User))
       }
-      
+
       return results
     } catch (error) {
       this.handleError('findManyByIds', error)
@@ -84,15 +95,21 @@ export class FirebaseUserRepository
       await firestoreUtils.runTransaction(async (transaction) => {
         const userRef = doc(this.collection, userId.value)
         const userDoc = await transaction.get(userRef)
-        
+
         if (!userDoc.exists()) throw new Error('User not found')
-        
+
         const currentData = userDoc.data() as any
-        
-        const newFollowers = Math.max(0, (currentData.followersCount || 0) + (delta.followersCount || 0))
-        const newFollowing = Math.max(0, (currentData.followingCount || 0) + (delta.followingCount || 0))
+
+        const newFollowers = Math.max(
+          0,
+          (currentData.followersCount || 0) + (delta.followersCount || 0)
+        )
+        const newFollowing = Math.max(
+          0,
+          (currentData.followingCount || 0) + (delta.followingCount || 0)
+        )
         const newPosts = Math.max(0, (currentData.postsCount || 0) + (delta.postsCount || 0))
-        
+
         transaction.update(userRef, {
           followersCount: newFollowers,
           followingCount: newFollowing,
@@ -123,7 +140,7 @@ export class FirebaseUserRepository
       }
     )
   }
-  
+
   private chunkArray<T>(arr: T[], size: number): T[][] {
     return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
       arr.slice(i * size, i * size + size)

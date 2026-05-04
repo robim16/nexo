@@ -43,7 +43,7 @@ export class UnfollowUserUseCase {
     this.eventBus.publish({
       type: DomainEvents.USER_UNFOLLOWED,
       timestamp: new Date(),
-      payload: { followerId: dto.followerId, followingId: dto.followingId },
+      payload: { followerId: dto.followerId, followingId: dto.followingId }
     })
   }
 }

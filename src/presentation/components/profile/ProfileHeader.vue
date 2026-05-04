@@ -4,57 +4,59 @@
       <div class="cover-overlay"></div>
       <div class="cover-glow"></div>
     </div>
-    
+
     <div class="profile-header__info glass">
       <div class="header-main-row">
         <div class="avatar-wrapper">
-          <div class="avatar-container" @click="triggerAvatarUpload" :class="{ 'clickable': isOwnProfile }">
-            <BaseAvatar 
-              :src="user.avatar || ''" 
-              :alt="user.displayName" 
-              size="xl" 
+          <div
+            class="avatar-container"
+            @click="triggerAvatarUpload"
+            :class="{ clickable: isOwnProfile }"
+          >
+            <BaseAvatar
+              :src="user.avatar || ''"
+              :alt="user.displayName"
+              size="xl"
               class="profile-avatar"
-              :class="{ 'uploading': isUploadingAvatar }"
+              :class="{ uploading: isUploadingAvatar }"
             />
-            <div v-if="isOwnProfile" class="avatar-overlay" :class="{ 'active': isUploadingAvatar }">
+            <div v-if="isOwnProfile" class="avatar-overlay" :class="{ active: isUploadingAvatar }">
               <span v-if="isUploadingAvatar">{{ uploadProgress }}%</span>
               <span v-else>📷</span>
             </div>
-            <input 
+            <input
               v-if="isOwnProfile"
-              type="file" 
-              ref="avatarInput" 
-              accept="image/*" 
-              style="display: none" 
-              @change="handleAvatarSelected" 
+              type="file"
+              ref="avatarInput"
+              accept="image/*"
+              style="display: none"
+              @change="handleAvatarSelected"
             />
           </div>
           <div class="avatar-glow"></div>
         </div>
-        
+
         <div class="profile-header__actions">
-          <BaseButton 
-            v-if="isOwnProfile" 
-            variant="glass" 
+          <BaseButton
+            v-if="isOwnProfile"
+            variant="glass"
             size="md"
             @click="$router.push('/settings')"
           >
             Edit Profile
           </BaseButton>
-          <FollowButton 
-            v-else 
-            :userId="user.id" 
-            :initialIsFollowing="isFollowing" 
-          />
+          <FollowButton v-else :userId="user.id" :initialIsFollowing="isFollowing" />
         </div>
       </div>
 
       <div class="profile-details">
         <h2 class="display-name">{{ user.displayName }}</h2>
-        <p class="handle">@{{ user.handle || user.displayName.toLowerCase().replace(/\s/g, '') }}</p>
-        
+        <p class="handle">
+          @{{ user.handle || user.displayName.toLowerCase().replace(/\s/g, '') }}
+        </p>
+
         <p class="bio">{{ user.bio || 'Exploring the boundaries of the Nexo.' }}</p>
-        
+
         <div class="profile-meta">
           <div class="meta-item">
             <span class="meta-icon">📅</span>
@@ -71,56 +73,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps } from 'vue';
-import { useUsersStore } from '@/application/stores/users.store';
-import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
-import BaseButton from '@/presentation/components/common/BaseButton.vue';
-import FollowButton from './FollowButton.vue';
+import { ref, defineProps } from 'vue'
+import { useUsersStore } from '@/application/stores/users.store'
+import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue'
+import BaseButton from '@/presentation/components/common/BaseButton.vue'
+import FollowButton from './FollowButton.vue'
 
 const props = defineProps<{
-  user?: any; // Mock User model
-  isOwnProfile?: boolean;
-  isFollowing?: boolean;
-}>();
+  user?: any // Mock User model
+  isOwnProfile?: boolean
+  isFollowing?: boolean
+}>()
 
-const usersStore = useUsersStore();
+const usersStore = useUsersStore()
 
-const avatarInput = ref<HTMLInputElement | null>(null);
-const isUploadingAvatar = ref(false);
-const uploadProgress = ref(0);
+const avatarInput = ref<HTMLInputElement | null>(null)
+const isUploadingAvatar = ref(false)
+const uploadProgress = ref(0)
 
 const triggerAvatarUpload = () => {
   if (props.isOwnProfile && !isUploadingAvatar.value) {
-    avatarInput.value?.click();
+    avatarInput.value?.click()
   }
-};
+}
 
 const handleAvatarSelected = async (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  if (!target.files || target.files.length === 0) return;
-  
-  const file = target.files[0];
+  const target = e.target as HTMLInputElement
+  if (!target.files || target.files.length === 0) return
+
+  const file = target.files[0]
   if (file.size > 5 * 1024 * 1024) {
-    alert('El avatar debe pesar menos de 5MB');
-    return;
+    alert('El avatar debe pesar menos de 5MB')
+    return
   }
-  
-  isUploadingAvatar.value = true;
-  uploadProgress.value = 0;
-  
+
+  isUploadingAvatar.value = true
+  uploadProgress.value = 0
+
   try {
     await usersStore.updateAvatar(file, (percent) => {
-      uploadProgress.value = percent;
-    });
+      uploadProgress.value = percent
+    })
   } catch (error) {
-    console.error('Failed to update avatar:', error);
-    alert('Error al actualizar el avatar');
+    console.error('Failed to update avatar:', error)
+    alert('Error al actualizar el avatar')
   } finally {
-    isUploadingAvatar.value = false;
-    uploadProgress.value = 0;
-    target.value = '';
+    isUploadingAvatar.value = false
+    uploadProgress.value = 0
+    target.value = ''
   }
-};
+}
 
 // mock data if user not provided
 const user = props.user || {
@@ -130,11 +132,11 @@ const user = props.user || {
   bio: 'Synthesizing the future of social interaction in the Onyx space.',
   createdAt: new Date(),
   location: 'Cyber Space'
-};
+}
 
 const formatJoinDate = (date: any) => {
-  return new Date(date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-};
+  return new Date(date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+}
 </script>
 
 <style scoped>
@@ -154,11 +156,7 @@ const formatJoinDate = (date: any) => {
 .cover-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(var(--color-primary-rgb), 0.1),
-    var(--surface-base)
-  );
+  background: linear-gradient(to bottom, rgba(var(--color-primary-rgb), 0.1), var(--surface-base));
 }
 
 .cover-glow {
@@ -308,19 +306,23 @@ const formatJoinDate = (date: any) => {
 }
 
 @keyframes slow-rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 640px) {
   .profile-header__cover {
     height: 160px;
   }
-  
+
   .display-name {
     font-size: 2rem;
   }
-  
+
   .profile-header__info {
     padding: var(--space-4) var(--space-6) var(--space-6);
     margin-top: -60px;

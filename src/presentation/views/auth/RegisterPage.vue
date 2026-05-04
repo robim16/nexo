@@ -4,9 +4,9 @@
       <h2>Únete a Nexo</h2>
       <p>Crea tu cuenta para empezar a conectar.</p>
     </div>
-    
+
     <RegisterForm />
-    
+
     <p class="auth-page__footer">
       ¿Ya tienes una cuenta? <router-link to="/login">Inicia Sesión</router-link>
     </p>
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import RegisterForm from '@/presentation/components/auth/RegisterForm.vue';
+import RegisterForm from '@/presentation/components/auth/RegisterForm.vue'
 </script>
 
 <style scoped>

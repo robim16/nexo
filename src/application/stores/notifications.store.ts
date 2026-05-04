@@ -1,34 +1,34 @@
-import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import type { GetNotificationsUseCase } from '../../core/use-cases/notifications/GetNotificationsUseCase';
-import type { MarkNotificationReadUseCase } from '../../core/use-cases/notifications/MarkNotificationReadUseCase';
-import { container } from '../../dependency-injection';
-import { useAuthStore } from './auth.store';
-import { UserId } from '../../core/value-objects/UserId';
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import type { GetNotificationsUseCase } from '../../core/use-cases/notifications/GetNotificationsUseCase'
+import type { MarkNotificationReadUseCase } from '../../core/use-cases/notifications/MarkNotificationReadUseCase'
+import { container } from '../../dependency-injection'
+import { useAuthStore } from './auth.store'
+import { UserId } from '../../core/value-objects/UserId'
 
 export interface NotificationDTO {
-  id: string;
-  type: string;
-  message: string;
-  fromUserId: string;
-  actorName: string;
-  actorAvatar?: string;
-  postId?: string;
-  isRead: boolean;
-  createdAt: string;
+  id: string
+  type: string
+  message: string
+  fromUserId: string
+  actorName: string
+  actorAvatar?: string
+  postId?: string
+  isRead: boolean
+  createdAt: string
 }
 
 export const useNotificationsStore = defineStore('notifications', () => {
-  const authStore = useAuthStore();
+  const authStore = useAuthStore()
 
   // --- Estado ---
-  const notifications = ref<NotificationDTO[]>([]);
-  const loading = ref(false);
-  const error = ref<string | null>(null);
-  const notificationSubscription = ref<(() => void) | null>(null);
+  const notifications = ref<NotificationDTO[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+  const notificationSubscription = ref<(() => void) | null>(null)
 
   // --- Getters ---
-  const unreadCount = computed(() => notifications.value.filter(n => !n.isRead).length);
+  const unreadCount = computed(() => notifications.value.filter((n) => !n.isRead).length)
 
   // --- Acciones ---
 
@@ -36,38 +36,43 @@ export const useNotificationsStore = defineStore('notifications', () => {
    * Suscribe a las notificaciones en tiempo real.
    */
   async function subscribeToNotifications() {
-    if (notificationSubscription.value) notificationSubscription.value();
+    if (notificationSubscription.value) notificationSubscription.value()
 
-    const userId = authStore.currentUserId;
-    if (!userId) return;
+    const userId = authStore.currentUserId
+    if (!userId) return
 
     try {
-      const repository = container.get<any>('INotificationRepository');
-      const userRepository = container.get<any>('IUserRepository');
+      const repository = container.get<any>('INotificationRepository')
+      const userRepository = container.get<any>('IUserRepository')
 
-      const unsubscribe = repository.subscribeToRecipient(UserId.reconstitute(userId), async (domainNotifications: any[]) => {
-        // Para cada notificación, necesitamos el actor (usuario).
-        // En una implementación real, podríamos optimizar esto.
-        const mapped = await Promise.all(domainNotifications.map(async (n) => {
-          const actor = await userRepository.findById(n.actorId);
-          return {
-            id: n.id.value,
-            type: n.type,
-            message: n.message,
-            fromUserId: n.actorId.value,
-            actorName: actor?.displayName || 'Unknown User',
-            actorAvatar: actor?.avatarUrl || undefined,
-            postId: n.postId?.value,
-            isRead: n.isRead,
-            createdAt: n.createdAt.toISOString()
-          };
-        }));
-        notifications.value = mapped;
-      });
+      const unsubscribe = repository.subscribeToRecipient(
+        UserId.reconstitute(userId),
+        async (domainNotifications: any[]) => {
+          // Para cada notificación, necesitamos el actor (usuario).
+          // En una implementación real, podríamos optimizar esto.
+          const mapped = await Promise.all(
+            domainNotifications.map(async (n) => {
+              const actor = await userRepository.findById(n.actorId)
+              return {
+                id: n.id.value,
+                type: n.type,
+                message: n.message,
+                fromUserId: n.actorId.value,
+                actorName: actor?.displayName || 'Unknown User',
+                actorAvatar: actor?.avatarUrl || undefined,
+                postId: n.postId?.value,
+                isRead: n.isRead,
+                createdAt: n.createdAt.toISOString()
+              }
+            })
+          )
+          notifications.value = mapped
+        }
+      )
 
-      notificationSubscription.value = unsubscribe;
+      notificationSubscription.value = unsubscribe
     } catch (err) {
-      console.error('Error subscribing to notifications:', err);
+      console.error('Error subscribing to notifications:', err)
     }
   }
 
@@ -76,8 +81,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
    */
   function unsubscribe() {
     if (notificationSubscription.value) {
-      notificationSubscription.value();
-      notificationSubscription.value = null;
+      notificationSubscription.value()
+      notificationSubscription.value = null
     }
   }
 
@@ -85,16 +90,16 @@ export const useNotificationsStore = defineStore('notifications', () => {
    * Carga las notificaciones del usuario.
    */
   async function fetchNotifications() {
-    const userId = authStore.currentUserId;
-    if (!userId) return;
+    const userId = authStore.currentUserId
+    if (!userId) return
 
-    loading.value = true;
+    loading.value = true
     try {
-      const useCase = container.get<GetNotificationsUseCase>('GetNotificationsUseCase');
-      const result = await useCase.execute({ userId });
-      
+      const useCase = container.get<GetNotificationsUseCase>('GetNotificationsUseCase')
+      const result = await useCase.execute({ userId })
+
       // Mapear a DTO simple para la UI
-      notifications.value = result.notifications.map(n => ({
+      notifications.value = result.notifications.map((n) => ({
         id: n.notification.id.value,
         type: n.notification.type,
         message: n.notification.message,
@@ -104,11 +109,11 @@ export const useNotificationsStore = defineStore('notifications', () => {
         postId: n.notification.postId?.value,
         isRead: n.notification.isRead,
         createdAt: n.notification.createdAt.toISO()
-      }));
+      }))
     } catch (err: any) {
-      error.value = err.message || 'Error al cargar notificaciones';
+      error.value = err.message || 'Error al cargar notificaciones'
     } finally {
-      loading.value = false;
+      loading.value = false
     }
   }
 
@@ -116,19 +121,19 @@ export const useNotificationsStore = defineStore('notifications', () => {
    * Marca una notificación como leída.
    */
   async function markAsRead(notificationId: string) {
-    const userId = authStore.currentUserId;
-    if (!userId) return;
+    const userId = authStore.currentUserId
+    if (!userId) return
 
-    const useCase = container.get<MarkNotificationReadUseCase>('MarkNotificationReadUseCase');
+    const useCase = container.get<MarkNotificationReadUseCase>('MarkNotificationReadUseCase')
     try {
-      await useCase.execute({ userId, notificationId });
-      
-      const notification = notifications.value.find(n => n.id === notificationId);
+      await useCase.execute({ userId, notificationId })
+
+      const notification = notifications.value.find((n) => n.id === notificationId)
       if (notification) {
-        notification.isRead = true;
+        notification.isRead = true
       }
     } catch (err: any) {
-      error.value = err.message || 'Error al marcar notificación';
+      error.value = err.message || 'Error al marcar notificación'
     }
   }
 
@@ -136,18 +141,18 @@ export const useNotificationsStore = defineStore('notifications', () => {
    * Marca todas las notificaciones como leídas.
    */
   async function markAllAsRead() {
-    const userId = authStore.currentUserId;
-    if (!userId) return;
+    const userId = authStore.currentUserId
+    if (!userId) return
 
-    const useCase = container.get<MarkNotificationReadUseCase>('MarkNotificationReadUseCase');
+    const useCase = container.get<MarkNotificationReadUseCase>('MarkNotificationReadUseCase')
     try {
-      await useCase.execute({ userId });
-      
-      notifications.value.forEach(n => {
-        n.isRead = true;
-      });
+      await useCase.execute({ userId })
+
+      notifications.value.forEach((n) => {
+        n.isRead = true
+      })
     } catch (err: any) {
-      error.value = err.message || 'Error al marcar notificaciones';
+      error.value = err.message || 'Error al marcar notificaciones'
     }
   }
 
@@ -161,5 +166,5 @@ export const useNotificationsStore = defineStore('notifications', () => {
     markAllAsRead,
     subscribeToNotifications,
     unsubscribe
-  };
-});
+  }
+})

@@ -66,4 +66,16 @@ export interface IPostRepository extends IBaseRepository<Post, PostId> {
 
   /** Busca publicaciones por hashtag o contenido (búsqueda parcial) */
   search(query: string, limit?: number): Promise<Post[]>
+
+  /** Guarda un post para un usuario */
+  savePost(postId: PostId, userId: UserId): Promise<void>
+
+  /** Quita un post de los guardados del usuario */
+  unsavePost(postId: PostId, userId: UserId): Promise<void>
+
+  /** Verifica si un post está guardado por un usuario */
+  isPostSaved(postId: PostId, userId: UserId): Promise<boolean>
+
+  /** Obtiene la lista de posts guardados por un usuario */
+  getSavedPosts(userId: UserId, options?: FeedOptions): Promise<Post[]>
 }

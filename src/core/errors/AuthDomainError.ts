@@ -26,17 +26,11 @@ export class AuthDomainError extends DomainError {
   // --- Factories semánticas ---
 
   static invalidCredentials(): AuthDomainError {
-    return new AuthDomainError(
-      'INVALID_CREDENTIALS',
-      'Email o contraseña incorrectos'
-    )
+    return new AuthDomainError('INVALID_CREDENTIALS', 'Email o contraseña incorrectos')
   }
 
   static emailAlreadyExists(email: string): AuthDomainError {
-    return new AuthDomainError(
-      'EMAIL_ALREADY_EXISTS',
-      `El email "${email}" ya está registrado`
-    )
+    return new AuthDomainError('EMAIL_ALREADY_EXISTS', `El email "${email}" ya está registrado`)
   }
 
   static userNotFound(identifier: string): AuthDomainError {
@@ -54,10 +48,7 @@ export class AuthDomainError extends DomainError {
   }
 
   static emailNotVerified(): AuthDomainError {
-    return new AuthDomainError(
-      'EMAIL_NOT_VERIFIED',
-      'Debes verificar tu email antes de continuar'
-    )
+    return new AuthDomainError('EMAIL_NOT_VERIFIED', 'Debes verificar tu email antes de continuar')
   }
 
   static weakPassword(): AuthDomainError {
@@ -75,9 +66,6 @@ export class AuthDomainError extends DomainError {
   }
 
   static unauthorized(): AuthDomainError {
-    return new AuthDomainError(
-      'UNAUTHORIZED',
-      'No tienes permisos para realizar esta acción'
-    )
+    return new AuthDomainError('UNAUTHORIZED', 'No tienes permisos para realizar esta acción')
   }
 }

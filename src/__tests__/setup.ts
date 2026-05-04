@@ -37,7 +37,9 @@ global.IntersectionObserver = class IntersectionObserver {
   constructor() {}
   disconnect() {}
   observe() {}
-  takeRecords() { return [] }
+  takeRecords() {
+    return []
+  }
   unobserve() {}
 } as any
 
@@ -57,10 +59,7 @@ global.ResizeObserver = class ResizeObserver {
  */
 const originalError = console.error
 console.error = (...args) => {
-  if (
-    typeof args[0] === 'string' && 
-    args[0].includes('Warning: Test was not wrapped in act')
-  ) {
+  if (typeof args[0] === 'string' && args[0].includes('Warning: Test was not wrapped in act')) {
     return
   }
   originalError.call(console, ...args)

@@ -77,9 +77,9 @@ export class FirebaseAuthService implements IAuthService {
   onAuthStateChanged(callback: (user: User | null) => void): () => void {
     return onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-         callback(this.mapFirebaseUserToDomain(firebaseUser))
+        callback(this.mapFirebaseUserToDomain(firebaseUser))
       } else {
-         callback(null)
+        callback(null)
       }
     })
   }
@@ -117,7 +117,8 @@ export class FirebaseAuthService implements IAuthService {
       'auth/weak-password': 'La contraseña es muy débil',
       'auth/invalid-email': 'Email inválido',
       'auth/too-many-requests': 'Demasiados intentos. Intenta más tarde',
-      'auth/network-request-failed': 'Error de red. Verifica tu conexión o reinicia el servidor de desarrollo'
+      'auth/network-request-failed':
+        'Error de red. Verifica tu conexión o reinicia el servidor de desarrollo'
     }
     const message = errorMessages[error.code] || error.message
     return new Error(message)

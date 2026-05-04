@@ -52,18 +52,18 @@ export class GetFeedUseCase {
     // 3. Obtener posts del repositorio
     const posts = await this.postRepository.getFeed(userId, followingIds, {
       limit: limit + 1, // +1 para saber si hay más
-      lastPostId,
+      lastPostId
     })
 
     // 4. Enriquecer posts con información del autor
-    const authorIds = [...new Set(posts.map(p => p.authorId))];
-    const authors = await this.userRepository.findManyByIds(authorIds);
-    const authorMap = new Map(authors.map(u => [u.id.value, u]));
+    const authorIds = [...new Set(posts.map((p) => p.authorId))]
+    const authors = await this.userRepository.findManyByIds(authorIds)
+    const authorMap = new Map(authors.map((u) => [u.id.value, u]))
 
     for (const post of posts) {
-      const author = authorMap.get(post.authorId.value);
+      const author = authorMap.get(post.authorId.value)
       if (author) {
-        post.setAuthorInfo(author.displayName.value, author.avatar);
+        post.setAuthorInfo(author.displayName.value, author.avatar)
       }
     }
 

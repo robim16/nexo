@@ -4,7 +4,7 @@
       <div class="header-content">
         <BaseButton variant="glass" size="sm" class="back-btn" @click="$router.back()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
+            <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
         </BaseButton>
         <h1 class="page-title">Post</h1>
@@ -24,11 +24,13 @@
         @like="postsStore.toggleLike"
         @comment="handleComment"
         @share="handleShare"
+        @save="postsStore.toggleSave"
+        @unsave="postsStore.toggleSave"
       />
 
       <div class="comments-section">
         <h3 class="comments-title">Comments ({{ comments.length }})</h3>
-        
+
         <div v-if="commentsLoading" class="comments-loading">
           <LoadingSpinner size="sm" />
         </div>
@@ -36,16 +38,12 @@
           <p>No comments yet. Be the first!</p>
         </div>
         <div v-else class="comments-list">
-          <CommentItem
-            v-for="comment in comments"
-            :key="comment.id"
-            :comment="comment"
-          />
+          <CommentItem v-for="comment in comments" :key="comment.id" :comment="comment" />
         </div>
       </div>
     </div>
 
-    <CommentDialog 
+    <CommentDialog
       :is-open="isCommentDialogOpen"
       :post-id="activePostId"
       :loading="isCommenting"
@@ -56,92 +54,92 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
-import { usePostsStore } from '@/application/stores/posts.store';
-import { useCommentsStore } from '@/application/stores/comments.store';
-import PostCard from '@/presentation/components/feed/PostCard.vue';
-import CommentItem from '@/presentation/components/feed/CommentItem.vue';
-import CommentDialog from '@/presentation/components/feed/CommentDialog.vue';
-import BaseButton from '@/presentation/components/common/BaseButton.vue';
-import LoadingSpinner from '@/presentation/components/common/LoadingSpinner.vue';
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { usePostsStore } from '@/application/stores/posts.store'
+import { useCommentsStore } from '@/application/stores/comments.store'
+import PostCard from '@/presentation/components/feed/PostCard.vue'
+import CommentItem from '@/presentation/components/feed/CommentItem.vue'
+import CommentDialog from '@/presentation/components/feed/CommentDialog.vue'
+import BaseButton from '@/presentation/components/common/BaseButton.vue'
+import LoadingSpinner from '@/presentation/components/common/LoadingSpinner.vue'
 
-const route = useRoute();
-const postsStore = usePostsStore();
-const commentsStore = useCommentsStore();
+const route = useRoute()
+const postsStore = usePostsStore()
+const commentsStore = useCommentsStore()
 
-const isCommentDialogOpen = ref(false);
-const isCommenting = ref(false);
-const activePostId = ref<string | null>(null);
+const isCommentDialogOpen = ref(false)
+const isCommenting = ref(false)
+const activePostId = ref<string | null>(null)
 
-const postId = computed(() => route.params.id as string);
-const post = computed(() => postsStore.currentPost);
-const loading = computed(() => postsStore.loading && !post.value);
-const error = computed(() => postsStore.error);
+const postId = computed(() => route.params.id as string)
+const post = computed(() => postsStore.currentPost)
+const loading = computed(() => postsStore.loading && !post.value)
+const error = computed(() => postsStore.error)
 
-const comments = computed(() => commentsStore.commentsByPost[postId.value] || []);
-const commentsLoading = computed(() => commentsStore.loading);
+const comments = computed(() => commentsStore.commentsByPost[postId.value] || [])
+const commentsLoading = computed(() => commentsStore.loading)
 
 onMounted(() => {
-  loadData();
-});
+  loadData()
+})
 
 watch(postId, () => {
-  if (postId.value) loadData();
-});
+  if (postId.value) loadData()
+})
 
 const loadData = async () => {
   if (postId.value) {
-    await postsStore.fetchPostById(postId.value);
-    await commentsStore.fetchComments(postId.value);
+    await postsStore.fetchPostById(postId.value)
+    await commentsStore.fetchComments(postId.value)
   }
-};
+}
 
 const handleComment = (id: string) => {
-  activePostId.value = id;
-  isCommentDialogOpen.value = true;
-};
+  activePostId.value = id
+  isCommentDialogOpen.value = true
+}
 
 const submitComment = async (content: string) => {
-  if (!activePostId.value) return;
-  
-  isCommenting.value = true;
+  if (!activePostId.value) return
+
+  isCommenting.value = true
   try {
-    await commentsStore.addComment(activePostId.value, content);
-    isCommentDialogOpen.value = false;
+    await commentsStore.addComment(activePostId.value, content)
+    isCommentDialogOpen.value = false
   } catch (err) {
-    console.error('Error submitting comment', err);
+    console.error('Error submitting comment', err)
   } finally {
-    isCommenting.value = false;
+    isCommenting.value = false
   }
-};
+}
 
 const handleShare = async (id: string) => {
-  const postToShare = postsStore.feed.find(p => p.id === id) || postsStore.currentPost;
-  if (!postToShare) return;
-  
-  const url = `${window.location.origin}/post/${id}`;
+  const postToShare = postsStore.feed.find((p) => p.id === id) || postsStore.currentPost
+  if (!postToShare) return
+
+  const url = `${window.location.origin}/post/${id}`
   if (navigator.share) {
     try {
       await navigator.share({
         title: `Post de ${postToShare.authorName || 'Nexo'}`,
         text: postToShare.content,
-        url,
-      });
-      await postsStore.sharePost(id);
+        url
+      })
+      await postsStore.sharePost(id)
     } catch (err) {
-      console.error('Error sharing', err);
+      console.error('Error sharing', err)
     }
   } else {
     try {
-      await navigator.clipboard.writeText(url);
-      alert('Enlace copiado al portapapeles');
-      await postsStore.sharePost(id);
+      await navigator.clipboard.writeText(url)
+      alert('Enlace copiado al portapapeles')
+      await postsStore.sharePost(id)
     } catch (err) {
-      console.error('Error copying to clipboard', err);
+      console.error('Error copying to clipboard', err)
     }
   }
-};
+}
 </script>
 
 <style scoped>
@@ -191,7 +189,8 @@ const handleShare = async (id: string) => {
   color: var(--text-primary);
 }
 
-.loading-container, .error-container {
+.loading-container,
+.error-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -222,7 +221,8 @@ const handleShare = async (id: string) => {
   color: var(--text-primary);
 }
 
-.comments-loading, .empty-comments {
+.comments-loading,
+.empty-comments {
   display: flex;
   justify-content: center;
   padding: var(--space-8);

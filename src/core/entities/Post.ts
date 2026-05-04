@@ -79,19 +79,45 @@ export class Post {
 
   // ─── Getters ──────────────────────────────────────────────────────────────
 
-  get content(): PostContent { return this._content }
-  get images(): readonly string[] { return this._images }
-  get likes(): readonly string[] { return this._likes }
-  get likesCount(): number { return this._likesCount }
-  get commentsCount(): number { return this._commentsCount }
-  get sharesCount(): number { return this._sharesCount }
-  get visibility(): PostVisibility { return this._visibility }
-  get updatedAt(): Timestamp { return this._updatedAt }
-  get isEdited(): boolean { return this._isEdited }
-  get hashtags(): readonly string[] { return this._content.hashtags }
-  get mentions(): readonly string[] { return this._content.mentions }
-  get authorName(): string | undefined { return this._authorName }
-  get authorAvatar(): string | null | undefined { return this._authorAvatar }
+  get content(): PostContent {
+    return this._content
+  }
+  get images(): readonly string[] {
+    return this._images
+  }
+  get likes(): readonly string[] {
+    return this._likes
+  }
+  get likesCount(): number {
+    return this._likesCount
+  }
+  get commentsCount(): number {
+    return this._commentsCount
+  }
+  get sharesCount(): number {
+    return this._sharesCount
+  }
+  get visibility(): PostVisibility {
+    return this._visibility
+  }
+  get updatedAt(): Timestamp {
+    return this._updatedAt
+  }
+  get isEdited(): boolean {
+    return this._isEdited
+  }
+  get hashtags(): readonly string[] {
+    return this._content.hashtags
+  }
+  get mentions(): readonly string[] {
+    return this._content.mentions
+  }
+  get authorName(): string | undefined {
+    return this._authorName
+  }
+  get authorAvatar(): string | null | undefined {
+    return this._authorAvatar
+  }
 
   // ─── Comportamiento de Negocio ────────────────────────────────────────────
 
@@ -150,8 +176,7 @@ export class Post {
       throw PostDomainError.unauthorizedAction('editar')
     }
 
-    const hoursSinceCreation =
-      (Date.now() - this.createdAt.value.getTime()) / (1000 * 60 * 60)
+    const hoursSinceCreation = (Date.now() - this.createdAt.value.getTime()) / (1000 * 60 * 60)
 
     if (hoursSinceCreation > EDIT_WINDOW_HOURS) {
       throw PostDomainError.editWindowExpired(EDIT_WINDOW_HOURS)
@@ -195,8 +220,7 @@ export class Post {
 
   canBeEditedBy(userId: UserId): boolean {
     if (!this.isAuthor(userId)) return false
-    const hoursSinceCreation =
-      (Date.now() - this.createdAt.value.getTime()) / (1000 * 60 * 60)
+    const hoursSinceCreation = (Date.now() - this.createdAt.value.getTime()) / (1000 * 60 * 60)
     return hoursSinceCreation <= EDIT_WINDOW_HOURS
   }
 
@@ -222,7 +246,9 @@ export class Post {
       data.content,
       data.images ?? [],
       [],
-      0, 0, 0,
+      0,
+      0,
+      0,
       data.visibility ?? PostVisibility.public(),
       now,
       now,
@@ -268,7 +294,7 @@ export class Post {
       visibility: this._visibility.value,
       createdAt: this.createdAt.toISO(),
       updatedAt: this._updatedAt.toISO(),
-      isEdited: this._isEdited,
+      isEdited: this._isEdited
     }
   }
 }

@@ -130,7 +130,7 @@ export class FirebaseFollowRepository
   async getFollowingIds(userId: UserId): Promise<string[]> {
     try {
       const relations = await this.findFollowing(userId)
-      return relations.map(r => r.followingId.value)
+      return relations.map((r) => r.followingId.value)
     } catch (error) {
       this.handleError('getFollowingIds', error)
       return []

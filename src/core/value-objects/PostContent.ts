@@ -36,7 +36,7 @@ export class PostContent {
     if (trimmed.length > PostContent.MAX_LENGTH) {
       throw new Error(
         `El contenido del post no puede superar ${PostContent.MAX_LENGTH} caracteres ` +
-        `(actual: ${trimmed.length})`
+          `(actual: ${trimmed.length})`
       )
     }
 

@@ -7,13 +7,23 @@
       </div>
       <div class="header-actions">
         <button class="header-btn" title="Refresh feed" @click="refreshFeed">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ spinning: isRefreshing }">
-            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            :class="{ spinning: isRefreshing }"
+          >
+            <polyline points="23 4 23 10 17 10" />
+            <polyline points="1 20 1 14 7 14" />
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
           </svg>
         </button>
       </div>
     </header>
-    
+
     <div class="page-content">
       <section class="create-post-section">
         <CreatePostDialog />
@@ -27,30 +37,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import CreatePostDialog from '@/presentation/components/feed/CreatePostDialog.vue';
-import VirtualFeed from '@/presentation/components/feed/VirtualFeed.vue';
-import { usePostsStore } from '@/application/stores/posts.store';
+import { ref, onMounted, onUnmounted } from 'vue'
+import CreatePostDialog from '@/presentation/components/feed/CreatePostDialog.vue'
+import VirtualFeed from '@/presentation/components/feed/VirtualFeed.vue'
+import { usePostsStore } from '@/application/stores/posts.store'
 
-const postsStore = usePostsStore();
-const isRefreshing = ref(false);
+const postsStore = usePostsStore()
+const isRefreshing = ref(false)
 
 onMounted(() => {
-  postsStore.subscribeToFeed();
-});
+  postsStore.subscribeToFeed()
+})
 
 onUnmounted(() => {
-  postsStore.unsubscribe();
-});
+  postsStore.unsubscribe()
+})
 
 const refreshFeed = async () => {
-  isRefreshing.value = true;
+  isRefreshing.value = true
   try {
-    await postsStore.subscribeToFeed();
+    await postsStore.subscribeToFeed()
   } finally {
-    setTimeout(() => { isRefreshing.value = false }, 600);
+    setTimeout(() => {
+      isRefreshing.value = false
+    }, 600)
   }
-};
+}
 </script>
 
 <style scoped>
@@ -129,8 +141,12 @@ const refreshFeed = async () => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .page-content {
@@ -154,7 +170,7 @@ const refreshFeed = async () => {
   .page-header {
     padding: var(--space-4);
   }
-  
+
   .page-title {
     font-size: 1.375rem;
   }

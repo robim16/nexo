@@ -39,10 +39,10 @@ export const DomainEvents = {
   // ─── Notificaciones ────────────────────────────────────────────────────────
   NOTIFICATION_CREATED: 'NOTIFICATION_CREATED',
   NOTIFICATION_READ: 'NOTIFICATION_READ',
-  ALL_NOTIFICATIONS_READ: 'ALL_NOTIFICATIONS_READ',
+  ALL_NOTIFICATIONS_READ: 'ALL_NOTIFICATIONS_READ'
 } as const
 
-export type DomainEventType = typeof DomainEvents[keyof typeof DomainEvents]
+export type DomainEventType = (typeof DomainEvents)[keyof typeof DomainEvents]
 
 // ─── Payloads tipados para cada evento ─────────────────────────────────────
 

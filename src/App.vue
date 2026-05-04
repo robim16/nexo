@@ -6,27 +6,31 @@
       </transition>
     </component>
   </router-view>
+  <ToastManager />
 </template>
 
 <script setup lang="ts">
-import { markRaw } from 'vue';
-import DefaultLayout from '@/presentation/layouts/DefaultLayout.vue';
-import AuthLayout from '@/presentation/layouts/AuthLayout.vue';
+import { markRaw } from 'vue'
+import DefaultLayout from '@/presentation/layouts/DefaultLayout.vue'
+import AuthLayout from '@/presentation/layouts/AuthLayout.vue'
+import ToastManager from '@/presentation/components/common/ToastManager.vue'
 
 // Resolve layout based on route metadata
 const resolveLayout = (route: any) => {
   if (route.meta.layout === 'AuthLayout') {
-    return markRaw(AuthLayout);
+    return markRaw(AuthLayout)
   }
-  return markRaw(DefaultLayout);
-};
+  return markRaw(DefaultLayout)
+}
 </script>
 
 <style>
 /* Global Page Transitions */
 .page-fade-enter-active,
 .page-fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .page-fade-enter-from {
@@ -88,12 +92,23 @@ const resolveLayout = (route: any) => {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.2)); }
-  50% { opacity: 1; filter: drop-shadow(0 0 20px rgba(var(--color-primary-rgb), 0.4)); }
+  0%,
+  100% {
+    opacity: 0.8;
+    filter: drop-shadow(0 0 10px rgba(var(--color-primary-rgb), 0.2));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 20px rgba(var(--color-primary-rgb), 0.4));
+  }
 }
 
 @keyframes loading-slide {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(250%); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
 }
 </style>

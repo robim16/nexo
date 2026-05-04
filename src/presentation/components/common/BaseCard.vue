@@ -25,7 +25,7 @@ withDefaults(defineProps<BaseCardProps>(), {
   interactive: false,
   clickable: false,
   radius: '2xl',
-  as: 'div',
+  as: 'div'
 })
 
 type BaseCardProps = Props
@@ -45,8 +45,8 @@ defineEmits<{
       `base-card--r-${radius}`,
       {
         'base-card--interactive': interactive,
-        'base-card--clickable': clickable,
-      },
+        'base-card--clickable': clickable
+      }
     ]"
     @click="clickable && $emit('click', $event)"
   >
@@ -56,7 +56,15 @@ defineEmits<{
     </div>
 
     <!-- Default (body) slot -->
-    <div :class="['base-card__body', { 'base-card__body--no-header': !$slots.header, 'base-card__body--no-footer': !$slots.footer }]">
+    <div
+      :class="[
+        'base-card__body',
+        {
+          'base-card__body--no-header': !$slots.header,
+          'base-card__body--no-footer': !$slots.footer
+        }
+      ]"
+    >
       <slot />
     </div>
 
@@ -110,33 +118,55 @@ defineEmits<{
 }
 
 /* ── Radius ─────────────────────────────────────────────────── */
-.base-card--r-sm  { border-radius: var(--radius-sm); }
-.base-card--r-md  { border-radius: var(--radius-md); }
-.base-card--r-lg  { border-radius: var(--radius-lg); }
-.base-card--r-xl  { border-radius: var(--radius-xl); }
-.base-card--r-2xl { border-radius: var(--radius-2xl); }
-.base-card--r-3xl { border-radius: var(--radius-3xl); }
+.base-card--r-sm {
+  border-radius: var(--radius-sm);
+}
+.base-card--r-md {
+  border-radius: var(--radius-md);
+}
+.base-card--r-lg {
+  border-radius: var(--radius-lg);
+}
+.base-card--r-xl {
+  border-radius: var(--radius-xl);
+}
+.base-card--r-2xl {
+  border-radius: var(--radius-2xl);
+}
+.base-card--r-3xl {
+  border-radius: var(--radius-3xl);
+}
 
 /* ── Padding ────────────────────────────────────────────────── */
 .base-card--p-none .base-card__header,
 .base-card--p-none .base-card__body,
-.base-card--p-none .base-card__footer { padding: 0; }
+.base-card--p-none .base-card__footer {
+  padding: 0;
+}
 
 .base-card--p-sm .base-card__header,
 .base-card--p-sm .base-card__body,
-.base-card--p-sm .base-card__footer { padding: var(--space-3); }
+.base-card--p-sm .base-card__footer {
+  padding: var(--space-3);
+}
 
 .base-card--p-md .base-card__header,
 .base-card--p-md .base-card__body,
-.base-card--p-md .base-card__footer { padding: var(--space-4); }
+.base-card--p-md .base-card__footer {
+  padding: var(--space-4);
+}
 
 .base-card--p-lg .base-card__header,
 .base-card--p-lg .base-card__body,
-.base-card--p-lg .base-card__footer { padding: var(--space-6); }
+.base-card--p-lg .base-card__footer {
+  padding: var(--space-6);
+}
 
 .base-card--p-xl .base-card__header,
 .base-card--p-xl .base-card__body,
-.base-card--p-xl .base-card__footer { padding: var(--space-8); }
+.base-card--p-xl .base-card__footer {
+  padding: var(--space-8);
+}
 
 /* ── Sections (No-Line Principle) ────────────────────────── */
 .base-card__header {
@@ -169,5 +199,7 @@ defineEmits<{
   box-shadow: var(--shadow-md), var(--glow-primary);
 }
 
-.base-card--clickable { cursor: pointer; }
+.base-card--clickable {
+  cursor: pointer;
+}
 </style>

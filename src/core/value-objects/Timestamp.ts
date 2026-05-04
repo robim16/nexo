@@ -62,7 +62,7 @@ export class Timestamp {
     return this.value.toLocaleDateString('es-ES', {
       day: 'numeric',
       month: 'short',
-      year: 'numeric',
+      year: 'numeric'
     })
   }
 

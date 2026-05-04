@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'md',
   thickness: 2.5,
   decorative: false,
-  label: 'Cargando...',
+  label: 'Cargando...'
 })
 
 const sizeMap: Record<string, string> = {
@@ -30,7 +30,7 @@ const sizeMap: Record<string, string> = {
   sm: '1.25rem',
   md: '1.5rem',
   lg: '2rem',
-  xl: '3rem',
+  xl: '3rem'
 }
 
 const resolveSize = computed(() => {
@@ -47,7 +47,7 @@ const resolveColor = computed(() => {
     success: 'var(--color-success-500)',
     warning: 'var(--color-warning-500)',
     error: 'var(--color-error-500)',
-    white: '#ffffff',
+    white: '#ffffff'
   }
   return map[props.color] || map.current
 })

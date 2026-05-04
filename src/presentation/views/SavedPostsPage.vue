@@ -1,21 +1,22 @@
 <template>
-  <div class="virtual-feed">
-    <PostList
-      :items="posts"
-      :loading="loading"
-      :skeletonCount="3"
-      @like="handleLike"
-      @unlike="handleUnlike"
-      @comment="handleComment"
-      @share="handleShare"
-      @save="handleSave"
-      @unsave="handleUnsave"
-    >
-      <template #append>
-        <!-- The load trigger for Infinite Scroll -->
-        <div ref="loadTrigger" class="infinite-scroll-trigger"></div>
-      </template>
-    </PostList>
+  <div class="saved-posts-page">
+    <header class="page-header">
+      <h1 class="page-title">Publicaciones Guardadas</h1>
+      <p class="page-subtitle">Contenido que has marcado para ver más tarde</p>
+    </header>
+
+    <div class="content-container">
+      <PostList
+        :items="posts"
+        :loading="loading"
+        @like="handleLike"
+        @unlike="handleUnlike"
+        @comment="handleComment"
+        @share="handleShare"
+        @save="handleSave"
+        @unsave="handleUnsave"
+      />
+    </div>
 
     <CommentDialog
       :is-open="isCommentDialogOpen"
@@ -28,68 +29,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import PostList from './PostList.vue'
-import CommentDialog from './CommentDialog.vue'
+import { ref, onMounted, computed } from 'vue'
+import PostList from '@/presentation/components/feed/PostList.vue'
+import CommentDialog from '@/presentation/components/feed/CommentDialog.vue'
 import { usePostsStore } from '@/application/stores/posts.store'
 import { useCommentsStore } from '@/application/stores/comments.store'
-import { useAuthStore } from '@/application/stores/auth.store'
 
 const postsStore = usePostsStore()
 const commentsStore = useCommentsStore()
-const authStore = useAuthStore()
 
 const posts = computed(() => {
-  return postsStore.feed.map((post) => ({
+  return postsStore.savedFeed.map((post) => ({
     ...post,
-    isSaved: postsStore.isSaved(post.id)
+    isSaved: true // On this page, they are all saved
   }))
 })
-const loading = computed(() => postsStore.loading)
-const loadTrigger = ref<HTMLElement | null>(null)
 
+const loading = computed(() => postsStore.loading)
 const isCommentDialogOpen = ref(false)
 const isCommenting = ref(false)
 const activePostId = ref<string | null>(null)
 
-let observer: IntersectionObserver
-
-const loadMore = async () => {
-  try {
-    await postsStore.fetchFeed()
-  } catch (err) {
-    console.error('Error fetching feed', err)
-  }
-}
-
 onMounted(() => {
-  // Initial load
-  loadMore()
-
-  // Setup infinite scroll observer
-  observer = new IntersectionObserver(
-    (entries) => {
-      if (entries[0].isIntersecting) {
-        loadMore()
-      }
-    },
-    {
-      rootMargin: '200px' // Trigger slightly before the bottom
-    }
-  )
-
-  if (loadTrigger.value) {
-    observer.observe(loadTrigger.value)
-  }
+  postsStore.fetchSavedPosts()
 })
 
-onUnmounted(() => {
-  if (observer) {
-    observer.disconnect()
-  }
-})
-
-// Delegate like/unlike to store (it handles optimistic updates)
 const handleLike = (id: string) => {
   postsStore.toggleLike(id)
 }
@@ -112,7 +76,7 @@ const handleComment = (id: string) => {
 }
 
 const handleShare = async (id: string) => {
-  const post = postsStore.feed.find((p) => p.id === id)
+  const post = postsStore.savedFeed.find((p) => p.id === id)
   if (!post) return
   const url = `${window.location.origin}/post/${id}`
   if (navigator.share) {
@@ -153,12 +117,30 @@ const submitComment = async (content: string) => {
 </script>
 
 <style scoped>
-.virtual-feed {
-  width: 100%;
+.saved-posts-page {
+  padding: var(--space-4);
+  max-width: 680px;
+  margin: 0 auto;
 }
 
-.infinite-scroll-trigger {
-  height: 1px;
-  width: 100%;
+.page-header {
+  margin-bottom: var(--space-6);
+  text-align: center;
+}
+
+.page-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.page-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+}
+
+.content-container {
+  min-height: 400px;
 }
 </style>

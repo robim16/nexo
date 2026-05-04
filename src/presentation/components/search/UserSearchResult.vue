@@ -1,46 +1,36 @@
 <template>
   <div class="user-search-result" @click="navigateToProfile">
     <div class="avatar-wrapper">
-      <img 
-        v-if="user.avatar" 
-        :src="user.avatar" 
-        :alt="user.displayName" 
-        class="avatar-img"
-      />
+      <img v-if="user.avatar" :src="user.avatar" :alt="user.displayName" class="avatar-img" />
       <div v-else class="avatar-placeholder">
         {{ user.displayName.charAt(0).toUpperCase() }}
       </div>
     </div>
-    
+
     <div class="user-info">
       <div class="display-name">{{ user.displayName }}</div>
       <div class="username">@{{ user.email.split('@')[0] }}</div>
     </div>
 
     <div class="action-wrapper">
-      <button 
-        class="view-profile-btn"
-        @click.stop="navigateToProfile"
-      >
-        View
-      </button>
+      <button class="view-profile-btn" @click.stop="navigateToProfile">View</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import type { UserPlainObject } from '@/core/entities/User';
+import { useRouter } from 'vue-router'
+import type { UserPlainObject } from '@/core/entities/User'
 
 const props = defineProps<{
-  user: UserPlainObject;
-}>();
+  user: UserPlainObject
+}>()
 
-const router = useRouter();
+const router = useRouter()
 
 const navigateToProfile = () => {
-  router.push(`/profile/${props.user.id}`);
-};
+  router.push(`/profile/${props.user.id}`)
+}
 </script>
 
 <style scoped>
@@ -67,7 +57,8 @@ const navigateToProfile = () => {
   flex-shrink: 0;
 }
 
-.avatar-img, .avatar-placeholder {
+.avatar-img,
+.avatar-placeholder {
   width: 48px;
   height: 48px;
   border-radius: var(--radius-full);

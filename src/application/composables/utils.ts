@@ -1,26 +1,29 @@
-import { ref, watch, onUnmounted } from 'vue';
+import { ref, watch, onUnmounted } from 'vue'
 
 /**
  * useDebounce
  * Retrasa la ejecución de un valor hasta que haya pasado un tiempo determinado sin cambios.
  */
 export function useDebounce<T>(value: { value: T }, delay = 500) {
-  const debouncedValue = ref(value.value) as any;
-  let timeout: any = null;
+  const debouncedValue = ref(value.value) as any
+  let timeout: any = null
 
-  const stop = watch(() => value.value, (newVal) => {
-    if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      debouncedValue.value = newVal;
-    }, delay);
-  });
+  const stop = watch(
+    () => value.value,
+    (newVal) => {
+      if (timeout) clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        debouncedValue.value = newVal
+      }, delay)
+    }
+  )
 
   onUnmounted(() => {
-    stop();
-    if (timeout) clearTimeout(timeout);
-  });
+    stop()
+    if (timeout) clearTimeout(timeout)
+  })
 
-  return debouncedValue;
+  return debouncedValue
 }
 
 /**
@@ -28,15 +31,15 @@ export function useDebounce<T>(value: { value: T }, delay = 500) {
  * Asegura que una función se ejecute como máximo una vez cada determinado tiempo.
  */
 export function useThrottle<T extends (...args: any[]) => any>(fn: T, limit = 500) {
-  let inThrottle = false;
-  
-  return function(this: any, ...args: Parameters<T>) {
+  let inThrottle = false
+
+  return function (this: any, ...args: Parameters<T>) {
     if (!inThrottle) {
-      fn.apply(this, args);
-      inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
+      fn.apply(this, args)
+      inThrottle = true
+      setTimeout(() => (inThrottle = false), limit)
     }
-  };
+  }
 }
 
 /**
@@ -48,26 +51,29 @@ export function useIntersectionObserver(
   callback: (isIntersecting: boolean) => void,
   options: IntersectionObserverInit = {}
 ) {
-  let observer: IntersectionObserver | null = null;
+  let observer: IntersectionObserver | null = null
 
   const stop = () => {
     if (observer) {
-      observer.disconnect();
-      observer = null;
+      observer.disconnect()
+      observer = null
     }
-  };
+  }
 
-  watch(() => target.value, (el) => {
-    stop();
-    if (el) {
-      observer = new IntersectionObserver((entries) => {
-        callback(entries[0].isIntersecting);
-      }, options);
-      observer.observe(el);
+  watch(
+    () => target.value,
+    (el) => {
+      stop()
+      if (el) {
+        observer = new IntersectionObserver((entries) => {
+          callback(entries[0].isIntersecting)
+        }, options)
+        observer.observe(el)
+      }
     }
-  });
+  )
 
-  onUnmounted(stop);
+  onUnmounted(stop)
 
-  return { stop };
+  return { stop }
 }

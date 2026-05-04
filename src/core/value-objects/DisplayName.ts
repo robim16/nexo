@@ -19,21 +19,15 @@ export class DisplayName {
     const sanitized = rawName.trim().replace(/\s+/g, ' ')
 
     if (sanitized.length < DisplayName.MIN_LENGTH) {
-      throw new Error(
-        `El nombre debe tener al menos ${DisplayName.MIN_LENGTH} caracteres`
-      )
+      throw new Error(`El nombre debe tener al menos ${DisplayName.MIN_LENGTH} caracteres`)
     }
 
     if (sanitized.length > DisplayName.MAX_LENGTH) {
-      throw new Error(
-        `El nombre no puede superar ${DisplayName.MAX_LENGTH} caracteres`
-      )
+      throw new Error(`El nombre no puede superar ${DisplayName.MAX_LENGTH} caracteres`)
     }
 
     if (!DisplayName.VALID_CHARS_REGEX.test(sanitized)) {
-      throw new Error(
-        'El nombre solo puede contener letras, números, espacios, guiones y puntos'
-      )
+      throw new Error('El nombre solo puede contener letras, números, espacios, guiones y puntos')
     }
 
     return new DisplayName(sanitized)

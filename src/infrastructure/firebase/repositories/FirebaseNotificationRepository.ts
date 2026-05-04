@@ -18,7 +18,10 @@ import {
 } from 'firebase/firestore'
 import { collections, db } from '../config/firebase.config'
 import { FirebaseBaseRepository } from './FirebaseBaseRepository'
-import { INotificationRepository, Unsubscribe } from '@/core/ports/repositories/INotificationRepository'
+import {
+  INotificationRepository,
+  Unsubscribe
+} from '@/core/ports/repositories/INotificationRepository'
 import { Notification } from '@/core/entities/Notification'
 import { NotificationId } from '@/core/value-objects/NotificationId'
 import { UserId } from '@/core/value-objects/UserId'
@@ -107,7 +110,7 @@ export class FirebaseNotificationRepository
       }
 
       const snapshot = await getDocs(q)
-      return snapshot.docs.map(doc => doc.data() as Notification)
+      return snapshot.docs.map((doc) => doc.data() as Notification)
     } catch (error) {
       this.handleError('findByRecipient', error)
       return []
@@ -175,7 +178,7 @@ export class FirebaseNotificationRepository
     return onSnapshot(
       q,
       (snapshot) => {
-        const items = snapshot.docs.map(docSnap => docSnap.data() as Notification)
+        const items = snapshot.docs.map((docSnap) => docSnap.data() as Notification)
         callback(items)
       },
       (error) => {

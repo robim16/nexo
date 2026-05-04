@@ -57,16 +57,19 @@ export class FollowUserUseCase {
     const notification = Notification.create({
       recipientId: followingId,
       actorId: followerId,
-      type: 'FOLLOW',
+      type: 'FOLLOW'
     })
     await this.notificationRepository.save(notification)
 
     // 7. Publicar evento
-    const payload: UserFollowedPayload = { followerId: dto.followerId, followingId: dto.followingId }
+    const payload: UserFollowedPayload = {
+      followerId: dto.followerId,
+      followingId: dto.followingId
+    }
     this.eventBus.publish({
       type: DomainEvents.USER_FOLLOWED,
       timestamp: new Date(),
-      payload,
+      payload
     })
   }
 }

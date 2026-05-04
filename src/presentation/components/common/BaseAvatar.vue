@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'md',
   shape: 'circle',
   status: null,
-  bordered: false,
+  bordered: false
 })
 
 // Derivar iniciales del nombre
@@ -39,14 +39,14 @@ const initials = computed(() => {
 
 // Paleta de colores para iniciales basada en el nombre
 const AVATAR_COLORS = [
-  ['#3d62f5', '#e0eaff'],  // brand
-  ['#a855f7', '#f3e8ff'],  // accent
-  ['#22c55e', '#f0fdf4'],  // green
-  ['#f59e0b', '#fffbeb'],  // amber
-  ['#ef4444', '#fef2f2'],  // red
-  ['#06b6d4', '#ecfeff'],  // cyan
-  ['#ec4899', '#fdf2f8'],  // pink
-  ['#8b5cf6', '#ede9fe'],  // violet
+  ['#3d62f5', '#e0eaff'], // brand
+  ['#a855f7', '#f3e8ff'], // accent
+  ['#22c55e', '#f0fdf4'], // green
+  ['#f59e0b', '#fffbeb'], // amber
+  ['#ef4444', '#fef2f2'], // red
+  ['#06b6d4', '#ecfeff'], // cyan
+  ['#ec4899', '#fdf2f8'], // pink
+  ['#8b5cf6', '#ede9fe'] // violet
 ]
 
 const avatarColor = computed(() => {
@@ -57,7 +57,7 @@ const avatarColor = computed(() => {
   }
   const idx = Math.abs(hash) % AVATAR_COLORS.length
   return AVATAR_COLORS[idx]
-})//esta función computada se encarga de generar
+}) //esta función computada se encarga de generar
 //un color aleatorio para el avatar, dependiendo del nombre del usuario
 
 const hasImage = computed(() => !!props.src)
@@ -67,7 +67,7 @@ const statusLabel = computed(() => {
     online: 'En línea',
     offline: 'Desconectado',
     busy: 'Ocupado',
-    away: 'Ausente',
+    away: 'Ausente'
   }
   return props.status ? map[props.status] : null
 })
@@ -79,7 +79,7 @@ const statusLabel = computed(() => {
       'base-avatar',
       `base-avatar--${size}`,
       `base-avatar--${shape}`,
-      { 'base-avatar--bordered': bordered },
+      { 'base-avatar--bordered': bordered }
     ]"
     role="img"
     :aria-label="name || 'Avatar'"
@@ -100,7 +100,7 @@ const statusLabel = computed(() => {
       class="base-avatar__initials"
       :style="{
         color: avatarColor[0],
-        backgroundColor: avatarColor[1],
+        backgroundColor: avatarColor[1]
       }"
       aria-hidden="true"
     >
@@ -136,20 +136,50 @@ const statusLabel = computed(() => {
 }
 
 /* ── Sizes ───────────────────────────────────────────────────── */
-.base-avatar--xs  { width: var(--avatar-size-xs);  height: var(--avatar-size-xs);  font-size: var(--font-size-2xs); }
-.base-avatar--sm  { width: var(--avatar-size-sm);  height: var(--avatar-size-sm);  font-size: var(--font-size-xs); }
-.base-avatar--md  { width: var(--avatar-size-md);  height: var(--avatar-size-md);  font-size: var(--font-size-sm); }
-.base-avatar--lg  { width: var(--avatar-size-lg);  height: var(--avatar-size-lg);  font-size: var(--font-size-base); }
-.base-avatar--xl  { width: var(--avatar-size-xl);  height: var(--avatar-size-xl);  font-size: var(--font-size-md); }
-.base-avatar--2xl { width: var(--avatar-size-2xl); height: var(--avatar-size-2xl); font-size: var(--font-size-xl); }
+.base-avatar--xs {
+  width: var(--avatar-size-xs);
+  height: var(--avatar-size-xs);
+  font-size: var(--font-size-2xs);
+}
+.base-avatar--sm {
+  width: var(--avatar-size-sm);
+  height: var(--avatar-size-sm);
+  font-size: var(--font-size-xs);
+}
+.base-avatar--md {
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+  font-size: var(--font-size-sm);
+}
+.base-avatar--lg {
+  width: var(--avatar-size-lg);
+  height: var(--avatar-size-lg);
+  font-size: var(--font-size-base);
+}
+.base-avatar--xl {
+  width: var(--avatar-size-xl);
+  height: var(--avatar-size-xl);
+  font-size: var(--font-size-md);
+}
+.base-avatar--2xl {
+  width: var(--avatar-size-2xl);
+  height: var(--avatar-size-2xl);
+  font-size: var(--font-size-xl);
+}
 
 /* ── Shapes ──────────────────────────────────────────────────── */
-.base-avatar--circle { border-radius: var(--radius-full); }
-.base-avatar--square { border-radius: var(--radius-lg); }
+.base-avatar--circle {
+  border-radius: var(--radius-full);
+}
+.base-avatar--square {
+  border-radius: var(--radius-lg);
+}
 
 /* ── Border ──────────────────────────────────────────────────── */
 .base-avatar--bordered {
-  box-shadow: 0 0 0 2px var(--surface-elevated), 0 0 0 4px var(--border-default);
+  box-shadow:
+    0 0 0 2px var(--surface-elevated),
+    0 0 0 4px var(--border-default);
 }
 
 /* ── Image ───────────────────────────────────────────────────── */
@@ -185,17 +215,44 @@ const statusLabel = computed(() => {
 }
 
 /* Size proportional to avatar */
-.base-avatar--xs .base-avatar__status  { width: 6px;  height: 6px;  border-width: 1.5px; }
-.base-avatar--sm .base-avatar__status  { width: 8px;  height: 8px; }
-.base-avatar--md .base-avatar__status  { width: 10px; height: 10px; }
-.base-avatar--lg .base-avatar__status  { width: 12px; height: 12px; }
-.base-avatar--xl .base-avatar__status  { width: 14px; height: 14px; }
-.base-avatar--2xl .base-avatar__status { width: 16px; height: 16px; }
+.base-avatar--xs .base-avatar__status {
+  width: 6px;
+  height: 6px;
+  border-width: 1.5px;
+}
+.base-avatar--sm .base-avatar__status {
+  width: 8px;
+  height: 8px;
+}
+.base-avatar--md .base-avatar__status {
+  width: 10px;
+  height: 10px;
+}
+.base-avatar--lg .base-avatar__status {
+  width: 12px;
+  height: 12px;
+}
+.base-avatar--xl .base-avatar__status {
+  width: 14px;
+  height: 14px;
+}
+.base-avatar--2xl .base-avatar__status {
+  width: 16px;
+  height: 16px;
+}
 
-.base-avatar__status--online  { background-color: var(--color-success-500); }
-.base-avatar__status--offline { background-color: var(--color-neutral-400); }
-.base-avatar__status--busy    { background-color: var(--color-error-500); }
-.base-avatar__status--away    { background-color: var(--color-warning-500); }
+.base-avatar__status--online {
+  background-color: var(--color-success-500);
+}
+.base-avatar__status--offline {
+  background-color: var(--color-neutral-400);
+}
+.base-avatar__status--busy {
+  background-color: var(--color-error-500);
+}
+.base-avatar__status--away {
+  background-color: var(--color-warning-500);
+}
 
 /* Online pulse animation */
 .base-avatar__status--online::before {
@@ -219,7 +276,8 @@ const statusLabel = computed(() => {
 }
 
 @keyframes ping {
-  75%, 100% {
+  75%,
+  100% {
     transform: scale(2);
     opacity: 0;
   }

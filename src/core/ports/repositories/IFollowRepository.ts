@@ -20,10 +20,7 @@ export interface IFollowRepository {
    * Busca si existe una relación entre dos usuarios.
    * Retorna null si no existe.
    */
-  findByFollowerAndFollowing(
-    followerId: UserId,
-    followingId: UserId
-  ): Promise<Follow | null>
+  findByFollowerAndFollowing(followerId: UserId, followingId: UserId): Promise<Follow | null>
 
   /** Obtiene todos los seguidores de un usuario */
   findFollowers(userId: UserId, limit?: number): Promise<Follow[]>

@@ -20,7 +20,7 @@ export class GetCommentsUseCase {
 
   async execute(dto: GetCommentsDTO): Promise<GetCommentsResult> {
     const postId = PostId.fromString(dto.postId)
-    
+
     // 1. Obtener comentarios
     const comments = await this.commentRepository.findByPost(postId, dto.limit)
 

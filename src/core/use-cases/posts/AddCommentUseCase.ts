@@ -68,13 +68,15 @@ export class AddCommentUseCase {
     // 6. Notificar a los seguidores del actor (quien comentó)
     const followers = await this.followRepository.findFollowers(userId)
     const followerNotifications = followers
-      .filter(f => !f.followerId.equals(post.authorId)) // No duplicar si el autor ya recibió notificación
-      .map(f => Notification.create({
-        recipientId: f.followerId,
-        actorId: userId,
-        type: 'REACTION_FOLLOWED',
-        postId,
-      }))
+      .filter((f) => !f.followerId.equals(post.authorId)) // No duplicar si el autor ya recibió notificación
+      .map((f) =>
+        Notification.create({
+          recipientId: f.followerId,
+          actorId: userId,
+          type: 'REACTION_FOLLOWED',
+          postId
+        })
+      )
 
     if (followerNotifications.length > 0) {
       await this.notificationRepository.saveMany(followerNotifications)

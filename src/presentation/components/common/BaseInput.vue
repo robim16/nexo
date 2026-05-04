@@ -45,17 +45,17 @@ const props = withDefaults(defineProps<Props>(), {
   readonly: false,
   required: false,
   fullWidth: true,
-  rows: 4,
+  rows: 4
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
-  'blur': [event: FocusEvent]
-  'focus': [event: FocusEvent]
-  'keydown': [event: KeyboardEvent]
+  blur: [event: FocusEvent]
+  focus: [event: FocusEvent]
+  keydown: [event: KeyboardEvent]
 }>()
 
-const inputId  = useId()
+const inputId = useId()
 const isFocused = ref(false)
 const showPassword = ref(false)
 
@@ -76,18 +76,9 @@ function onInput(event: Event) {
 </script>
 
 <template>
-  <div
-    :class="[
-      'base-input-wrapper',
-      { 'base-input-wrapper--full': fullWidth },
-    ]"
-  >
+  <div :class="['base-input-wrapper', { 'base-input-wrapper--full': fullWidth }]">
     <!-- Label -->
-    <label
-      v-if="label"
-      :for="inputId"
-      class="base-input__label"
-    >
+    <label v-if="label" :for="inputId" class="base-input__label">
       {{ label }}
       <span v-if="required" class="base-input__required" aria-hidden="true">*</span>
     </label>
@@ -101,12 +92,16 @@ function onInput(event: Event) {
           'base-input__field--focused': isFocused,
           'base-input__field--error': !!error,
           'base-input__field--disabled': disabled,
-          'base-input__field--readonly': readonly,
-        },
+          'base-input__field--readonly': readonly
+        }
       ]"
     >
       <!-- Leading icon slot -->
-      <span v-if="$slots.leading" class="base-input__icon base-input__icon--leading" aria-hidden="true">
+      <span
+        v-if="$slots.leading"
+        class="base-input__icon base-input__icon--leading"
+        aria-hidden="true"
+      >
         <slot name="leading" />
       </span>
 
@@ -127,8 +122,14 @@ function onInput(event: Event) {
         :aria-describedby="error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined"
         class="base-input__control base-input__control--textarea"
         @input="onInput"
-        @focus="isFocused = true; $emit('focus', $event)"
-        @blur="isFocused = false; $emit('blur', $event)"
+        @focus="
+          isFocused = true;
+          $emit('focus', $event);
+        "
+        @blur="
+          isFocused = false;
+          $emit('blur', $event);
+        "
         @keydown="$emit('keydown', $event)"
       />
 
@@ -149,8 +150,14 @@ function onInput(event: Event) {
         :aria-describedby="error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined"
         class="base-input__control"
         @input="onInput"
-        @focus="isFocused = true; $emit('focus', $event)"
-        @blur="isFocused = false; $emit('blur', $event)"
+        @focus="
+          isFocused = true;
+          $emit('focus', $event);
+        "
+        @blur="
+          isFocused = false;
+          $emit('blur', $event);
+        "
         @keydown="$emit('keydown', $event)"
       />
 
@@ -162,18 +169,40 @@ function onInput(event: Event) {
         :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
         @click="showPassword = !showPassword"
       >
-        <svg v-if="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>
+        <svg
+          v-if="!showPassword"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+          <circle cx="12" cy="12" r="3" />
         </svg>
-        <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-          <line x1="1" y1="1" x2="23" y2="23"/>
+        <svg
+          v-else
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+          />
+          <line x1="1" y1="1" x2="23" y2="23" />
         </svg>
       </button>
 
       <!-- Trailing icon slot -->
-      <span v-else-if="$slots.trailing" class="base-input__icon base-input__icon--trailing" aria-hidden="true">
+      <span
+        v-else-if="$slots.trailing"
+        class="base-input__icon base-input__icon--trailing"
+        aria-hidden="true"
+      >
         <slot name="trailing" />
       </span>
     </div>
@@ -187,21 +216,31 @@ function onInput(event: Event) {
         role="alert"
         aria-live="polite"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
         {{ error }}
       </p>
-      <p
-        v-else-if="hint"
-        :id="`${inputId}-hint`"
-        class="base-input__hint"
-      >
+      <p v-else-if="hint" :id="`${inputId}-hint`" class="base-input__hint">
         {{ hint }}
       </p>
       <span v-else />
 
-      <span v-if="maxLength" class="base-input__counter" :class="{ 'base-input__counter--over': charCount > maxLength }">
+      <span
+        v-if="maxLength"
+        class="base-input__counter"
+        :class="{ 'base-input__counter--over': charCount > maxLength }"
+      >
         {{ charCount }}/{{ maxLength }}
       </span>
     </div>
@@ -250,9 +289,15 @@ function onInput(event: Event) {
 }
 
 /* Sizes */
-.base-input__field--sm { min-height: 2.5rem; }
-.base-input__field--md { min-height: 3rem; }
-.base-input__field--lg { min-height: 3.5rem; }
+.base-input__field--sm {
+  min-height: 2.5rem;
+}
+.base-input__field--md {
+  min-height: 3rem;
+}
+.base-input__field--lg {
+  min-height: 3.5rem;
+}
 
 /* States */
 .base-input__field--focused {
@@ -314,8 +359,12 @@ function onInput(event: Event) {
   color: var(--color-secondary);
 }
 
-.base-input__icon--leading { padding-left: var(--space-4); }
-.base-input__icon--trailing { padding-right: var(--space-4); }
+.base-input__icon--leading {
+  padding-left: var(--space-4);
+}
+.base-input__icon--trailing {
+  padding-right: var(--space-4);
+}
 
 .base-input__icon svg {
   width: 1.25rem;
@@ -366,7 +415,13 @@ function onInput(event: Event) {
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

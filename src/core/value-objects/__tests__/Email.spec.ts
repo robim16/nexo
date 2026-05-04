@@ -10,7 +10,7 @@ describe('Email Value Object', () => {
 
   it('should throw error for invalid email format', () => {
     const invalidEmails = ['invalid-email', 'test@', '@example.com', 'test@example']
-    invalidEmails.forEach(email => {
+    invalidEmails.forEach((email) => {
       expect(() => Email.create(email)).toThrow()
     })
   })
@@ -24,7 +24,7 @@ describe('Email Value Object', () => {
     const email1 = Email.create('a@b.com')
     const email2 = Email.create('a@b.com')
     const email3 = Email.create('x@y.com')
-    
+
     expect(email1.equals(email2)).toBe(true)
     expect(email1.equals(email3)).toBe(false)
   })

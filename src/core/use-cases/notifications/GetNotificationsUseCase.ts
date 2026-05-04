@@ -33,7 +33,9 @@ export class GetNotificationsUseCase {
   async execute(dto: GetNotificationsDTO): Promise<GetNotificationsResult> {
     const userId = UserId.fromString(dto.userId)
     const limit = dto.limit ?? 20
-    const lastId = dto.lastNotificationId ? NotificationId.fromString(dto.lastNotificationId) : undefined
+    const lastId = dto.lastNotificationId
+      ? NotificationId.fromString(dto.lastNotificationId)
+      : undefined
 
     // Carga paralela de notificaciones y count
     const [notifications, unreadCount] = await Promise.all([
@@ -49,11 +51,13 @@ export class GetNotificationsUseCase {
       return { notifications: [], unreadCount, hasMore }
     }
 
-    const actorIds = [...new Set(rawNotifications.map(n => n.actorId.value))].map(id => UserId.reconstitute(id))
+    const actorIds = [...new Set(rawNotifications.map((n) => n.actorId.value))].map((id) =>
+      UserId.reconstitute(id)
+    )
     const actors = await this.userRepository.findManyByIds(actorIds)
-    const actorMap = new Map(actors.map(u => [u.id.value, u]))
+    const actorMap = new Map(actors.map((u) => [u.id.value, u]))
 
-    const enrichedNotifications: EnrichedNotification[] = rawNotifications.map(n => {
+    const enrichedNotifications: EnrichedNotification[] = rawNotifications.map((n) => {
       const actor = actorMap.get(n.actorId.value)
       return {
         notification: n,

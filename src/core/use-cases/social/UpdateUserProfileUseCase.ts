@@ -79,8 +79,8 @@ export class UpdateUserProfileUseCase {
       updatedFields: {
         avatar: avatarUrl,
         displayName: dto.displayName,
-        bio: dto.bio,
-      },
+        bio: dto.bio
+      }
     }
   }
 }

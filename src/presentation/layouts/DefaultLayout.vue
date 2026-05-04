@@ -5,25 +5,31 @@
       <div class="sidebar__brand">
         <div class="brand-icon">
           <svg viewBox="0 0 32 32" fill="none">
-            <circle cx="16" cy="16" r="14" stroke="url(#brandGrad)" stroke-width="2.5"/>
-            <path d="M10 20 L16 10 L22 20" stroke="url(#brandGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16" cy="16" r="14" stroke="url(#brandGrad)" stroke-width="2.5" />
+            <path
+              d="M10 20 L16 10 L22 20"
+              stroke="url(#brandGrad)"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
             <defs>
               <linearGradient id="brandGrad" x1="0" y1="0" x2="32" y2="32">
-                <stop offset="0%" stop-color="var(--color-primary)"/>
-                <stop offset="100%" stop-color="var(--color-secondary)"/>
+                <stop offset="0%" stop-color="var(--color-primary)" />
+                <stop offset="100%" stop-color="var(--color-secondary)" />
               </linearGradient>
             </defs>
           </svg>
         </div>
         <span class="brand-text">Nexo</span>
       </div>
-      
+
       <nav class="sidebar__nav">
-        <router-link 
-          v-for="item in navItems" 
-          :key="item.to" 
-          :to="item.to" 
-          class="nav-item" 
+        <router-link
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          class="nav-item"
           active-class="nav-item--active"
           :exact="item.exact"
         >
@@ -32,23 +38,27 @@
           <span v-if="item.badge" class="nav-badge">{{ item.badge }}</span>
         </router-link>
       </nav>
-      
+
       <div class="sidebar__footer">
         <div class="user-peek">
-          <BaseAvatar 
-            :src="userAvatar" 
-            :name="userDisplayName" 
-            size="md" 
-            class="peek-avatar"
-          />
+          <BaseAvatar :src="userAvatar" :name="userDisplayName" size="md" class="peek-avatar" />
           <div class="peek-info">
             <span class="peek-name">{{ userDisplayName }}</span>
             <span class="peek-handle">{{ userHandle }}</span>
           </div>
         </div>
         <button class="logout-btn" title="Sign out" @click="handleLogout">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
         </button>
       </div>
@@ -59,10 +69,20 @@
       <header class="mobile-header">
         <div class="mobile-brand">Nexo</div>
         <button class="mobile-menu-toggle" @click="mobileMenuOpen = !mobileMenuOpen">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
         </button>
       </header>
-      
+
       <div class="content-container">
         <slot />
       </div>
@@ -74,7 +94,16 @@
         <!-- Search Widget -->
         <div class="widget widget--search">
           <div class="search-input-wrapper">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg
+              class="search-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
             <input type="text" class="search-input" placeholder="Search Nexo..." />
           </div>
         </div>
@@ -82,12 +111,20 @@
         <!-- Trending Widget -->
         <div class="widget">
           <h3 class="widget-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-secondary)" stroke-width="2" style="width:18px;height:18px;margin-right:8px"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--color-secondary)"
+              stroke-width="2"
+              style="width: 18px; height: 18px; margin-right: 8px"
+            >
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
             Trending
           </h3>
           <ul class="trending-list">
             <template v-if="postsStore.loadingTrends">
-              <li v-for="i in 3" :key="'skeleton-'+i" class="trend-item skeleton">
+              <li v-for="i in 3" :key="'skeleton-' + i" class="trend-item skeleton">
                 <div class="trend-rank-skeleton"></div>
                 <div class="trend-body-skeleton">
                   <div class="trend-name-skeleton"></div>
@@ -102,21 +139,40 @@
                 <span class="trend-stats">{{ trend.count }} posts</span>
               </div>
             </li>
-            <li v-if="!postsStore.loadingTrends && (!trends || trends.length === 0)" class="empty-trends">
+            <li
+              v-if="!postsStore.loadingTrends && (!trends || trends.length === 0)"
+              class="empty-trends"
+            >
               No trends today
             </li>
           </ul>
         </div>
-        
+
         <!-- Suggestions Widget -->
         <div class="widget">
           <h3 class="widget-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="width:18px;height:18px;margin-right:8px"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--color-primary)"
+              stroke-width="2"
+              style="width: 18px; height: 18px; margin-right: 8px"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="8.5" cy="7" r="4" />
+              <line x1="20" y1="8" x2="20" y2="14" />
+              <line x1="23" y1="11" x2="17" y2="11" />
+            </svg>
             Who to Follow
           </h3>
           <div class="follow-list">
             <div v-for="user in suggestedUsers" :key="user.id" class="follow-item">
-              <BaseAvatar :src="user.avatar" :name="user.displayName" size="sm" class="follow-avatar" />
+              <BaseAvatar
+                :src="user.avatar"
+                :name="user.displayName"
+                size="sm"
+                class="follow-avatar"
+              />
               <div class="follow-info">
                 <span class="follow-name">{{ user.displayName }}</span>
                 <span class="follow-handle">@{{ user.email.split('@')[0] }}</span>
@@ -141,70 +197,100 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/application/stores/auth.store';
-import { useUsersStore } from '@/application/stores/users.store';
-import { usePostsStore } from '@/application/stores/posts.store';
-import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/application/stores/auth.store'
+import { useUsersStore } from '@/application/stores/users.store'
+import { usePostsStore } from '@/application/stores/posts.store'
+import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue'
 
-const router = useRouter();
-const authStore = useAuthStore();
-const usersStore = useUsersStore();
-const postsStore = usePostsStore();
-const mobileMenuOpen = ref(false);
+const router = useRouter()
+const authStore = useAuthStore()
+const usersStore = useUsersStore()
+const postsStore = usePostsStore()
+const mobileMenuOpen = ref(false)
 
-const userDisplayName = computed(() => authStore.user?.displayName || 'Explorer');
+const userDisplayName = computed(() => authStore.user?.displayName || 'Explorer')
 const userHandle = computed(() => {
   if (authStore.user?.email) {
-    return `@${authStore.user.email.split('@')[0]}`;
+    return `@${authStore.user.email.split('@')[0]}`
   }
-  return '@guest';
-});
+  return '@guest'
+})
 
-const userAvatar = computed(() => authStore.user?.avatar || null);
+const userAvatar = computed(() => authStore.user?.avatar || null)
 
 interface NavItem {
-  to: string;
-  label: string;
-  icon: string;
-  exact?: boolean;
-  badge?: string | number;
+  to: string
+  label: string
+  icon: string
+  exact?: boolean
+  badge?: string | number
 }
 
 const navItems: NavItem[] = [
-  { to: '/', label: 'Home', exact: true, icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' },
-  { to: '/explore', label: 'Explore', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>' },
-  { to: '/notifications', label: 'Notifications', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>' },
-  { to: '/profile', label: 'Profile', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
-  { to: '/settings', label: 'Settings', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>' },
-];
+  {
+    to: '/',
+    label: 'Home',
+    exact: true,
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'
+  },
+  {
+    to: '/explore',
+    label: 'Explore',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>'
+  },
+  {
+    to: '/notifications',
+    label: 'Notifications',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'
+  },
+  {
+    to: '/profile',
+    label: 'Profile',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+  },
+  {
+    to: '/saved',
+    label: 'Saved',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'
+  },
+  {
+    to: '/settings',
+    label: 'Settings',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+  }
+]
 
-const trends = computed(() => postsStore.trendingTags || []);
+const trends = computed(() => postsStore.trendingTags || [])
 
-const suggestedUsers = computed(() => usersStore.suggestedUsers || []);
+const suggestedUsers = computed(() => usersStore.suggestedUsers || [])
 
 const handleFollow = async (userId: string) => {
-  await usersStore.followUser(userId);
-  await usersStore.fetchSuggestedUsers(); // Refresh suggestions
-};
+  await usersStore.followUser(userId)
+  await usersStore.fetchSuggestedUsers() // Refresh suggestions
+}
 
 onMounted(() => {
-  usersStore.fetchSuggestedUsers();
-  usersStore.fetchMyFollowingIds();
-  postsStore.fetchTrendingTags();
-});
+  usersStore.fetchSuggestedUsers()
+  usersStore.fetchMyFollowingIds()
+  postsStore.fetchTrendingTags()
+  postsStore.fetchSavedPosts()
+})
 
-watch(() => authStore.currentUserId, (newId) => {
-  if (newId) {
-    usersStore.fetchSuggestedUsers();
+watch(
+  () => authStore.currentUserId,
+  (newId) => {
+    if (newId) {
+      usersStore.fetchSuggestedUsers()
+    }
   }
-});
+)
 
 const handleLogout = async () => {
-  await authStore.logout();
-  router.push({ name: 'Login' });
-};
+  await authStore.logout()
+  router.push({ name: 'Login' })
+}
 </script>
 
 <style scoped>
@@ -254,8 +340,13 @@ const handleLogout = async () => {
 }
 
 @keyframes brand-pulse {
-  0%, 100% { filter: drop-shadow(0 0 8px rgba(var(--color-primary-rgb), 0.4)); }
-  50% { filter: drop-shadow(0 0 16px rgba(var(--color-secondary-rgb), 0.5)); }
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgba(var(--color-primary-rgb), 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(var(--color-secondary-rgb), 0.5));
+  }
 }
 
 .brand-text {
@@ -297,7 +388,11 @@ const handleLogout = async () => {
 }
 
 .nav-item--active {
-  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.12), rgba(var(--color-secondary-rgb), 0.06));
+  background: linear-gradient(
+    135deg,
+    rgba(var(--color-primary-rgb), 0.12),
+    rgba(var(--color-secondary-rgb), 0.06)
+  );
   color: var(--color-primary);
   font-weight: var(--font-weight-semibold);
 }
@@ -673,9 +768,15 @@ const handleLogout = async () => {
 }
 
 @keyframes pulse {
-  0% { opacity: 0.5; }
-  50% { opacity: 0.8; }
-  100% { opacity: 0.5; }
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.5;
+  }
 }
 
 .follow-list {

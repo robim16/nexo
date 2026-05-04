@@ -6,7 +6,8 @@ import { Comment } from '@/core/entities/Comment'
  * Generador de IDs únicos para tests
  */
 let counter = 0
-const nextId = (prefix: string = 'id') => `${prefix}-${++counter}-${Math.random().toString(36).substring(7)}`
+const nextId = (prefix: string = 'id') =>
+  `${prefix}-${++counter}-${Math.random().toString(36).substring(7)}`
 
 /**
  * Fábrica para la entidad User

@@ -68,9 +68,7 @@ export class CreatePostUseCase {
     const imageUrls: string[] = []
     if (dto.images && dto.images.length > 0) {
       const uploadResults = await Promise.all(
-        dto.images.map((file) =>
-          this.storageService.uploadImage(file, `posts/${userId.value}/`)
-        )
+        dto.images.map((file) => this.storageService.uploadImage(file, `posts/${userId.value}/`))
       )
       imageUrls.push(...uploadResults.map((r) => r.downloadUrl))
     }
@@ -85,11 +83,11 @@ export class CreatePostUseCase {
       authorId: userId,
       content,
       images: imageUrls,
-      visibility,
+      visibility
     })
-    
+
     // Adjuntar info del autor para la UI
-    post.setAuthorInfo(user.displayName.value, user.avatar);
+    post.setAuthorInfo(user.displayName.value, user.avatar)
 
     // 8. Persistir post
     await this.postRepository.save(post)
@@ -103,13 +101,13 @@ export class CreatePostUseCase {
       authorId: userId.value,
       hasImages: imageUrls.length > 0,
       mentionedUsers: [...content.mentions],
-      hashtags: [...content.hashtags],
+      hashtags: [...content.hashtags]
     }
 
     this.eventBus.publish({
       type: DomainEvents.POST_CREATED,
       timestamp: new Date(),
-      payload,
+      payload
     })
 
     return { post }

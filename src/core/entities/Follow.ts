@@ -79,7 +79,7 @@ export class Follow {
       id: this.id.value,
       followerId: this.followerId.value,
       followingId: this.followingId.value,
-      createdAt: this.createdAt.toISO(),
+      createdAt: this.createdAt.toISO()
     }
   }
 }

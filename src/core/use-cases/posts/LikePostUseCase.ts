@@ -19,7 +19,7 @@ export interface LikePostDTO {
 }
 
 export interface LikePostResult {
-  liked: boolean   // true = dio like, false = quitó like
+  liked: boolean // true = dio like, false = quitó like
   likesCount: number
 }
 
@@ -54,8 +54,8 @@ export class LikePostUseCase {
         payload: {
           postId: dto.postId,
           authorId: post.authorId.value,
-          userId: dto.userId,
-        },
+          userId: dto.userId
+        }
       })
 
       return { liked: false, likesCount: post.likesCount }
@@ -70,7 +70,7 @@ export class LikePostUseCase {
           recipientId: post.authorId,
           actorId: userId,
           type: 'LIKE',
-          postId,
+          postId
         })
         await this.notificationRepository.save(notification)
       }
@@ -78,14 +78,16 @@ export class LikePostUseCase {
       // 4. Notificar a los seguidores del actor (quien dio like)
       const followers = await this.followRepository.findFollowers(userId)
       const followerNotifications = followers
-        .filter(f => !f.followerId.equals(post.authorId)) // No duplicar si el autor ya recibió notificación
-        .map(f => Notification.create({
-          recipientId: f.followerId,
-          actorId: userId,
-          type: 'REACTION_FOLLOWED',
-          postId,
-        }))
-      
+        .filter((f) => !f.followerId.equals(post.authorId)) // No duplicar si el autor ya recibió notificación
+        .map((f) =>
+          Notification.create({
+            recipientId: f.followerId,
+            actorId: userId,
+            type: 'REACTION_FOLLOWED',
+            postId
+          })
+        )
+
       if (followerNotifications.length > 0) {
         await this.notificationRepository.saveMany(followerNotifications)
       }
@@ -93,13 +95,13 @@ export class LikePostUseCase {
       const payload: PostLikedPayload = {
         postId: dto.postId,
         authorId: post.authorId.value,
-        userId: dto.userId,
+        userId: dto.userId
       }
 
       this.eventBus.publish({
         type: DomainEvents.POST_LIKED,
         timestamp: new Date(),
-        payload,
+        payload
       })
 
       return { liked: true, likesCount: post.likesCount }

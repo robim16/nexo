@@ -1,9 +1,15 @@
 <template>
   <div class="post-list">
     <template v-if="loading && items.length === 0">
-      <SkeletonLoader v-for="i in skeletonCount" :key="i" type="rect" height="160px" class="mb-md" />
+      <SkeletonLoader
+        v-for="i in skeletonCount"
+        :key="i"
+        type="rect"
+        height="160px"
+        class="mb-md"
+      />
     </template>
-    
+
     <template v-else-if="items.length === 0">
       <EmptyState
         title="No hay publicaciones"
@@ -11,7 +17,7 @@
         icon="📭"
       />
     </template>
-    
+
     <template v-else>
       <TransitionGroup name="list">
         <PostCard
@@ -22,12 +28,14 @@
           @unlike="$emit('unlike', $event)"
           @comment="$emit('comment', $event)"
           @share="$emit('share', $event)"
+          @save="$emit('save', $event)"
+          @unsave="$emit('unsave', $event)"
         />
       </TransitionGroup>
-      
+
       <!-- Custom append slot for infinite loaders -->
       <slot name="append"></slot>
-      
+
       <div v-if="loading && items.length > 0" class="loading-more">
         <LoadingSpinner size="sm" />
       </div>
@@ -36,20 +44,20 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
-import PostCard from './PostCard.vue';
-import type { PostDisplay } from './PostCard.vue';
-import SkeletonLoader from '@/presentation/components/common/SkeletonLoader.vue';
-import EmptyState from '@/presentation/components/common/EmptyState.vue';
-import LoadingSpinner from '@/presentation/components/common/LoadingSpinner.vue';
+import { defineProps, defineEmits } from 'vue'
+import PostCard from './PostCard.vue'
+import type { PostDisplay } from './PostCard.vue'
+import SkeletonLoader from '@/presentation/components/common/SkeletonLoader.vue'
+import EmptyState from '@/presentation/components/common/EmptyState.vue'
+import LoadingSpinner from '@/presentation/components/common/LoadingSpinner.vue'
 
 defineProps<{
-  items: PostDisplay[];
-  loading?: boolean;
-  skeletonCount?: number;
-}>();
+  items: PostDisplay[]
+  loading?: boolean
+  skeletonCount?: number
+}>()
 
-defineEmits(['like', 'unlike', 'comment', 'share']);
+defineEmits(['like', 'unlike', 'comment', 'share', 'save', 'unsave'])
 </script>
 
 <style scoped>

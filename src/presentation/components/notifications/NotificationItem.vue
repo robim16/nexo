@@ -1,20 +1,17 @@
 <template>
-  <div 
-    class="notification-item" 
-    :class="{ 'unread': !notification.isRead, 'interactive': true }"
-  >
+  <div class="notification-item" :class="{ unread: !notification.isRead, interactive: true }">
     <div class="actor-visual">
-      <BaseAvatar 
-        :src="notification.actorAvatar || ''" 
-        :alt="notification.actorName" 
-        size="md" 
+      <BaseAvatar
+        :src="notification.actorAvatar || ''"
+        :alt="notification.actorName"
+        size="md"
         class="actor-avatar"
       />
       <div class="type-indicator" :class="notification.type.toLowerCase()">
         <span class="type-icon">{{ typeIcon }}</span>
       </div>
     </div>
-    
+
     <div class="notification-content">
       <div class="content-text">
         <span class="actor-name">{{ notification.actorName }}</span>
@@ -28,52 +25,69 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from 'vue';
-import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
+import { defineProps, computed } from 'vue'
+import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue'
 
 export interface AppNotification {
-  id: string;
-  type: string;
-  actorName: string;
-  actorAvatar?: string;
-  createdAt: Date | string | number;
-  isRead: boolean;
-  postId?: string;
-  fromUserId?: string;
+  id: string
+  type: string
+  actorName: string
+  actorAvatar?: string
+  createdAt: Date | string | number
+  isRead: boolean
+  postId?: string
+  fromUserId?: string
 }
 
 const props = defineProps<{
-  notification: AppNotification;
-}>();
+  notification: AppNotification
+}>()
 
 const actionText = computed(() => {
   switch (props.notification.type) {
-    case 'LIKE': return 'liked your pulse.';
-    case 'COMMENT': return 'commented on your pulse.';
-    case 'FOLLOW': return 'is now following you.';
-    case 'MENTION': return 'mentioned you in a pulse.';
-    case 'SHARE': return 'shared your pulse.';
-    case 'REACTION_FOLLOWED': return 'reacted to a pulse.';
-    default: return 'interacted with you.';
+    case 'LIKE':
+      return 'liked your pulse.'
+    case 'COMMENT':
+      return 'commented on your pulse.'
+    case 'FOLLOW':
+      return 'is now following you.'
+    case 'MENTION':
+      return 'mentioned you in a pulse.'
+    case 'SHARE':
+      return 'shared your pulse.'
+    case 'REACTION_FOLLOWED':
+      return 'reacted to a pulse.'
+    default:
+      return 'interacted with you.'
   }
-});
+})
 
 const typeIcon = computed(() => {
   switch (props.notification.type) {
-    case 'LIKE': return '❤️';
-    case 'COMMENT': return '💬';
-    case 'FOLLOW': return '👤';
-    case 'MENTION': return '🏷️';
-    case 'SHARE': return '🔄';
-    case 'REACTION_FOLLOWED': return '⚡';
-    default: return '✨';
+    case 'LIKE':
+      return '❤️'
+    case 'COMMENT':
+      return '💬'
+    case 'FOLLOW':
+      return '👤'
+    case 'MENTION':
+      return '🏷️'
+    case 'SHARE':
+      return '🔄'
+    case 'REACTION_FOLLOWED':
+      return '⚡'
+    default:
+      return '✨'
   }
-});
+})
 
 const formatTime = (date: Date | string | number) => {
-  const d = new Date(date);
-  return new Intl.RelativeTimeFormat('en', { style: 'short', numeric: 'auto' }).format(-Math.round((Date.now() - d.getTime()) / (1000 * 60)), 'minute');
-};
+  const d = new Date(date)
+  return new Intl.RelativeTimeFormat('en', { style: 'short', numeric: 'auto' }).format(
+    -Math.round((Date.now() - d.getTime()) / (1000 * 60)),
+    'minute'
+  )
+}
 </script>
 
 <style scoped>
@@ -137,7 +151,8 @@ const formatTime = (date: Date | string | number) => {
   box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.5);
 }
 
-.type-indicator.comment, .type-indicator.follow {
+.type-indicator.comment,
+.type-indicator.follow {
   background-color: var(--color-secondary);
   box-shadow: 0 0 10px rgba(var(--color-secondary-rgb), 0.5);
 }
@@ -181,8 +196,17 @@ const formatTime = (date: Date | string | number) => {
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.5); opacity: 0.5; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>

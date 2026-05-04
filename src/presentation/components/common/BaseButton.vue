@@ -6,7 +6,15 @@
 
 interface Props {
   /** Variante visual */
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success' | 'outline' | 'gradient' | 'glass'
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'ghost'
+    | 'danger'
+    | 'success'
+    | 'outline'
+    | 'gradient'
+    | 'glass'
   /** Tamaño del botón */
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   /** Estado de carga */
@@ -31,7 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
   iconOnly: false,
   fullWidth: false,
   type: 'button',
-  pill: false,
+  pill: false
 })
 
 defineEmits<{
@@ -53,8 +61,8 @@ defineEmits<{
         'base-btn--loading': loading,
         'base-btn--icon-only': iconOnly,
         'base-btn--full': fullWidth,
-        'base-btn--pill': pill,
-      },
+        'base-btn--pill': pill
+      }
     ]"
     @click="!disabled && !loading && $emit('click', $event)"
   >
@@ -67,8 +75,11 @@ defineEmits<{
     <span v-if="loading" class="base-btn__spinner" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle
-          cx="12" cy="12" r="10"
-          stroke="currentColor" stroke-width="2.5"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="2.5"
           stroke-linecap="round"
           stroke-dasharray="31.42"
           stroke-dashoffset="10"
@@ -151,9 +162,16 @@ defineEmits<{
 }
 
 /* ── Modifiers ─────────────────────────────────────────────── */
-.base-btn--pill { border-radius: var(--radius-full); }
-.base-btn--full { width: 100%; }
-.base-btn--icon-only { padding: 0; aspect-ratio: 1; }
+.base-btn--pill {
+  border-radius: var(--radius-full);
+}
+.base-btn--full {
+  width: 100%;
+}
+.base-btn--icon-only {
+  padding: 0;
+  aspect-ratio: 1;
+}
 
 /* ── Variants ───────────────────────────────────────────────── */
 
@@ -276,7 +294,11 @@ defineEmits<{
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

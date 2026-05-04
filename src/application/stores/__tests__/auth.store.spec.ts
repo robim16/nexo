@@ -21,16 +21,16 @@ describe('Auth Store (Integration)', () => {
 
   beforeEach(() => {
     setActivePinia(createPinia())
-    
+
     // Mocks de dependencias
     mockAuthService = {
       onAuthStateChanged: vi.fn()
     }
-    
+
     mockLoginUseCase = {
       execute: vi.fn()
     }
-    
+
     mockLogoutUseCase = {
       execute: vi.fn()
     }
@@ -40,21 +40,23 @@ describe('Auth Store (Integration)', () => {
       if (key === 'IAuthService') return mockAuthService
       if (key === 'LoginUseCase') return mockLoginUseCase
       if (key === 'LogoutUseCase') return mockLogoutUseCase
+      if (key === 'IUserRepository') return { findById: vi.fn().mockResolvedValue(null) }
+      if (key === 'IFollowRepository') return { getFollowingIds: vi.fn().mockResolvedValue([]) }
       return {}
     })
 
     authStore = useAuthStore()
   })
 
-  it('initAuth should set user when authenticated', () => {
+  it('initAuth should set user when authenticated', async () => {
     const domainUser = createTestUser({ displayName: 'Auth User' })
-    
+
     // Simular que onAuthStateChanged detecta un usuario
     mockAuthService.onAuthStateChanged.mockImplementation((callback: any) => {
       callback(domainUser)
     })
 
-    authStore.initAuth()
+    await authStore.initAuth()
 
     expect(authStore.user.displayName).toBe('Auth User')
     expect(authStore.isAuthenticated).toBe(true)
@@ -66,11 +68,11 @@ describe('Auth Store (Integration)', () => {
     mockLoginUseCase.execute.mockResolvedValue({ user: domainUser })
 
     const loginPromise = authStore.login({ email: 'login@test.com', password: 'password123' })
-    
+
     expect(authStore.loading).toBe(true)
-    
+
     await loginPromise
-    
+
     expect(authStore.user.email).toBe('login@test.com')
     expect(authStore.loading).toBe(false)
     expect(authStore.error).toBeNull()

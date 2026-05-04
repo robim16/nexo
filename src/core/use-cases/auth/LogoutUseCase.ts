@@ -24,7 +24,7 @@ export class LogoutUseCase {
     this.eventBus.publish({
       type: DomainEvents.USER_LOGGED_OUT,
       timestamp: new Date(),
-      payload: { userId: dto.userId },
+      payload: { userId: dto.userId }
     })
   }
 }
