@@ -1,4 +1,4 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router'
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -7,8 +7,8 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/presentation/views/HomePage.vue'),
     meta: {
       requiresAuth: true,
-      layout: 'DefaultLayout',
-    },
+      layout: 'DefaultLayout'
+    }
   },
   {
     path: '/explore',
@@ -16,8 +16,8 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/presentation/views/ExplorePage.vue'),
     meta: {
       requiresAuth: true,
-      layout: 'DefaultLayout',
-    },
+      layout: 'DefaultLayout'
+    }
   },
   {
     path: '/notifications',
@@ -25,8 +25,8 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/presentation/views/NotificationsPage.vue'),
     meta: {
       requiresAuth: true,
-      layout: 'DefaultLayout',
-    },
+      layout: 'DefaultLayout'
+    }
   },
   {
     path: '/profile/:id?',
@@ -34,8 +34,8 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/presentation/views/ProfilePage.vue'),
     meta: {
       requiresAuth: true,
-      layout: 'DefaultLayout',
-    },
+      layout: 'DefaultLayout'
+    }
   },
   {
     path: '/settings',
@@ -43,8 +43,8 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/presentation/views/SettingsPage.vue'),
     meta: {
       requiresAuth: true,
-      layout: 'DefaultLayout',
-    },
+      layout: 'DefaultLayout'
+    }
   },
   {
     path: '/login',
@@ -52,8 +52,8 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/presentation/views/auth/LoginPage.vue'),
     meta: {
       requiresGuest: true,
-      layout: 'AuthLayout',
-    },
+      layout: 'AuthLayout'
+    }
   },
   {
     path: '/register',
@@ -61,8 +61,8 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/presentation/views/auth/RegisterPage.vue'),
     meta: {
       requiresGuest: true,
-      layout: 'AuthLayout',
-    },
+      layout: 'AuthLayout'
+    }
   },
   {
     path: '/post/:id',
@@ -70,12 +70,12 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/presentation/views/SinglePostPage.vue'),
     meta: {
       requiresAuth: true,
-      layout: 'DefaultLayout',
-    },
+      layout: 'DefaultLayout'
+    }
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    redirect: '/',
-  },
-];
+    redirect: '/'
+  }
+]

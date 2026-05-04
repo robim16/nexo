@@ -15,7 +15,7 @@
       </template>
     </PostList>
 
-    <CommentDialog 
+    <CommentDialog
       :is-open="isCommentDialogOpen"
       :post-id="activePostId"
       :loading="isCommenting"
@@ -26,109 +26,112 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import PostList from './PostList.vue';
-import CommentDialog from './CommentDialog.vue';
-import { usePostsStore } from '@/application/stores/posts.store';
-import { useCommentsStore } from '@/application/stores/comments.store';
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import PostList from './PostList.vue'
+import CommentDialog from './CommentDialog.vue'
+import { usePostsStore } from '@/application/stores/posts.store'
+import { useCommentsStore } from '@/application/stores/comments.store'
 
-const postsStore = usePostsStore();
-const commentsStore = useCommentsStore();
-const posts = computed(() => postsStore.feed);
-const loading = computed(() => postsStore.loading);
-const loadTrigger = ref<HTMLElement | null>(null);
+const postsStore = usePostsStore()
+const commentsStore = useCommentsStore()
+const posts = computed(() => postsStore.feed)
+const loading = computed(() => postsStore.loading)
+const loadTrigger = ref<HTMLElement | null>(null)
 
-const isCommentDialogOpen = ref(false);
-const isCommenting = ref(false);
-const activePostId = ref<string | null>(null);
+const isCommentDialogOpen = ref(false)
+const isCommenting = ref(false)
+const activePostId = ref<string | null>(null)
 
-let observer: IntersectionObserver;
+let observer: IntersectionObserver
 
 const loadMore = async () => {
   try {
-    await postsStore.fetchFeed();
+    await postsStore.fetchFeed()
   } catch (err) {
-    console.error('Error fetching feed', err);
+    console.error('Error fetching feed', err)
   }
-};
+}
 
 onMounted(() => {
   // Initial load
-  loadMore();
+  loadMore()
 
   // Setup infinite scroll observer
-  observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      loadMore();
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting) {
+        loadMore()
+      }
+    },
+    {
+      rootMargin: '200px' // Trigger slightly before the bottom
     }
-  }, {
-    rootMargin: '200px' // Trigger slightly before the bottom
-  });
+  )
 
   if (loadTrigger.value) {
-    observer.observe(loadTrigger.value);
+    observer.observe(loadTrigger.value)
   }
-});
+})
 
 onUnmounted(() => {
   if (observer) {
-    observer.disconnect();
+    observer.disconnect()
   }
-});
+})
 
 // Delegate like/unlike to store (it handles optimistic updates)
 const handleLike = (id: string) => {
-  postsStore.toggleLike(id);
-};
+  postsStore.toggleLike(id)
+}
 
 const handleUnlike = (id: string) => {
-  postsStore.toggleLike(id);
-};
+  postsStore.toggleLike(id)
+}
 
 const handleComment = (id: string) => {
-  activePostId.value = id;
-  isCommentDialogOpen.value = true;
-};
+  activePostId.value = id
+  isCommentDialogOpen.value = true
+}
 
 const handleShare = async (id: string) => {
-  const post = postsStore.feed.find(p => p.id === id);
-  if (!post) return;
-  const url = `${window.location.origin}/post/${id}`;
+  const post = postsStore.feed.find((p) => p.id === id)
+  if (!post) return
+  const url = `${window.location.origin}/post/${id}`
   if (navigator.share) {
     try {
       await navigator.share({
         title: `Post de ${post.authorName || 'Nexo'}`,
         text: post.content,
-        url,
-      });
-      await postsStore.sharePost(id);
+        url
+      })
+      await postsStore.sharePost(id)
     } catch (err) {
-      console.error('Error sharing', err);
+      console.error('Error sharing', err)
     }
   } else {
     try {
-      await navigator.clipboard.writeText(url);
-      alert('Enlace copiado al portapapeles');
-      await postsStore.sharePost(id);
+      await navigator.clipboard.writeText(url)
+      alert('Enlace copiado al portapapeles')
+      await postsStore.sharePost(id)
     } catch (err) {
-      console.error('Error copying to clipboard', err);
+      console.error('Error copying to clipboard', err)
     }
   }
-};
+}
 
 const submitComment = async (content: string) => {
-  if (!activePostId.value) return;
-  
-  isCommenting.value = true;
+  if (!activePostId.value) return
+
+  isCommenting.value = true
   try {
-    await commentsStore.addComment(activePostId.value, content);
-    isCommentDialogOpen.value = false;
+    await commentsStore.addComment(activePostId.value, content)
+    isCommentDialogOpen.value = false
   } catch (err) {
-    console.error('Error submitting comment', err);
+    console.error('Error submitting comment', err)
   } finally {
-    isCommenting.value = false;
+    isCommenting.value = false
   }
-};
+}
 </script>
 
 <style scoped>

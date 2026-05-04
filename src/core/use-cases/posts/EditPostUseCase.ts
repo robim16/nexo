@@ -54,8 +54,8 @@ export class EditPostUseCase {
       payload: {
         postId: dto.postId,
         authorId: post.authorId.value,
-        newContent: newContent.value,
-      },
+        newContent: newContent.value
+      }
     })
 
     return { post }

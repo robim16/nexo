@@ -4,9 +4,9 @@
       <h2>Iniciar Sesión</h2>
       <p>Bienvenido de vuelta a Nexo</p>
     </div>
-    
+
     <LoginForm />
-    
+
     <p class="auth-page__footer">
       ¿No tienes una cuenta? <router-link to="/register">Regístrate</router-link>
     </p>
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import LoginForm from '@/presentation/components/auth/LoginForm.vue';
+import LoginForm from '@/presentation/components/auth/LoginForm.vue'
 </script>
 
 <style scoped>

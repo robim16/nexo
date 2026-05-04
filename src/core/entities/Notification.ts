@@ -8,7 +8,13 @@ import { PostId } from '../value-objects/PostId'
 import { Timestamp } from '../value-objects/Timestamp'
 
 /** Tipos de evento que generan notificaciones */
-export type NotificationType = 'FOLLOW' | 'LIKE' | 'COMMENT' | 'MENTION' | 'SHARE' | 'REACTION_FOLLOWED'
+export type NotificationType =
+  | 'FOLLOW'
+  | 'LIKE'
+  | 'COMMENT'
+  | 'MENTION'
+  | 'SHARE'
+  | 'REACTION_FOLLOWED'
 
 export interface NotificationPlainObject {
   id: string
@@ -56,9 +62,15 @@ export class Notification {
 
   // ─── Getters ──────────────────────────────────────────────────────────────
 
-  get message(): string { return this._message }
-  get isRead(): boolean { return this._isRead }
-  get readAt(): Timestamp | null { return this._readAt }
+  get message(): string {
+    return this._message
+  }
+  get isRead(): boolean {
+    return this._isRead
+  }
+  get readAt(): Timestamp | null {
+    return this._readAt
+  }
 
   // ─── Comportamiento de Negocio ────────────────────────────────────────────
 
@@ -122,7 +134,7 @@ export class Notification {
       message: this._message,
       isRead: this._isRead,
       createdAt: this.createdAt.toISO(),
-      readAt: this._readAt?.toISO() ?? null,
+      readAt: this._readAt?.toISO() ?? null
     }
   }
 
@@ -135,7 +147,7 @@ export class Notification {
       COMMENT: 'comentó en tu publicación',
       MENTION: 'te mencionó en una publicación',
       SHARE: 'compartió tu publicación',
-      REACTION_FOLLOWED: 'reaccionó a una publicación',
+      REACTION_FOLLOWED: 'reaccionó a una publicación'
     }
     return messages[type]
   }

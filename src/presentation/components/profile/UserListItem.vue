@@ -4,40 +4,37 @@
       <BaseAvatar :src="user.avatar || ''" :alt="user.displayName" size="md" />
       <div class="user-details">
         <span class="display-name">{{ user.displayName }}</span>
-        <span class="handle">@{{ user.handle || user.displayName.toLowerCase().replace(/\s/g, '') }}</span>
+        <span class="handle"
+          >@{{ user.handle || user.displayName.toLowerCase().replace(/\s/g, '') }}</span
+        >
       </div>
     </div>
-    
+
     <div class="user-actions" @click.stop>
-      <FollowButton 
-        v-if="!isOwnProfile" 
-        :userId="user.id" 
-        :initialIsFollowing="false" 
-        size="sm" 
-      />
+      <FollowButton v-if="!isOwnProfile" :userId="user.id" :initialIsFollowing="false" size="sm" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/application/stores/auth.store';
-import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
-import FollowButton from '@/presentation/components/profile/FollowButton.vue';
+import { defineProps, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/application/stores/auth.store'
+import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue'
+import FollowButton from '@/presentation/components/profile/FollowButton.vue'
 
 const props = defineProps<{
-  user: any;
-}>();
+  user: any
+}>()
 
-const router = useRouter();
-const authStore = useAuthStore();
+const router = useRouter()
+const authStore = useAuthStore()
 
-const isOwnProfile = computed(() => authStore.user?.id === props.user.id);
+const isOwnProfile = computed(() => authStore.user?.id === props.user.id)
 
 const navigateToProfile = () => {
-  router.push(`/profile/${props.user.id}`);
-};
+  router.push(`/profile/${props.user.id}`)
+}
 </script>
 
 <style scoped>

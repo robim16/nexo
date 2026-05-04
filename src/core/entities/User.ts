@@ -64,15 +64,33 @@ export class User {
 
   // ─── Getters ──────────────────────────────────────────────────────────────
 
-  get displayName(): DisplayName { return this._displayName }
-  get bio(): Bio { return this._bio }
-  get avatar(): string | null { return this._avatar }
-  get followersCount(): number { return this._followersCount }
-  get followingCount(): number { return this._followingCount }
-  get postsCount(): number { return this._postsCount }
-  get updatedAt(): Timestamp { return this._updatedAt }
-  get isVerified(): boolean { return this._isVerified }
-  get isActive(): boolean { return this._isActive }
+  get displayName(): DisplayName {
+    return this._displayName
+  }
+  get bio(): Bio {
+    return this._bio
+  }
+  get avatar(): string | null {
+    return this._avatar
+  }
+  get followersCount(): number {
+    return this._followersCount
+  }
+  get followingCount(): number {
+    return this._followingCount
+  }
+  get postsCount(): number {
+    return this._postsCount
+  }
+  get updatedAt(): Timestamp {
+    return this._updatedAt
+  }
+  get isVerified(): boolean {
+    return this._isVerified
+  }
+  get isActive(): boolean {
+    return this._isActive
+  }
 
   // ─── Comportamiento de Negocio ────────────────────────────────────────────
 
@@ -178,7 +196,9 @@ export class User {
       DisplayName.create(data.displayName),
       Bio.create(data.bio ?? ''),
       null,
-      0, 0, 0,
+      0,
+      0,
+      0,
       now,
       now,
       false,
@@ -219,7 +239,7 @@ export class User {
       createdAt: this.createdAt.toISO(),
       updatedAt: this._updatedAt.toISO(),
       isVerified: this._isVerified,
-      isActive: this._isActive,
+      isActive: this._isActive
     }
   }
 }

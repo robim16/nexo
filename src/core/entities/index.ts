@@ -18,5 +18,5 @@ export type {
   NotificationType,
   NotificationPlainObject,
   CreateNotificationData,
-  ReconstituteNotificationData,
+  ReconstituteNotificationData
 } from './Notification'

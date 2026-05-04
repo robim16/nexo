@@ -1,4 +1,4 @@
-import { Post, type PostPlainObject } from '../../core/entities/Post';
+import { Post, type PostPlainObject } from '../../core/entities/Post'
 
 /**
  * PostMapper
@@ -9,7 +9,7 @@ export class PostMapper {
    * Convierte una entidad Post a un objeto plano.
    */
   static toPlain(post: Post): PostPlainObject {
-    return post.toPlainObject();
+    return post.toPlainObject()
   }
 
   /**
@@ -22,13 +22,13 @@ export class PostMapper {
       updatedAt: new Date(plain.updatedAt),
       authorName: plain.authorName,
       authorAvatar: plain.authorAvatar
-    });
+    })
   }
 
   /**
    * Mapea una lista de entidades a objetos planos.
    */
   static toPlainList(posts: Post[]): PostPlainObject[] {
-    return posts.map(post => this.toPlain(post));
+    return posts.map((post) => this.toPlain(post))
   }
 }

@@ -13,7 +13,7 @@
 import type {
   IStorageService,
   UploadOptions,
-  UploadResult,
+  UploadResult
 } from '@/core/ports/services/IStorageService'
 
 const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string
@@ -76,7 +76,7 @@ function uploadToCloudinary(
             downloadUrl: response.secure_url as string,
             storagePath: response.public_id as string,
             sizeBytes: response.bytes as number,
-            contentType: file.type,
+            contentType: file.type
           })
         } catch {
           reject(new Error('Error al parsear la respuesta de Cloudinary'))

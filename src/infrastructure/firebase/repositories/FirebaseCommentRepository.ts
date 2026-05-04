@@ -46,7 +46,7 @@ export class FirebaseCommentRepository
       )
 
       const snapshot = await getDocs(q)
-      return snapshot.docs.map(doc => doc.data() as Comment)
+      return snapshot.docs.map((doc) => doc.data() as Comment)
     } catch (error) {
       this.handleError('findByPost', error)
       return []

@@ -21,14 +21,14 @@ export class GetPostByIdUseCase {
   async execute(input: GetPostByIdInput): Promise<GetPostByIdOutput> {
     const postId = PostId.reconstitute(input.postId)
     const post = await this.postRepository.findById(postId)
-    
+
     if (post) {
       const author = await this.userRepository.findById(UserId.reconstitute(post.authorId.value))
       if (author) {
         post.setAuthorInfo(author.displayName.value, author.avatar)
       }
     }
-    
+
     return { post }
   }
 }

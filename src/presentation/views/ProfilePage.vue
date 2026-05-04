@@ -4,7 +4,7 @@
       <div class="header-content">
         <BaseButton variant="glass" size="sm" class="back-btn" @click="$router.back()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
+            <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
         </BaseButton>
         <div class="header-info">
@@ -20,10 +20,10 @@
 
     <div v-else-if="profileUser" class="profile-container">
       <div class="profile-top-section">
-        <ProfileHeader 
-          :user="profileUser" 
-          :isOwnProfile="isOwnProfile" 
-          :isFollowing="usersStore.isFollowingProfile" 
+        <ProfileHeader
+          :user="profileUser"
+          :isOwnProfile="isOwnProfile"
+          :isFollowing="usersStore.isFollowingProfile"
         />
         <div class="stats-wrapper">
           <ProfileStats :stats="stats" @click-stat="handleStatClick" />
@@ -32,10 +32,10 @@
 
       <div class="profile-content">
         <div class="profile-tabs glass">
-          <button 
-            v-for="tab in tabs" 
+          <button
+            v-for="tab in tabs"
             :key="tab.id"
-            class="tab-item" 
+            class="tab-item"
             :class="{ active: activeTab === tab.id }"
             @click="activeTab = tab.id"
           >
@@ -47,47 +47,45 @@
         <div class="feed-wrapper">
           <transition name="fade-slide" mode="out-in">
             <div v-if="activeTab === 'posts'">
-              <PostList 
-                :items="postsStore.feed" 
+              <PostList
+                :items="postsStore.feed"
                 :loading="postsStore.loading"
                 @like="postsStore.toggleLike"
                 @comment="handleComment"
                 @share="handleShare"
               />
             </div>
-            
 
-            
             <div v-else-if="activeTab === 'followers'" class="user-list">
-              <UserListItem 
-                v-for="user in usersStore.followers" 
-                :key="user.id" 
-                :user="user" 
-              />
+              <UserListItem v-for="user in usersStore.followers" :key="user.id" :user="user" />
               <div v-if="usersStore.followers.length === 0" class="empty-state">
                 <p>No followers yet.</p>
               </div>
             </div>
 
             <div v-else-if="activeTab === 'following'" class="user-list">
-              <UserListItem 
-                v-for="user in usersStore.following" 
-                :key="user.id" 
-                :user="user" 
-              />
+              <UserListItem v-for="user in usersStore.following" :key="user.id" :user="user" />
               <div v-if="usersStore.following.length === 0" class="empty-state">
                 <p>Not following anyone yet.</p>
               </div>
             </div>
 
             <div v-else class="empty-state">
-              <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              <svg
+                class="empty-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
               <p>Nothing to see here yet.</p>
             </div>
           </transition>
-          <CommentDialog 
+          <CommentDialog
             :is-open="isCommentDialogOpen"
             :post-id="activePostId"
             :loading="isCommenting"
@@ -97,7 +95,7 @@
         </div>
       </div>
     </div>
-    
+
     <div v-else class="error-container">
       <p>User not found or error loading profile.</p>
       <BaseButton @click="$router.push('/')">Go Home</BaseButton>
@@ -106,161 +104,166 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { usePostsStore } from '@/application/stores/posts.store';
-import { useAuthStore } from '@/application/stores/auth.store';
-import { useUsersStore } from '@/application/stores/users.store';
-import { useCommentsStore } from '@/application/stores/comments.store';
-import ProfileHeader from '@/presentation/components/profile/ProfileHeader.vue';
-import ProfileStats from '@/presentation/components/profile/ProfileStats.vue';
-import UserListItem from '@/presentation/components/profile/UserListItem.vue';
-import PostList from '@/presentation/components/feed/PostList.vue';
-import CommentDialog from '@/presentation/components/feed/CommentDialog.vue';
-import BaseButton from '@/presentation/components/common/BaseButton.vue';
-import LoadingSpinner from '@/presentation/components/common/LoadingSpinner.vue';
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { usePostsStore } from '@/application/stores/posts.store'
+import { useAuthStore } from '@/application/stores/auth.store'
+import { useUsersStore } from '@/application/stores/users.store'
+import { useCommentsStore } from '@/application/stores/comments.store'
+import ProfileHeader from '@/presentation/components/profile/ProfileHeader.vue'
+import ProfileStats from '@/presentation/components/profile/ProfileStats.vue'
+import UserListItem from '@/presentation/components/profile/UserListItem.vue'
+import PostList from '@/presentation/components/feed/PostList.vue'
+import CommentDialog from '@/presentation/components/feed/CommentDialog.vue'
+import BaseButton from '@/presentation/components/common/BaseButton.vue'
+import LoadingSpinner from '@/presentation/components/common/LoadingSpinner.vue'
 
-const route = useRoute();
-const postsStore = usePostsStore();
-const authStore = useAuthStore();
-const usersStore = useUsersStore();
-const commentsStore = useCommentsStore();
+const route = useRoute()
+const postsStore = usePostsStore()
+const authStore = useAuthStore()
+const usersStore = useUsersStore()
+const commentsStore = useCommentsStore()
 
-const activeTab = ref('posts');
-const loading = ref(true);
+const activeTab = ref('posts')
+const loading = ref(true)
 
-const isCommentDialogOpen = ref(false);
-const isCommenting = ref(false);
-const activePostId = ref<string | null>(null);
+const isCommentDialogOpen = ref(false)
+const isCommenting = ref(false)
+const activePostId = ref<string | null>(null)
 
-const userId = computed(() => (route.params.id as string) || authStore.currentUserId);
+const userId = computed(() => (route.params.id as string) || authStore.currentUserId)
 
 const tabs = [
   { id: 'posts', label: 'Posts' },
   { id: 'followers', label: 'Followers' },
   { id: 'following', label: 'Following' },
   { id: 'likes', label: 'Likes' }
-];
+]
 
 const profileUser = computed(() => {
-  if (!userId.value) return null;
-  return usersStore.profiles[userId.value] || (userId.value === authStore.user?.id ? authStore.user : null);
-});
+  if (!userId.value) return null
+  return (
+    usersStore.profiles[userId.value] ||
+    (userId.value === authStore.user?.id ? authStore.user : null)
+  )
+})
 
 const stats = computed(() => ({
   posts: profileUser.value?.postsCount || 0,
   followers: profileUser.value?.followersCount || 0,
   following: profileUser.value?.followingCount || 0
-}));
+}))
 
-const isOwnProfile = computed(() => authStore.user?.id === userId.value);
+const isOwnProfile = computed(() => authStore.user?.id === userId.value)
 
 const handleStatClick = (statId: string) => {
   if (statId === 'followers' || statId === 'following' || statId === 'posts') {
-    activeTab.value = statId;
+    activeTab.value = statId
   }
-};
+}
 
 const handleComment = (id: string) => {
-  activePostId.value = id;
-  isCommentDialogOpen.value = true;
-};
+  activePostId.value = id
+  isCommentDialogOpen.value = true
+}
 
 const handleShare = async (id: string) => {
-  const post = postsStore.feed.find(p => p.id === id);
-  if (!post) return;
-  const url = `${window.location.origin}/post/${id}`;
+  const post = postsStore.feed.find((p) => p.id === id)
+  if (!post) return
+  const url = `${window.location.origin}/post/${id}`
   if (navigator.share) {
     try {
       await navigator.share({
         title: `Post de ${post.authorName || 'Nexo'}`,
         text: post.content,
-        url,
-      });
-      await postsStore.sharePost(id);
+        url
+      })
+      await postsStore.sharePost(id)
     } catch (err) {
-      console.error('Error sharing', err);
+      console.error('Error sharing', err)
     }
   } else {
     try {
-      await navigator.clipboard.writeText(url);
-      alert('Enlace copiado al portapapeles');
-      await postsStore.sharePost(id);
+      await navigator.clipboard.writeText(url)
+      alert('Enlace copiado al portapapeles')
+      await postsStore.sharePost(id)
     } catch (err) {
-      console.error('Error copying to clipboard', err);
+      console.error('Error copying to clipboard', err)
     }
   }
-};
+}
 
 const submitComment = async (content: string) => {
-  if (!activePostId.value) return;
-  
-  isCommenting.value = true;
+  if (!activePostId.value) return
+
+  isCommenting.value = true
   try {
-    await commentsStore.addComment(activePostId.value, content);
-    isCommentDialogOpen.value = false;
+    await commentsStore.addComment(activePostId.value, content)
+    isCommentDialogOpen.value = false
   } catch (err) {
-    console.error('Error submitting comment', err);
+    console.error('Error submitting comment', err)
   } finally {
-    isCommenting.value = false;
+    isCommenting.value = false
   }
-};
+}
 
 onMounted(() => {
-  loadProfileData();
-});
-
+  loadProfileData()
+})
 
 onUnmounted(() => {
   if (userId.value) {
-    usersStore.unsubscribeFromProfile(userId.value);
+    usersStore.unsubscribeFromProfile(userId.value)
   }
-  postsStore.unsubscribe();
-});
+  postsStore.unsubscribe()
+})
 
 const loadProfileData = async () => {
   if (!userId.value) {
-    loading.value = false;
-    return;
+    loading.value = false
+    return
   }
 
-  loading.value = true;
+  loading.value = true
   try {
     // 1. Cargar perfil inicial y suscribirse
-    await usersStore.fetchProfile(userId.value);
-    usersStore.subscribeToProfile(userId.value);
-    
+    await usersStore.fetchProfile(userId.value)
+    usersStore.subscribeToProfile(userId.value)
+
     // 2. Suscribirse a posts del usuario
-    postsStore.subscribeToUserPosts(userId.value);
-    
+    postsStore.subscribeToUserPosts(userId.value)
+
     // 3. Verificar si lo seguimos
     if (!isOwnProfile.value) {
-      await usersStore.checkIsFollowing(userId.value);
+      await usersStore.checkIsFollowing(userId.value)
     }
   } catch (error) {
-    console.error('Error loading profile:', error);
+    console.error('Error loading profile:', error)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 // Cargar listas cuando se cambia de pestaña
 watch(activeTab, (newTab) => {
   if (newTab === 'followers' && userId.value) {
-    usersStore.fetchFollowers(userId.value);
+    usersStore.fetchFollowers(userId.value)
   } else if (newTab === 'following' && userId.value) {
-    usersStore.fetchFollowing(userId.value);
+    usersStore.fetchFollowing(userId.value)
   }
-});
+})
 
 // Recargar si cambia el ID en la ruta
-watch(() => route.params.id, (newId, oldId) => {
-  if (oldId) {
-    usersStore.unsubscribeFromProfile(oldId as string);
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    if (oldId) {
+      usersStore.unsubscribeFromProfile(oldId as string)
+    }
+    activeTab.value = 'posts'
+    loadProfileData()
   }
-  activeTab.value = 'posts';
-  loadProfileData();
-});
+)
 </script>
 
 <style scoped>
@@ -403,7 +406,8 @@ watch(() => route.params.id, (newId, oldId) => {
   color: var(--text-disabled);
 }
 
-.loading-container, .error-container {
+.loading-container,
+.error-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -423,7 +427,9 @@ watch(() => route.params.id, (newId, oldId) => {
 /* Animations */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .fade-slide-enter-from {

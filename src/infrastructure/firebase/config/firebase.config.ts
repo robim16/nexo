@@ -25,7 +25,7 @@ const firebaseConfig = {
 // Validar configuración
 const validateConfig = () => {
   const required = ['apiKey', 'authDomain', 'projectId']
-  const missing = required.filter(key => !firebaseConfig[key as keyof typeof firebaseConfig])
+  const missing = required.filter((key) => !firebaseConfig[key as keyof typeof firebaseConfig])
   if (missing.length > 0) {
     throw new Error(`Configuración Firebase faltante: ${missing.join(', ')}`)
   }
@@ -48,13 +48,12 @@ export const storage: FirebaseStorage = getStorage(app)
 export const functions: Functions = getFunctions(app)
 
 // Analytics (solo en producción)
-export const analytics: Analytics | null =
-  import.meta.env.PROD ? getAnalytics(app) : null
+export const analytics: Analytics | null = import.meta.env.PROD ? getAnalytics(app) : null
 
 // Configuración de emuladores (solo en desarrollo)
 if (import.meta.env.DEV) {
   const USE_EMULATORS = import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true'
-  
+
   console.log('🔥 Firebase Config:', {
     projectId: firebaseConfig.projectId,
     useEmulators: USE_EMULATORS,

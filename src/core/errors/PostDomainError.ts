@@ -27,10 +27,7 @@ export class PostDomainError extends DomainError {
   // --- Factories semánticas ---
 
   static notFound(postId: string): PostDomainError {
-    return new PostDomainError(
-      'POST_NOT_FOUND',
-      `No se encontró la publicación con ID "${postId}"`
-    )
+    return new PostDomainError('POST_NOT_FOUND', `No se encontró la publicación con ID "${postId}"`)
   }
 
   static contentTooShort(minLength: number): PostDomainError {
@@ -55,17 +52,11 @@ export class PostDomainError extends DomainError {
   }
 
   static alreadyLiked(): PostDomainError {
-    return new PostDomainError(
-      'ALREADY_LIKED',
-      'Ya has dado like a esta publicación'
-    )
+    return new PostDomainError('ALREADY_LIKED', 'Ya has dado like a esta publicación')
   }
 
   static notLiked(): PostDomainError {
-    return new PostDomainError(
-      'NOT_LIKED',
-      'No has dado like a esta publicación'
-    )
+    return new PostDomainError('NOT_LIKED', 'No has dado like a esta publicación')
   }
 
   static editWindowExpired(hours: number = 24): PostDomainError {
@@ -83,9 +74,6 @@ export class PostDomainError extends DomainError {
   }
 
   static imageTooLarge(maxMB: number): PostDomainError {
-    return new PostDomainError(
-      'IMAGE_TOO_LARGE',
-      `Cada imagen no puede superar ${maxMB} MB`
-    )
+    return new PostDomainError('IMAGE_TOO_LARGE', `Cada imagen no puede superar ${maxMB} MB`)
   }
 }

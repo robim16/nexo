@@ -7,12 +7,10 @@ export interface UpdatePasswordDTO {
 }
 
 const MIN_PASSWORD_LENGTH = 8
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
 export class UpdatePasswordUseCase {
-  constructor(
-    private readonly authService: IAuthService
-  ) {}
+  constructor(private readonly authService: IAuthService) {}
 
   async execute(dto: UpdatePasswordDTO): Promise<void> {
     // 1. Validar contraseña

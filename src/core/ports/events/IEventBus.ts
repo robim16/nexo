@@ -30,18 +30,12 @@ export interface IEventBus {
    * Suscribe un handler a un tipo de evento específico.
    * @returns Función para cancelar la suscripción
    */
-  subscribe<TPayload = unknown>(
-    eventType: string,
-    handler: EventHandler<TPayload>
-  ): () => void
+  subscribe<TPayload = unknown>(eventType: string, handler: EventHandler<TPayload>): () => void
 
   /**
    * Cancela la suscripción de un handler a un tipo de evento.
    */
-  unsubscribe<TPayload = unknown>(
-    eventType: string,
-    handler: EventHandler<TPayload>
-  ): void
+  unsubscribe<TPayload = unknown>(eventType: string, handler: EventHandler<TPayload>): void
 
   /**
    * Publica un evento de forma asíncrona (no bloquea el caso de uso).

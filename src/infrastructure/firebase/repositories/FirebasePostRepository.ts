@@ -17,7 +17,11 @@ import {
 } from 'firebase/firestore'
 import { collections } from '../config/firebase.config'
 import { FirebaseBaseRepository } from './FirebaseBaseRepository'
-import { IPostRepository, Unsubscribe, FeedOptions } from '@/core/ports/repositories/IPostRepository'
+import {
+  IPostRepository,
+  Unsubscribe,
+  FeedOptions
+} from '@/core/ports/repositories/IPostRepository'
 import { Post } from '@/core/entities/Post'
 import { PostId } from '@/core/value-objects/PostId'
 import { UserId } from '@/core/value-objects/UserId'
@@ -42,7 +46,7 @@ export class FirebasePostRepository
   async findByAuthor(authorId: UserId, options?: FeedOptions): Promise<Post[]> {
     try {
       const fetchLimit = options?.limit || 20
-      
+
       let q = query(
         this.collection,
         where('authorId', '==', authorId.value),
@@ -59,26 +63,22 @@ export class FirebasePostRepository
       }
 
       const snapshot = await getDocs(q)
-      return snapshot.docs.map(doc => doc.data() as Post)
+      return snapshot.docs.map((doc) => doc.data() as Post)
     } catch (error) {
       this.handleError('findByAuthor', error)
       return []
     }
   }
 
-  async getFeed(
-    userId: UserId,
-    followingIds: string[],
-    options?: FeedOptions
-  ): Promise<Post[]> {
+  async getFeed(userId: UserId, followingIds: string[], options?: FeedOptions): Promise<Post[]> {
     try {
       if (!followingIds || followingIds.length === 0) return []
 
       const fetchLimit = options?.limit || 20
-      
+
       // Firebase 'in' max limit is 10
       const idsToFetch = followingIds.slice(0, 10)
-      
+
       let q = query(
         this.collection,
         where('authorId', 'in', idsToFetch),
@@ -95,7 +95,7 @@ export class FirebasePostRepository
       }
 
       const snapshot = await getDocs(q)
-      return snapshot.docs.map(doc => doc.data() as Post)
+      return snapshot.docs.map((doc) => doc.data() as Post)
     } catch (error) {
       this.handleError('getFeed', error)
       return []
@@ -187,17 +187,14 @@ export class FirebasePostRepository
     )
   }
 
-  subscribeToFeed(
-    followingIds: string[],
-    callback: (posts: Post[]) => void
-  ): Unsubscribe {
+  subscribeToFeed(followingIds: string[], callback: (posts: Post[]) => void): Unsubscribe {
     if (!followingIds || followingIds.length === 0) {
       callback([])
       return () => {}
     }
 
     const idsToFetch = followingIds.slice(0, 10)
-    
+
     const q = query(
       this.collection,
       where('authorId', 'in', idsToFetch),
@@ -208,7 +205,7 @@ export class FirebasePostRepository
     return onSnapshot(
       q,
       (snapshot) => {
-        const posts = snapshot.docs.map(doc => doc.data() as Post)
+        const posts = snapshot.docs.map((doc) => doc.data() as Post)
         callback(posts)
       },
       (error) => {
@@ -229,7 +226,7 @@ export class FirebasePostRepository
     return onSnapshot(
       q,
       (snapshot) => {
-        const posts = snapshot.docs.map(doc => doc.data() as Post)
+        const posts = snapshot.docs.map((doc) => doc.data() as Post)
         callback(posts)
       },
       (error) => {
@@ -259,11 +256,11 @@ export class FirebasePostRepository
         orderBy('createdAt', 'desc'),
         fbLimit(100)
       )
-      
+
       const snapshot = await getDocs(q)
       const tagCounts: Record<string, number> = {}
-      
-      snapshot.docs.forEach(doc => {
+
+      snapshot.docs.forEach((doc) => {
         const post = doc.data() as any
         if (post.hashtags && Array.isArray(post.hashtags)) {
           post.hashtags.forEach((tag: string) => {
@@ -271,7 +268,7 @@ export class FirebasePostRepository
           })
         }
       })
-      
+
       return Object.entries(tagCounts)
         .map(([tag, count]) => ({ tag: `#${tag}`, count }))
         .sort((a, b) => b.count - a.count)
@@ -284,17 +281,17 @@ export class FirebasePostRepository
 
   async search(searchQuery: string, limitCount: number = 20): Promise<Post[]> {
     try {
-      let q;
-      
+      let q
+
       if (searchQuery.startsWith('#')) {
         // Búsqueda por hashtag exacto
-        const hashtag = searchQuery.substring(1).toLowerCase();
+        const hashtag = searchQuery.substring(1).toLowerCase()
         q = query(
           this.collection,
           where('hashtags', 'array-contains', hashtag),
           orderBy('createdAt', 'desc'),
           fbLimit(limitCount)
-        );
+        )
       } else {
         // Búsqueda por prefijo en el contenido (limitado en Firestore)
         q = query(
@@ -302,14 +299,14 @@ export class FirebasePostRepository
           where('content', '>=', searchQuery),
           where('content', '<=', searchQuery + '\uf8ff'),
           fbLimit(limitCount)
-        );
+        )
       }
 
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => doc.data() as Post);
+      const snapshot = await getDocs(q)
+      return snapshot.docs.map((doc) => doc.data() as Post)
     } catch (error) {
-      this.handleError('search', error);
-      return [];
+      this.handleError('search', error)
+      return []
     }
   }
 }

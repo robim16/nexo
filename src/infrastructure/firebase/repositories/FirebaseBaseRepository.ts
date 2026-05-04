@@ -22,7 +22,9 @@ export abstract class FirebaseBaseRepository<T, ID> implements IBaseRepository<T
     protected collectionName: string,
     protected converter: FirestoreDataConverter<T>
   ) {
-    this.collection = collection(db, collectionName).withConverter(converter) as CollectionReference<T>
+    this.collection = collection(db, collectionName).withConverter(
+      converter
+    ) as CollectionReference<T>
   }
 
   protected abstract idToString(id: ID): string
@@ -44,7 +46,7 @@ export abstract class FirebaseBaseRepository<T, ID> implements IBaseRepository<T
     try {
       const q = query(this.collection, fbLimit(limit))
       const snapshot = await getDocs(q)
-      return snapshot.docs.map(doc => doc.data())
+      return snapshot.docs.map((doc) => doc.data())
     } catch (error) {
       this.handleError('findAll', error)
       return []

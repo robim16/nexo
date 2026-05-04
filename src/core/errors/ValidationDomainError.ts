@@ -22,18 +22,14 @@ export class ValidationDomainError extends DomainError {
     return {
       ...super.toJSON(),
       field: this.field,
-      invalidValue: this.invalidValue,
+      invalidValue: this.invalidValue
     }
   }
 
   // --- Factories semánticas ---
 
   static required(field: string): ValidationDomainError {
-    return new ValidationDomainError(
-      `El campo "${field}" es obligatorio`,
-      field,
-      null
-    )
+    return new ValidationDomainError(`El campo "${field}" es obligatorio`, field, null)
   }
 
   static tooShort(field: string, min: number, value: string): ValidationDomainError {

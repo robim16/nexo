@@ -24,7 +24,7 @@ export abstract class DomainError extends Error {
       name: this.name,
       code: this.code,
       domain: this.domain,
-      message: this.message,
+      message: this.message
     }
   }
 

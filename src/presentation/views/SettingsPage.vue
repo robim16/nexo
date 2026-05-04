@@ -12,37 +12,48 @@
       <section class="settings-section glass">
         <div class="section-header">
           <div class="section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
             </svg>
           </div>
           <h3 class="section-title">Profile Settings</h3>
         </div>
-        
+
         <div class="section-content">
           <!-- Avatar Upload -->
           <div class="avatar-upload-section">
             <div class="avatar-preview-container" @click="triggerAvatarUpload">
-              <BaseAvatar 
-                :src="avatarPreview || authStore.user?.avatar" 
+              <BaseAvatar
+                :src="avatarPreview || authStore.user?.avatar"
                 :name="authStore.user?.displayName"
                 size="2xl"
                 class="settings-avatar"
-                :class="{ 'uploading': isUploadingAvatar }"
+                :class="{ uploading: isUploadingAvatar }"
               />
               <div class="avatar-edit-overlay">
                 <span v-if="isUploadingAvatar">{{ uploadProgress }}%</span>
                 <span v-else>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+                    <path
+                      d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                    />
+                    <circle cx="12" cy="13" r="4" />
                   </svg>
                 </span>
               </div>
-              <input 
-                type="file" 
-                ref="avatarInput" 
-                accept="image/*" 
-                style="display: none" 
+              <input
+                type="file"
+                ref="avatarInput"
+                accept="image/*"
+                style="display: none"
                 @change="handleAvatarSelected"
               />
             </div>
@@ -56,22 +67,22 @@
           </div>
 
           <div class="form-grid">
-            <BaseInput 
-              label="Display Name" 
-              placeholder="How others see you" 
+            <BaseInput
+              label="Display Name"
+              placeholder="How others see you"
               v-model="profileForm.displayName"
             />
-            <BaseInput 
-              label="Handle" 
-              placeholder="@username" 
+            <BaseInput
+              label="Handle"
+              placeholder="@username"
               v-model="profileForm.handle"
               disabled
             />
           </div>
           <div class="form-group">
-            <BaseInput 
-              label="Bio" 
-              placeholder="Tell the world your story..." 
+            <BaseInput
+              label="Bio"
+              placeholder="Tell the world your story..."
               v-model="profileForm.bio"
               type="textarea"
             />
@@ -81,9 +92,9 @@
           <div v-if="profileSuccess" class="success-message">Profile updated successfully!</div>
 
           <div class="action-row">
-            <BaseButton 
-              variant="primary" 
-              size="md" 
+            <BaseButton
+              variant="primary"
+              size="md"
               :loading="usersStore.loading"
               @click="handleUpdateProfile"
             >
@@ -97,18 +108,27 @@
       <section class="settings-section glass">
         <div class="section-header">
           <div class="section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+              />
             </svg>
           </div>
           <h3 class="section-title">Appearance</h3>
         </div>
-        
+
         <div class="section-content">
           <div class="appearance-grid">
-            <div 
-              v-for="theme in themes" 
-              :key="theme.id" 
+            <div
+              v-for="theme in themes"
+              :key="theme.id"
               class="theme-card"
               :class="{ active: activeTheme === theme.id }"
               @click="activeTheme = theme.id"
@@ -126,13 +146,21 @@
       <section class="settings-section glass">
         <div class="section-header">
           <div class="section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
           </div>
           <h3 class="section-title">Privacy & Security</h3>
         </div>
-        
+
         <div class="section-content">
           <div class="toggle-list">
             <div class="toggle-item">
@@ -157,38 +185,43 @@
       <section class="settings-section glass">
         <div class="section-header">
           <div class="section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
           </div>
           <h3 class="section-title">Security</h3>
         </div>
-        
+
         <div class="section-content">
           <div class="form-grid">
-            <BaseInput 
-              label="New Password" 
+            <BaseInput
+              label="New Password"
               type="password"
-              placeholder="Min. 8 chars, mixed case, symbols" 
+              placeholder="Min. 8 chars, mixed case, symbols"
               v-model="securityForm.newPassword"
             />
-            <BaseInput 
-              label="Confirm Password" 
+            <BaseInput
+              label="Confirm Password"
               type="password"
-              placeholder="Repeat new password" 
+              placeholder="Repeat new password"
               v-model="securityForm.confirmPassword"
             />
           </div>
           <div v-if="passwordError" class="error-message">
             {{ passwordError }}
           </div>
-          <div v-if="passwordSuccess" class="success-message">
-            Password updated successfully!
-          </div>
+          <div v-if="passwordSuccess" class="success-message">Password updated successfully!</div>
           <div class="action-row">
-            <BaseButton 
-              variant="primary" 
-              size="md" 
+            <BaseButton
+              variant="primary"
+              size="md"
               :loading="authStore.loading"
               @click="handleUpdatePassword"
             >
@@ -202,15 +235,28 @@
       <section class="settings-section danger-glass">
         <div class="section-header">
           <div class="section-icon text-error">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+              />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
           </div>
           <h3 class="section-title danger-text">Danger Zone</h3>
         </div>
-        
+
         <div class="section-content">
-          <p class="danger-desc">Once you delete your account, there is no going back. Please be certain.</p>
+          <p class="danger-desc">
+            Once you delete your account, there is no going back. Please be certain.
+          </p>
           <div class="action-row">
             <BaseButton variant="glass" size="md" class="btn-danger">Delete Account</BaseButton>
           </div>
@@ -221,133 +267,133 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
-import BaseInput from '@/presentation/components/common/BaseInput.vue';
-import BaseButton from '@/presentation/components/common/BaseButton.vue';
-import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
-import { useAuthStore } from '@/application/stores/auth.store';
-import { useUsersStore } from '@/application/stores/users.store';
+import { ref, reactive, onMounted } from 'vue'
+import BaseInput from '@/presentation/components/common/BaseInput.vue'
+import BaseButton from '@/presentation/components/common/BaseButton.vue'
+import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue'
+import { useAuthStore } from '@/application/stores/auth.store'
+import { useUsersStore } from '@/application/stores/users.store'
 
-const authStore = useAuthStore();
-const usersStore = useUsersStore();
+const authStore = useAuthStore()
+const usersStore = useUsersStore()
 
 const profileForm = reactive({
   displayName: '',
   handle: '',
   bio: ''
-});
+})
 
-const profileError = ref<string | null>(null);
-const profileSuccess = ref(false);
+const profileError = ref<string | null>(null)
+const profileSuccess = ref(false)
 
-const avatarInput = ref<HTMLInputElement | null>(null);
-const avatarPreview = ref<string | null>(null);
-const avatarFile = ref<File | null>(null);
-const isUploadingAvatar = ref(false);
-const uploadProgress = ref(0);
+const avatarInput = ref<HTMLInputElement | null>(null)
+const avatarPreview = ref<string | null>(null)
+const avatarFile = ref<File | null>(null)
+const isUploadingAvatar = ref(false)
+const uploadProgress = ref(0)
 
 onMounted(() => {
   if (authStore.user) {
-    profileForm.displayName = authStore.user.displayName;
-    const handle = authStore.user.email.split('@')[0];
-    profileForm.handle = `@${handle}`;
-    profileForm.bio = authStore.user.bio || '';
+    profileForm.displayName = authStore.user.displayName
+    const handle = authStore.user.email.split('@')[0]
+    profileForm.handle = `@${handle}`
+    profileForm.bio = authStore.user.bio || ''
   }
-});
+})
 
 function triggerAvatarUpload() {
-  avatarInput.value?.click();
+  avatarInput.value?.click()
 }
 
 function handleAvatarSelected(e: Event) {
-  const target = e.target as HTMLInputElement;
+  const target = e.target as HTMLInputElement
   if (target.files && target.files[0]) {
-    const file = target.files[0];
+    const file = target.files[0]
     if (file.size > 5 * 1024 * 1024) {
-      profileError.value = 'Image size must be less than 5MB';
-      return;
+      profileError.value = 'Image size must be less than 5MB'
+      return
     }
-    
-    avatarFile.value = file;
+
+    avatarFile.value = file
     // Create local preview
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = (event) => {
-      avatarPreview.value = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-    profileSuccess.value = false;
+      avatarPreview.value = event.target?.result as string
+    }
+    reader.readAsDataURL(file)
+    profileSuccess.value = false
   }
 }
 
 async function handleUpdateProfile() {
-  profileError.value = null;
-  profileSuccess.value = false;
-  
+  profileError.value = null
+  profileSuccess.value = false
+
   try {
-    isUploadingAvatar.value = !!avatarFile.value;
-    
+    isUploadingAvatar.value = !!avatarFile.value
+
     await usersStore.updateProfile({
       avatarFile: avatarFile.value || undefined,
       displayName: profileForm.displayName,
       bio: profileForm.bio,
       onProgress: (percent) => {
-        uploadProgress.value = percent;
+        uploadProgress.value = percent
       }
-    });
-    
-    profileSuccess.value = true;
-    avatarFile.value = null;
-    avatarPreview.value = null;
-    
+    })
+
+    profileSuccess.value = true
+    avatarFile.value = null
+    avatarPreview.value = null
+
     // Hide success message after 3 seconds
     setTimeout(() => {
-      profileSuccess.value = false;
-    }, 3000);
+      profileSuccess.value = false
+    }, 3000)
   } catch (err: any) {
-    profileError.value = err.message || 'Error updating profile';
+    profileError.value = err.message || 'Error updating profile'
   } finally {
-    isUploadingAvatar.value = false;
-    uploadProgress.value = 0;
+    isUploadingAvatar.value = false
+    uploadProgress.value = 0
   }
 }
 
 const securityForm = reactive({
   newPassword: '',
   confirmPassword: ''
-});
+})
 
-const passwordError = ref<string | null>(null);
-const passwordSuccess = ref(false);
+const passwordError = ref<string | null>(null)
+const passwordSuccess = ref(false)
 
 async function handleUpdatePassword() {
-  passwordError.value = null;
-  passwordSuccess.value = false;
+  passwordError.value = null
+  passwordSuccess.value = false
 
   if (securityForm.newPassword !== securityForm.confirmPassword) {
-    passwordError.value = 'Passwords do not match';
-    return;
+    passwordError.value = 'Passwords do not match'
+    return
   }
 
   try {
-    await authStore.updatePassword(securityForm.newPassword);
-    passwordSuccess.value = true;
-    securityForm.newPassword = '';
-    securityForm.confirmPassword = '';
-    
+    await authStore.updatePassword(securityForm.newPassword)
+    passwordSuccess.value = true
+    securityForm.newPassword = ''
+    securityForm.confirmPassword = ''
+
     setTimeout(() => {
-      passwordSuccess.value = false;
-    }, 3000);
+      passwordSuccess.value = false
+    }, 3000)
   } catch (err: any) {
-    passwordError.value = err.message || 'Error updating password';
+    passwordError.value = err.message || 'Error updating password'
   }
 }
 
-const activeTheme = ref('onyx');
+const activeTheme = ref('onyx')
 const themes = [
   { id: 'onyx', name: 'Onyx Dark', preview: '#0a0a0b', accent: 'var(--color-primary)' },
   { id: 'glass', name: 'Crystal', preview: '#1a1a1c', accent: 'var(--color-secondary)' },
   { id: 'nebula', name: 'Nebula', preview: '#0f0c29', accent: '#ff00ff' }
-];
+]
 </script>
 
 <style scoped>
@@ -668,7 +714,7 @@ const themes = [
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .settings-section {
     padding: var(--space-6);
   }

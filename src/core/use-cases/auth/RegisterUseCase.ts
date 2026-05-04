@@ -23,7 +23,7 @@ export interface RegisterResult {
 }
 
 const MIN_PASSWORD_LENGTH = 8
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
 export class RegisterUseCase {
   constructor(
@@ -53,7 +53,7 @@ export class RegisterUseCase {
     const user = User.create({
       id: authUser.id.value,
       email: email.value,
-      displayName: displayName.value,
+      displayName: displayName.value
     })
 
     // 6. Persistir perfil en el repositorio
@@ -63,13 +63,13 @@ export class RegisterUseCase {
     const payload: UserRegisteredPayload = {
       userId: user.id.value,
       email: email.value,
-      displayName: displayName.value,
+      displayName: displayName.value
     }
 
     this.eventBus.publish({
       type: DomainEvents.USER_REGISTERED,
       timestamp: new Date(),
-      payload,
+      payload
     })
 
     return { user }

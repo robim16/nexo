@@ -1,4 +1,4 @@
-import { User, type UserPlainObject, type ReconstituteUserData } from '../../core/entities/User';
+import { User, type UserPlainObject, type ReconstituteUserData } from '../../core/entities/User'
 
 /**
  * UserMapper
@@ -10,7 +10,7 @@ export class UserMapper {
    * Convierte una entidad User a un objeto plano.
    */
   static toPlain(user: User): UserPlainObject {
-    return user.toPlainObject();
+    return user.toPlainObject()
   }
 
   /**
@@ -21,13 +21,13 @@ export class UserMapper {
       ...plain,
       createdAt: new Date(plain.createdAt),
       updatedAt: new Date(plain.updatedAt)
-    });
+    })
   }
 
   /**
    * Mapea una lista de entidades a objetos planos.
    */
   static toPlainList(users: User[]): UserPlainObject[] {
-    return users.map(user => this.toPlain(user));
+    return users.map((user) => this.toPlain(user))
   }
 }

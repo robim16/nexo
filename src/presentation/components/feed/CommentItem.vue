@@ -1,6 +1,11 @@
 <template>
   <div class="comment-item">
-    <BaseAvatar :src="comment.authorAvatar" :name="comment.authorName" size="sm" class="author-avatar" />
+    <BaseAvatar
+      :src="comment.authorAvatar"
+      :name="comment.authorName"
+      size="sm"
+      class="author-avatar"
+    />
     <div class="comment-content">
       <header class="comment-header">
         <span class="author-name">{{ comment.authorName || 'User' }}</span>
@@ -12,25 +17,25 @@
 </template>
 
 <script setup lang="ts">
-import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
+import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue'
 
 export interface CommentDisplay {
-  id: string;
-  authorId: string;
-  authorName?: string;
-  authorAvatar?: string | null;
-  content: string;
-  createdAt: string | Date;
+  id: string
+  authorId: string
+  authorName?: string
+  authorAvatar?: string | null
+  content: string
+  createdAt: string | Date
 }
 
 defineProps<{
-  comment: CommentDisplay;
-}>();
+  comment: CommentDisplay
+}>()
 
 const formatDate = (date: string | Date) => {
-  const d = new Date(date);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-};
+  const d = new Date(date)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
 </script>
 
 <style scoped>

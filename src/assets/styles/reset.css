@@ -41,12 +41,18 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   line-height: var(--line-height-normal);
-  transition: background-color var(--duration-slow) var(--ease-in-out),
-              color var(--duration-slow) var(--ease-in-out);
+  transition:
+    background-color var(--duration-slow) var(--ease-in-out),
+    color var(--duration-slow) var(--ease-in-out);
 }
 
 /* ── Typography ───────────────────────────────────────────── */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
   letter-spacing: var(--letter-spacing-tight);
@@ -54,7 +60,9 @@ h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
 }
 
-p, li, blockquote {
+p,
+li,
+blockquote {
   overflow-wrap: break-word;
   hyphens: auto;
   line-height: var(--line-height-relaxed);
@@ -79,12 +87,17 @@ a:focus-visible {
 }
 
 /* ── Lists ────────────────────────────────────────────────── */
-ol, ul {
+ol,
+ul {
   list-style: none;
 }
 
 /* ── Media ────────────────────────────────────────────────── */
-img, picture, video, canvas, svg {
+img,
+picture,
+video,
+canvas,
+svg {
   display: block;
   max-width: 100%;
 }
@@ -94,7 +107,10 @@ img {
 }
 
 /* ── Form elements ────────────────────────────────────────── */
-input, button, textarea, select {
+input,
+button,
+textarea,
+select {
   font: inherit;
   color: inherit;
   background: transparent;

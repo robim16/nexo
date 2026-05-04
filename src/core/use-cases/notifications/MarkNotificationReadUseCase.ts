@@ -27,20 +27,20 @@ export class MarkNotificationReadUseCase {
       // Primero verificar pertinencia
       const notif = await this.notificationRepository.findById(notificationId)
       if (notif && notif.belongsTo(userId) && !notif.isRead) {
-         await this.notificationRepository.markAsRead(notificationId)
-         this.eventBus.publish({
-            type: DomainEvents.NOTIFICATION_READ,
-            timestamp: new Date(),
-            payload: { notificationId: dto.notificationId }
-         })
+        await this.notificationRepository.markAsRead(notificationId)
+        this.eventBus.publish({
+          type: DomainEvents.NOTIFICATION_READ,
+          timestamp: new Date(),
+          payload: { notificationId: dto.notificationId }
+        })
       }
     } else {
       // Marcar todas
       await this.notificationRepository.markAllAsRead(userId)
       this.eventBus.publish({
-         type: DomainEvents.ALL_NOTIFICATIONS_READ,
-         timestamp: new Date(),
-         payload: { userId: dto.userId }
+        type: DomainEvents.ALL_NOTIFICATIONS_READ,
+        timestamp: new Date(),
+        payload: { userId: dto.userId }
       })
     }
   }

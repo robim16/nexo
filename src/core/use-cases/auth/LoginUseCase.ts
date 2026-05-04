@@ -43,13 +43,13 @@ export class LoginUseCase {
     const authUser = await this.authService.signIn(email.value, dto.password)
 
     // 4. Cargar el perfil completo del usuario desde el repositorio
-    const user = await this.userRepository.findById(authUser.id) ?? authUser
+    const user = (await this.userRepository.findById(authUser.id)) ?? authUser
 
     // 5. Publicar evento de dominio
     this.eventBus.publish({
       type: DomainEvents.USER_LOGGED_IN,
       timestamp: new Date(),
-      payload: { userId: user.id.value },
+      payload: { userId: user.id.value }
     })
 
     return { user }

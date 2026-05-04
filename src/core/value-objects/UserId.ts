@@ -4,7 +4,6 @@
  * Garantiza formato UUID v4 válido e inmutabilidad.
  */
 export class UserId {
-
   private constructor(public readonly value: string) {}
 
   /** Crea un UserId desde un string existente */

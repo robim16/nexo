@@ -7,11 +7,20 @@
       </div>
       <div class="search-bar">
         <div class="search-wrapper">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <BaseInput 
-            v-model="searchQuery" 
-            type="text" 
-            placeholder="Search posts, people, hashtags..." 
+          <svg
+            class="search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <BaseInput
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search posts, people, hashtags..."
             class="search-input"
           />
         </div>
@@ -26,7 +35,10 @@
           Searching...
         </div>
 
-        <div v-else-if="searchStore.userResults.length === 0 && searchStore.postResults.length === 0" class="search-status">
+        <div
+          v-else-if="searchStore.userResults.length === 0 && searchStore.postResults.length === 0"
+          class="search-status"
+        >
           No results found for "{{ searchQuery }}"
         </div>
 
@@ -35,10 +47,10 @@
           <section v-if="searchStore.userResults.length > 0" class="results-group">
             <h2 class="section-label">People</h2>
             <div class="users-grid">
-              <UserSearchResult 
-                v-for="user in searchStore.userResults" 
-                :key="user.id" 
-                :user="user" 
+              <UserSearchResult
+                v-for="user in searchStore.userResults"
+                :key="user.id"
+                :user="user"
               />
             </div>
           </section>
@@ -46,8 +58,8 @@
           <!-- Post Results -->
           <section v-if="searchStore.postResults.length > 0" class="results-group">
             <h2 class="section-label">Posts</h2>
-            <PostList 
-              :items="searchStore.postResults" 
+            <PostList
+              :items="searchStore.postResults"
               :loading="false"
               @like="postsStore.toggleLike"
               @comment="handleComment"
@@ -60,16 +72,16 @@
       <!-- Trending Feed (Default) -->
       <div v-else class="feed-section">
         <h2 class="section-label px-4">Trending Now</h2>
-        <PostList 
-          :items="postsStore.feed" 
+        <PostList
+          :items="postsStore.feed"
           :loading="postsStore.loading"
           @like="postsStore.toggleLike"
           @comment="handleComment"
           @share="handleShare"
         />
       </div>
-      
-      <CommentDialog 
+
+      <CommentDialog
         :is-open="isCommentDialogOpen"
         :post-id="activePostId"
         :loading="isCommenting"
@@ -81,82 +93,83 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
-import BaseInput from '@/presentation/components/common/BaseInput.vue';
-import PostList from '@/presentation/components/feed/PostList.vue';
-import CommentDialog from '@/presentation/components/feed/CommentDialog.vue';
-import UserSearchResult from '@/presentation/components/search/UserSearchResult.vue';
-import { useCommentsStore } from '@/application/stores/comments.store';
-import { usePostsStore } from '@/application/stores/posts.store';
-import { useSearchStore } from '@/application/stores/search.store';
-import { useDebounce } from '@/application/composables/utils';
+import { onMounted, ref, watch } from 'vue'
+import BaseInput from '@/presentation/components/common/BaseInput.vue'
+import PostList from '@/presentation/components/feed/PostList.vue'
+import CommentDialog from '@/presentation/components/feed/CommentDialog.vue'
+import UserSearchResult from '@/presentation/components/search/UserSearchResult.vue'
+import { useCommentsStore } from '@/application/stores/comments.store'
+import { usePostsStore } from '@/application/stores/posts.store'
+import { useSearchStore } from '@/application/stores/search.store'
+import { useDebounce } from '@/application/composables/utils'
 
-const postsStore = usePostsStore();
-const commentsStore = useCommentsStore();
-const searchStore = useSearchStore();
+const postsStore = usePostsStore()
+const commentsStore = useCommentsStore()
+const searchStore = useSearchStore()
 
-const searchQuery = ref('');
-const debouncedSearch = useDebounce(searchQuery, 400);
+const searchQuery = ref('')
+const debouncedSearch = useDebounce(searchQuery, 400)
 
-const isCommentDialogOpen = ref(false);
-const isCommenting = ref(false);
-const activePostId = ref<string | null>(null);
+const isCommentDialogOpen = ref(false)
+const isCommenting = ref(false)
+const activePostId = ref<string | null>(null)
 
 const handleComment = (id: string) => {
-  activePostId.value = id;
-  isCommentDialogOpen.value = true;
-};
+  activePostId.value = id
+  isCommentDialogOpen.value = true
+}
 
 const handleShare = async (id: string) => {
-  const post = postsStore.feed.find(p => p.id === id) || searchStore.postResults.find(p => p.id === id);
-  if (!post) return;
-  
-  const url = `${window.location.origin}/post/${id}`;
+  const post =
+    postsStore.feed.find((p) => p.id === id) || searchStore.postResults.find((p) => p.id === id)
+  if (!post) return
+
+  const url = `${window.location.origin}/post/${id}`
   if (navigator.share) {
     try {
       await navigator.share({
         title: `Post de ${post.authorName || 'Nexo'}`,
         text: post.content,
-        url,
-      });
-      await postsStore.sharePost(id);
+        url
+      })
+      await postsStore.sharePost(id)
     } catch (err) {
-      console.error('Error sharing', err);
+      console.error('Error sharing', err)
     }
   } else {
     try {
-      await navigator.clipboard.writeText(url);
-      alert('Enlace copiado al portapapeles');
-      await postsStore.sharePost(id);
+      await navigator.clipboard.writeText(url)
+      alert('Enlace copiado al portapapeles')
+      await postsStore.sharePost(id)
     } catch (err) {
-      console.error('Error copying to clipboard', err);
+      console.error('Error copying to clipboard', err)
     }
   }
-};
+}
 
 const submitComment = async (content: string) => {
-  if (!activePostId.value) return;
-  
-  isCommenting.value = true;
+  if (!activePostId.value) return
+
+  isCommenting.value = true
   try {
-    await commentsStore.addComment(activePostId.value, content);
-    isCommentDialogOpen.value = false;
+    await commentsStore.addComment(activePostId.value, content)
+    isCommentDialogOpen.value = false
   } catch (err) {
-    console.error('Error submitting comment', err);
+    console.error('Error submitting comment', err)
   } finally {
-    isCommenting.value = false;
+    isCommenting.value = false
   }
-};
+}
 
 watch(debouncedSearch, (val) => {
-  searchStore.performSearch(val);
-});
+  searchStore.performSearch(val)
+})
 
 onMounted(() => {
   if (postsStore.feed.length === 0) {
-    postsStore.fetchFeed();
+    postsStore.fetchFeed()
   }
-});
+})
 </script>
 
 <style scoped>
@@ -240,7 +253,8 @@ onMounted(() => {
   padding-right: var(--space-4);
 }
 
-.feed-section, .results-section {
+.feed-section,
+.results-section {
   padding: 0 var(--space-2) var(--space-8);
 }
 
@@ -278,7 +292,9 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 640px) {

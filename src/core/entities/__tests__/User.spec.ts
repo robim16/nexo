@@ -6,7 +6,7 @@ describe('User Entity', () => {
   it('should update profile correctly', () => {
     const user = createTestUser()
     user.updateProfile('New Name', 'New Bio')
-    
+
     expect(user.displayName.value).toBe('New Name')
     expect(user.bio.value).toBe('New Bio')
   })
@@ -56,7 +56,7 @@ describe('User Entity', () => {
   it('should determine if user can post', () => {
     const activeUser = createTestUser({ isActive: true })
     const inactiveUser = createTestUser({ isActive: false })
-    
+
     expect(activeUser.canPost()).toBe(true)
     expect(inactiveUser.canPost()).toBe(false)
   })
@@ -64,7 +64,7 @@ describe('User Entity', () => {
   it('toPlainObject should return a valid plain object', () => {
     const user = createTestUser({ displayName: 'John Doe' })
     const plain = user.toPlainObject()
-    
+
     expect(plain.displayName).toBe('John Doe')
     expect(typeof plain.id).toBe('string')
   })

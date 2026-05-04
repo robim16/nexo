@@ -20,7 +20,7 @@ describe('PostCard Component', () => {
     const { getByText } = render(PostCard, {
       props: { post: mockPost },
       global: {
-        stubs: { 'BaseAvatar': true }
+        stubs: { BaseAvatar: true }
       }
     })
 
@@ -34,7 +34,7 @@ describe('PostCard Component', () => {
     const { container, emitted } = render(PostCard, {
       props: { post: mockPost },
       global: {
-        stubs: { 'BaseAvatar': true }
+        stubs: { BaseAvatar: true }
       }
     })
 
@@ -50,7 +50,7 @@ describe('PostCard Component', () => {
     const { container, emitted } = render(PostCard, {
       props: { post: likedPost },
       global: {
-        stubs: { 'BaseAvatar': true }
+        stubs: { BaseAvatar: true }
       }
     })
 
@@ -65,7 +65,7 @@ describe('PostCard Component', () => {
     const { container, emitted } = render(PostCard, {
       props: { post: mockPost },
       global: {
-        stubs: { 'BaseAvatar': true }
+        stubs: { BaseAvatar: true }
       }
     })
 
@@ -80,7 +80,7 @@ describe('PostCard Component', () => {
     const { container, emitted } = render(PostCard, {
       props: { post: mockPost },
       global: {
-        stubs: { 'BaseAvatar': true }
+        stubs: { BaseAvatar: true }
       }
     })
 

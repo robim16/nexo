@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import NotificationList from '@/presentation/components/notifications/NotificationList.vue';
+import NotificationList from '@/presentation/components/notifications/NotificationList.vue'
 </script>
 
 <style scoped>

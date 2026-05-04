@@ -31,18 +31,18 @@ const props = withDefaults(defineProps<Props>(), {
   closeOnEscape: true,
   showClose: true,
   centered: true,
-  backdrop: 'blur',
+  backdrop: 'blur'
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
-  'close': []
-  'open': []
+  close: []
+  open: []
 }>()
 
 const dialogRef = ref<HTMLDivElement | null>(null)
 const titleId = useId()
-const descId  = useId()
+const descId = useId()
 
 function close() {
   emit('update:modelValue', false)
@@ -64,7 +64,7 @@ function trapFocus(event: KeyboardEvent) {
     'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
   )
   const first = focusable[0]
-  const last  = focusable[focusable.length - 1]
+  const last = focusable[focusable.length - 1]
 
   if (event.shiftKey) {
     if (document.activeElement === first) {
@@ -80,21 +80,24 @@ function trapFocus(event: KeyboardEvent) {
 }
 
 // Focus first focusable element on open
-watch(() => props.modelValue, async (open) => {
-  if (open) {
-    document.addEventListener('keydown', onKeydown)
-    document.body.style.overflow = 'hidden'
-    await nextTick()
-    const firstFocusable = dialogRef.value?.querySelector<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    )
-    firstFocusable?.focus()
-    emit('open')
-  } else {
-    document.removeEventListener('keydown', onKeydown)
-    document.body.style.overflow = ''
+watch(
+  () => props.modelValue,
+  async (open) => {
+    if (open) {
+      document.addEventListener('keydown', onKeydown)
+      document.body.style.overflow = 'hidden'
+      await nextTick()
+      const firstFocusable = dialogRef.value?.querySelector<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+      firstFocusable?.focus()
+      emit('open')
+    } else {
+      document.removeEventListener('keydown', onKeydown)
+      document.body.style.overflow = ''
+    }
   }
-})
+)
 
 onUnmounted(() => {
   document.removeEventListener('keydown', onKeydown)
@@ -119,11 +122,7 @@ onUnmounted(() => {
             :aria-modal="true"
             :aria-labelledby="title ? titleId : undefined"
             :aria-describedby="$slots.default ? descId : undefined"
-            :class="[
-              'base-modal',
-              `base-modal--${size}`,
-              { 'base-modal--centered': centered },
-            ]"
+            :class="['base-modal', `base-modal--${size}`, { 'base-modal--centered': centered }]"
           >
             <!-- Header -->
             <div v-if="title || showClose || $slots.header" class="base-modal__header">
@@ -139,8 +138,16 @@ onUnmounted(() => {
                 aria-label="Cerrar modal"
                 @click="close"
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M18 6 6 18M6 6l12 12"/>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" />
                 </svg>
               </button>
             </div>
@@ -207,11 +214,21 @@ onUnmounted(() => {
 }
 
 /* ── Sizes ───────────────────────────────────────────────────── */
-.base-modal--xs  { max-width: var(--container-xs); }
-.base-modal--sm  { max-width: var(--container-sm); }
-.base-modal--md  { max-width: var(--container-md); }
-.base-modal--lg  { max-width: var(--container-3xl); }
-.base-modal--xl  { max-width: var(--container-5xl); }
+.base-modal--xs {
+  max-width: var(--container-xs);
+}
+.base-modal--sm {
+  max-width: var(--container-sm);
+}
+.base-modal--md {
+  max-width: var(--container-md);
+}
+.base-modal--lg {
+  max-width: var(--container-3xl);
+}
+.base-modal--xl {
+  max-width: var(--container-5xl);
+}
 .base-modal--full {
   max-width: 100%;
   max-height: 100dvh;

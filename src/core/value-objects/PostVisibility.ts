@@ -10,7 +10,7 @@ export class PostVisibility {
   private constructor(public readonly value: VisibilityLevel) {}
 
   static create(level: string): PostVisibility {
-    const normalizedLevel = level.toLowerCase() as VisibilityLevel;
+    const normalizedLevel = level.toLowerCase() as VisibilityLevel
     if (!PostVisibility.VALID_LEVELS.includes(normalizedLevel)) {
       throw new Error(
         `Visibilidad inválida: "${level}". Debe ser: ${PostVisibility.VALID_LEVELS.join(' | ')}`

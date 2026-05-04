@@ -19,13 +19,13 @@ export class GetFollowingUseCase {
 
   async execute(dto: GetFollowingDTO): Promise<User[]> {
     const userId = UserId.fromString(dto.userId)
-    
+
     // 1. Obtener las relaciones Follow donde el usuario es el seguidor
     const follows = await this.followRepository.findFollowing(userId, dto.limit)
     if (follows.length === 0) return []
 
     // 2. Extraer los IDs de los usuarios seguidos
-    const followingIds = follows.map(f => f.followingId)
+    const followingIds = follows.map((f) => f.followingId)
 
     // 3. Buscar los perfiles de los usuarios (batch read)
     return this.userRepository.findManyByIds(followingIds)

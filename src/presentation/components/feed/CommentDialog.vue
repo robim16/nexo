@@ -5,7 +5,7 @@
         <h3>Agregar comentario</h3>
         <button class="close-btn" @click="close">&times;</button>
       </header>
-      
+
       <div class="modal-body">
         <div v-if="loadingComments" class="loading-comments">
           <LoadingSpinner size="sm" />
@@ -13,27 +13,21 @@
         <div v-else-if="comments.length > 0" class="comments-list">
           <CommentItem v-for="c in comments" :key="c.id" :comment="c" />
         </div>
-        <div v-else class="no-comments">
-          No hay comentarios aún. ¡Sé el primero!
-        </div>
+        <div v-else class="no-comments">No hay comentarios aún. ¡Sé el primero!</div>
 
         <div class="input-section">
-          <textarea 
-            v-model="content" 
+          <textarea
+            v-model="content"
             placeholder="Escribe tu comentario..."
             class="comment-textarea"
             ref="textareaRef"
           ></textarea>
         </div>
       </div>
-      
+
       <footer class="modal-footer">
         <button class="btn btn--secondary" @click="close">Cerrar</button>
-        <button 
-          class="btn btn--primary" 
-          :disabled="!content.trim() || loading"
-          @click="submit"
-        >
+        <button class="btn btn--primary" :disabled="!content.trim() || loading" @click="submit">
           {{ loading ? 'Enviando...' : 'Comentar' }}
         </button>
       </footer>
@@ -42,49 +36,52 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, computed } from 'vue';
-import { useCommentsStore } from '@/application/stores/comments.store';
-import CommentItem from './CommentItem.vue';
-import LoadingSpinner from '@/presentation/components/common/LoadingSpinner.vue';
+import { ref, watch, nextTick, computed } from 'vue'
+import { useCommentsStore } from '@/application/stores/comments.store'
+import CommentItem from './CommentItem.vue'
+import LoadingSpinner from '@/presentation/components/common/LoadingSpinner.vue'
 
 const props = defineProps<{
-  isOpen: boolean;
-  postId: string | null;
-  loading?: boolean;
-}>();
+  isOpen: boolean
+  postId: string | null
+  loading?: boolean
+}>()
 
-const emit = defineEmits(['close', 'submit']);
+const emit = defineEmits(['close', 'submit'])
 
-const commentsStore = useCommentsStore();
-const content = ref('');
-const textareaRef = ref<HTMLTextAreaElement | null>(null);
+const commentsStore = useCommentsStore()
+const content = ref('')
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
 const comments = computed(() => {
-  if (!props.postId) return [];
-  return commentsStore.commentsByPost[props.postId] || [];
-});
+  if (!props.postId) return []
+  return commentsStore.commentsByPost[props.postId] || []
+})
 
-const loadingComments = computed(() => commentsStore.loading);
+const loadingComments = computed(() => commentsStore.loading)
 
-watch(() => props.isOpen, (newVal) => {
-  if (newVal && props.postId) {
-    content.value = '';
-    commentsStore.fetchComments(props.postId);
-    nextTick(() => {
-      textareaRef.value?.focus();
-    });
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    if (newVal && props.postId) {
+      content.value = ''
+      commentsStore.fetchComments(props.postId)
+      nextTick(() => {
+        textareaRef.value?.focus()
+      })
+    }
   }
-});
+)
 
 const close = () => {
-  if (props.loading) return;
-  emit('close');
-};
+  if (props.loading) return
+  emit('close')
+}
 
 const submit = () => {
-  if (!content.value.trim() || props.loading) return;
-  emit('submit', content.value);
-};
+  if (!content.value.trim() || props.loading) return
+  emit('submit', content.value)
+}
 </script>
 
 <style scoped>
@@ -147,7 +144,8 @@ const submit = () => {
   gap: var(--space-4);
 }
 
-.loading-comments, .no-comments {
+.loading-comments,
+.no-comments {
   text-align: center;
   padding: var(--space-6);
   color: var(--text-tertiary);

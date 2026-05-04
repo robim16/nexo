@@ -24,7 +24,7 @@ withDefaults(defineProps<Props>(), {
   size: 'md',
   pill: true,
   dot: false,
-  removable: false,
+  removable: false
 })
 
 const emit = defineEmits<{
@@ -38,7 +38,7 @@ const emit = defineEmits<{
       'base-badge',
       `base-badge--${variant}`,
       `base-badge--${size}`,
-      { 'base-badge--pill': pill },
+      { 'base-badge--pill': pill }
     ]"
   >
     <!-- Status dot -->
@@ -62,8 +62,16 @@ const emit = defineEmits<{
       aria-label="Eliminar"
       @click.stop="emit('remove')"
     >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M18 6 6 18M6 6l12 12"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M18 6 6 18M6 6l12 12" />
       </svg>
     </button>
   </span>
@@ -85,7 +93,9 @@ const emit = defineEmits<{
 }
 
 /* ── Pill ────────────────────────────────────────────────────── */
-.base-badge--pill { border-radius: var(--radius-full); }
+.base-badge--pill {
+  border-radius: var(--radius-full);
+}
 
 /* ── Sizes ───────────────────────────────────────────────────── */
 .base-badge--sm {
@@ -224,8 +234,9 @@ const emit = defineEmits<{
   cursor: pointer;
   color: currentColor;
   opacity: 0.6;
-  transition: opacity var(--duration-fast) var(--ease-in-out),
-              background-color var(--duration-fast) var(--ease-in-out);
+  transition:
+    opacity var(--duration-fast) var(--ease-in-out),
+    background-color var(--duration-fast) var(--ease-in-out);
   flex-shrink: 0;
   margin-left: var(--space-0-5);
 }

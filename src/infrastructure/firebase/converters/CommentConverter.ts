@@ -1,4 +1,9 @@
-import { FirestoreDataConverter, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from 'firebase/firestore'
+import {
+  FirestoreDataConverter,
+  QueryDocumentSnapshot,
+  SnapshotOptions,
+  Timestamp
+} from 'firebase/firestore'
 import { Comment } from '../../../core/entities/Comment'
 
 export class CommentConverter implements FirestoreDataConverter<Comment> {
@@ -16,10 +21,7 @@ export class CommentConverter implements FirestoreDataConverter<Comment> {
     }
   }
 
-  fromFirestore(
-    snapshot: QueryDocumentSnapshot,
-    options: SnapshotOptions
-  ): Comment {
+  fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): Comment {
     const data = snapshot.data(options)
     return Comment.reconstitute({
       id: snapshot.id,

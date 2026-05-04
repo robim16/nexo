@@ -5,143 +5,294 @@
 
 /* ── Entrance ─────────────────────────────────────────────── */
 @keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fade-out {
-  from { opacity: 1; }
-  to   { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slide-down {
-  from { opacity: 0; transform: translateY(-12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slide-left {
-  from { opacity: 0; transform: translateX(12px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes slide-right {
-  from { opacity: 0; transform: translateX(-12px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes scale-in {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes scale-in-center {
-  from { opacity: 0; transform: scale(0.75); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes pop-in {
-  0%   { opacity: 0; transform: scale(0.75); }
-  70%  { transform: scale(1.05); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  70% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* ── Looping ─────────────────────────────────────────────── */
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes spin-reverse {
-  from { transform: rotate(360deg); }
-  to   { transform: rotate(0deg); }
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 @keyframes ping {
-  75%, 100% {
+  75%,
+  100% {
     transform: scale(2);
     opacity: 0;
   }
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
-  50%       { transform: translateY(-6px); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+  0%,
+  100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(-6px);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-  20%, 40%, 60%, 80%      { transform: translateX(4px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
 }
 
 @keyframes wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  15%      { transform: rotate(-4deg); }
-  30%      { transform: rotate(4deg); }
-  45%      { transform: rotate(-3deg); }
-  60%      { transform: rotate(3deg); }
-  75%      { transform: rotate(-1deg); }
-  90%      { transform: rotate(1deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  15% {
+    transform: rotate(-4deg);
+  }
+  30% {
+    transform: rotate(4deg);
+  }
+  45% {
+    transform: rotate(-3deg);
+  }
+  60% {
+    transform: rotate(3deg);
+  }
+  75% {
+    transform: rotate(-1deg);
+  }
+  90% {
+    transform: rotate(1deg);
+  }
 }
 
 @keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  14%      { transform: scale(1.15); }
-  28%      { transform: scale(1); }
-  42%      { transform: scale(1.1); }
-  70%      { transform: scale(1); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.15);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(1);
+  }
 }
 
 /* ── Skeleton / Shimmer ───────────────────────────────────── */
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes skeleton-wave {
-  0%   { transform: translateX(-100%); }
-  60%  { transform: translateX(100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  60% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* ── Gradient shift (hero, backgrounds) ───────────────────── */
 @keyframes gradient-shift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* ── Glow ────────────────────────────────────────────────── */
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(61, 98, 245, 0.3); }
-  50%       { box-shadow: 0 0 20px rgba(61, 98, 245, 0.7); }
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(61, 98, 245, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(61, 98, 245, 0.7);
+  }
 }
 
 @keyframes glow-pulse-accent {
-  0%, 100% { box-shadow: 0 0 8px rgba(168, 85, 247, 0.3); }
-  50%       { box-shadow: 0 0 20px rgba(168, 85, 247, 0.7); }
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
+  }
 }
 
 /* ── Typing cursor ────────────────────────────────────────── */
 @keyframes caret-blink {
-  0%, 100% { border-color: currentColor; }
-  50%       { border-color: transparent; }
+  0%,
+  100% {
+    border-color: currentColor;
+  }
+  50% {
+    border-color: transparent;
+  }
 }
 
 /* ── Notification dot ─────────────────────────────────────── */
 @keyframes dot-ping {
-  0%        { transform: scale(1); opacity: 0.8; }
-  75%, 100% { transform: scale(2.5); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  75%,
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -160,12 +311,14 @@
 
 /* ── fade-slide-up ────────────────────────────────────────── */
 .fade-slide-up-enter-active {
-  transition: opacity var(--duration-slow) var(--ease-out),
-              transform var(--duration-slow) var(--ease-out);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
 }
 .fade-slide-up-leave-active {
-  transition: opacity var(--duration-base) var(--ease-in),
-              transform var(--duration-base) var(--ease-in);
+  transition:
+    opacity var(--duration-base) var(--ease-in),
+    transform var(--duration-base) var(--ease-in);
 }
 .fade-slide-up-enter-from,
 .fade-slide-up-leave-to {
@@ -175,12 +328,14 @@
 
 /* ── fade-slide-down ──────────────────────────────────────── */
 .fade-slide-down-enter-active {
-  transition: opacity var(--duration-slow) var(--ease-out),
-              transform var(--duration-slow) var(--ease-out);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
 }
 .fade-slide-down-leave-active {
-  transition: opacity var(--duration-base) var(--ease-in),
-              transform var(--duration-base) var(--ease-in);
+  transition:
+    opacity var(--duration-base) var(--ease-in),
+    transform var(--duration-base) var(--ease-in);
 }
 .fade-slide-down-enter-from,
 .fade-slide-down-leave-to {
@@ -190,12 +345,14 @@
 
 /* ── scale-fade (modals, popovers) ────────────────────────── */
 .scale-fade-enter-active {
-  transition: opacity var(--duration-slow) var(--ease-out),
-              transform var(--duration-slow) var(--ease-spring);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-spring);
 }
 .scale-fade-leave-active {
-  transition: opacity var(--duration-base) var(--ease-in),
-              transform var(--duration-base) var(--ease-in);
+  transition:
+    opacity var(--duration-base) var(--ease-in),
+    transform var(--duration-base) var(--ease-in);
 }
 .scale-fade-enter-from,
 .scale-fade-leave-to {
@@ -216,8 +373,9 @@
 /* ── slide-right (drawers, panels) ────────────────────────── */
 .slide-right-enter-active,
 .slide-right-leave-active {
-  transition: transform var(--duration-slow) var(--ease-in-out),
-              opacity var(--duration-slow) var(--ease-in-out);
+  transition:
+    transform var(--duration-slow) var(--ease-in-out),
+    opacity var(--duration-slow) var(--ease-in-out);
 }
 .slide-right-enter-from,
 .slide-right-leave-to {
@@ -228,8 +386,9 @@
 /* ── slide-left ───────────────────────────────────────────── */
 .slide-left-enter-active,
 .slide-left-leave-active {
-  transition: transform var(--duration-slow) var(--ease-in-out),
-              opacity var(--duration-slow) var(--ease-in-out);
+  transition:
+    transform var(--duration-slow) var(--ease-in-out),
+    opacity var(--duration-slow) var(--ease-in-out);
 }
 .slide-left-enter-from,
 .slide-left-leave-to {
@@ -242,8 +401,9 @@
   animation: pop-in var(--duration-slow) var(--ease-spring) forwards;
 }
 .pop-leave-active {
-  transition: opacity var(--duration-fast) var(--ease-in),
-              transform var(--duration-fast) var(--ease-in);
+  transition:
+    opacity var(--duration-fast) var(--ease-in),
+    transform var(--duration-fast) var(--ease-in);
 }
 .pop-leave-to {
   opacity: 0;
@@ -253,8 +413,9 @@
 /* ── list transitions ─────────────────────────────────────── */
 .list-enter-active,
 .list-leave-active {
-  transition: opacity var(--duration-slow) var(--ease-out),
-              transform var(--duration-slow) var(--ease-out);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
 }
 .list-enter-from {
   opacity: 0;
@@ -269,17 +430,46 @@
 }
 
 /* ── Utility animation classes ────────────────────────────── */
-.animate-spin           { animation: spin 1s linear infinite; }
-.animate-spin-slow      { animation: spin 2.5s linear infinite; }
-.animate-pulse          { animation: pulse 2s var(--ease-in-out) infinite; }
-.animate-bounce         { animation: bounce 1s infinite; }
-.animate-shake          { animation: shake 0.5s var(--ease-in-out); }
-.animate-wiggle         { animation: wiggle 0.6s var(--ease-in-out); }
-.animate-heartbeat      { animation: heartbeat 1.2s ease infinite; }
-.animate-ping           { animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
-.animate-fade-in        { animation: fade-in var(--duration-slow) var(--ease-out) forwards; }
-.animate-slide-up       { animation: slide-up var(--duration-slow) var(--ease-out) forwards; }
-.animate-scale-in       { animation: scale-in var(--duration-slow) var(--ease-spring) forwards; }
-.animate-glow           { animation: glow-pulse 2s ease-in-out infinite; }
-.animate-glow-accent    { animation: glow-pulse-accent 2s ease-in-out infinite; }
-.animate-gradient       { animation: gradient-shift 4s ease infinite; background-size: 200% 200%; }
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+.animate-spin-slow {
+  animation: spin 2.5s linear infinite;
+}
+.animate-pulse {
+  animation: pulse 2s var(--ease-in-out) infinite;
+}
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+.animate-shake {
+  animation: shake 0.5s var(--ease-in-out);
+}
+.animate-wiggle {
+  animation: wiggle 0.6s var(--ease-in-out);
+}
+.animate-heartbeat {
+  animation: heartbeat 1.2s ease infinite;
+}
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.animate-fade-in {
+  animation: fade-in var(--duration-slow) var(--ease-out) forwards;
+}
+.animate-slide-up {
+  animation: slide-up var(--duration-slow) var(--ease-out) forwards;
+}
+.animate-scale-in {
+  animation: scale-in var(--duration-slow) var(--ease-spring) forwards;
+}
+.animate-glow {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+.animate-glow-accent {
+  animation: glow-pulse-accent 2s ease-in-out infinite;
+}
+.animate-gradient {
+  animation: gradient-shift 4s ease infinite;
+  background-size: 200% 200%;
+}

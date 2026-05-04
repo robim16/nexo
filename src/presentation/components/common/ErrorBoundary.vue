@@ -18,7 +18,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   fallbackMessage: 'Ha ocurrido un error inesperado al renderizar este componente.',
-  showDetails: false,
+  showDetails: false
 })
 
 const emit = defineEmits<{
@@ -33,7 +33,7 @@ onErrorCaptured((err: unknown, instance, info) => {
     errorData.value = new Error(String(err))
   }
   errorInfo.value = info
-  
+
   emit('error', errorData.value, info)
 
   // Retornar falso previene que el error se propague más arriba en el árbol
@@ -51,12 +51,23 @@ function resetError() {
   <template v-if="hasError">
     <div class="error-boundary-wrapper">
       <slot name="fallback" :error="errorData" :reset="resetError">
-        <div class="error-boundary-ui base-card base-card--elevated base-card--p-lg base-card--r-lg">
+        <div
+          class="error-boundary-ui base-card base-card--elevated base-card--p-lg base-card--r-lg"
+        >
           <div class="error-boundary-ui__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-              <line x1="12" y1="9" x2="12" y2="13"/>
-              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+              />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
           </div>
           <h3 class="error-boundary-ui__title">Algo salió mal</h3>

@@ -13,52 +13,127 @@
           @focus="isFocused = true"
           @blur="handleBlur"
         ></textarea>
-        <div v-if="content.length > 0" class="char-counter" :class="{ 'char-counter--warn': content.length > 450, 'char-counter--danger': content.length > 490 }">
+        <div
+          v-if="content.length > 0"
+          class="char-counter"
+          :class="{
+            'char-counter--warn': content.length > 450,
+            'char-counter--danger': content.length > 490
+          }"
+        >
           {{ content.length }}/500
         </div>
       </div>
-        </div>
+    </div>
 
-    
     <div v-if="selectedImages.length > 0" class="image-previews">
       <div v-for="(img, index) in imagePreviews" :key="index" class="preview-item">
         <img :src="img" alt="preview" />
         <button class="remove-btn" @click="removeImage(index)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
       </div>
     </div>
-    
+
     <Transition name="actions">
-      <div v-if="isFocused || content.trim() || selectedImages.length > 0" class="create-post__actions">
+      <div
+        v-if="isFocused || content.trim() || selectedImages.length > 0"
+        class="create-post__actions"
+      >
         <div class="action-tools">
           <button class="tool-btn" title="Add Image" @click="triggerImageUpload">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
             </svg>
           </button>
-          <input type="file" ref="fileInput" accept="image/*" multiple style="display: none" @change="handleFileSelected" />
+          <input
+            type="file"
+            ref="fileInput"
+            accept="image/*"
+            multiple
+            style="display: none"
+            @change="handleFileSelected"
+          />
           <button class="tool-btn" title="Add GIF">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/><line x1="17" y1="17" x2="22" y2="17"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
+              <line x1="7" y1="2" x2="7" y2="22" />
+              <line x1="17" y1="2" x2="17" y2="22" />
+              <line x1="2" y1="12" x2="22" y2="12" />
+              <line x1="2" y1="7" x2="7" y2="7" />
+              <line x1="2" y1="17" x2="7" y2="17" />
+              <line x1="17" y1="7" x2="22" y2="7" />
+              <line x1="17" y1="17" x2="22" y2="17" />
             </svg>
           </button>
           <button class="tool-btn" title="Add Emoji">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+              <line x1="9" y1="9" x2="9.01" y2="9" />
+              <line x1="15" y1="9" x2="15.01" y2="9" />
             </svg>
           </button>
         </div>
-        
-        <BaseButton 
-          variant="primary" 
+
+        <BaseButton
+          variant="primary"
           size="md"
-          :disabled="(!content.trim() && selectedImages.length === 0) || isSubmitting || content.length > 500"
+          :disabled="
+            (!content.trim() && selectedImages.length === 0) || isSubmitting || content.length > 500
+          "
           @click="submitPost"
         >
           <span class="btn-content">
-            <svg v-if="isSubmitting" class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg>
-            <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <svg
+              v-if="isSubmitting"
+              class="spinner"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" opacity="0.25" />
+              <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+            </svg>
+            <svg
+              v-else
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
             {{ isSubmitting ? 'Sending...' : 'Post' }}
           </span>
         </BaseButton>
@@ -68,100 +143,100 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue';
-import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue';
-import BaseButton from '@/presentation/components/common/BaseButton.vue';
-import { useAuthStore } from '@/application/stores/auth.store';
-import { usePostsStore } from '@/application/stores/posts.store';
+import { ref, nextTick } from 'vue'
+import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue'
+import BaseButton from '@/presentation/components/common/BaseButton.vue'
+import { useAuthStore } from '@/application/stores/auth.store'
+import { usePostsStore } from '@/application/stores/posts.store'
 
-const authStore = useAuthStore();
-const postsStore = usePostsStore();
+const authStore = useAuthStore()
+const postsStore = usePostsStore()
 
-const content = ref('');
-const isSubmitting = ref(false);
-const isFocused = ref(false);
-const textareaRef = ref<HTMLTextAreaElement | null>(null);
+const content = ref('')
+const isSubmitting = ref(false)
+const isFocused = ref(false)
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
-const fileInput = ref<HTMLInputElement | null>(null);
-const selectedImages = ref<File[]>([]);
-const imagePreviews = ref<string[]>([]);
+const fileInput = ref<HTMLInputElement | null>(null)
+const selectedImages = ref<File[]>([])
+const imagePreviews = ref<string[]>([])
 
-const userAvatar = authStore.user?.avatar || '';
-const userName = authStore.user?.displayName || 'You';
+const userAvatar = authStore.user?.avatar || ''
+const userName = authStore.user?.displayName || 'You'
 
 const handleBlur = () => {
   if (!content.value.trim() && selectedImages.value.length === 0) {
-    isFocused.value = false;
+    isFocused.value = false
   }
-};
+}
 
 const triggerImageUpload = () => {
-  fileInput.value?.click();
-};
+  fileInput.value?.click()
+}
 
 const handleFileSelected = (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  if (!target.files) return;
-  
-  const files = Array.from(target.files);
-  const remainingSlots = 4 - selectedImages.value.length;
-  const filesToAdd = files.slice(0, remainingSlots);
-  
-  filesToAdd.forEach(file => {
+  const target = e.target as HTMLInputElement
+  if (!target.files) return
+
+  const files = Array.from(target.files)
+  const remainingSlots = 4 - selectedImages.value.length
+  const filesToAdd = files.slice(0, remainingSlots)
+
+  filesToAdd.forEach((file) => {
     if (file.size > 10 * 1024 * 1024) {
-      alert(`El archivo ${file.name} es muy grande. Máximo 10MB.`);
-      return;
+      alert(`El archivo ${file.name} es muy grande. Máximo 10MB.`)
+      return
     }
-    selectedImages.value.push(file);
-    imagePreviews.value.push(URL.createObjectURL(file));
-  });
-  
+    selectedImages.value.push(file)
+    imagePreviews.value.push(URL.createObjectURL(file))
+  })
+
   if (target.files.length > remainingSlots) {
-    alert(`Solo puedes subir hasta 4 imágenes por publicación.`);
+    alert(`Solo puedes subir hasta 4 imágenes por publicación.`)
   }
-  
-  target.value = '';
-  isFocused.value = true;
-};
+
+  target.value = ''
+  isFocused.value = true
+}
 
 const removeImage = (index: number) => {
-  URL.revokeObjectURL(imagePreviews.value[index]);
-  selectedImages.value.splice(index, 1);
-  imagePreviews.value.splice(index, 1);
-};
+  URL.revokeObjectURL(imagePreviews.value[index])
+  selectedImages.value.splice(index, 1)
+  imagePreviews.value.splice(index, 1)
+}
 
 const autoResize = (e: Event) => {
-  const target = e.target as HTMLTextAreaElement;
-  target.style.height = 'auto';
-  target.style.height = Math.min(target.scrollHeight, 200) + 'px';
-};
+  const target = e.target as HTMLTextAreaElement
+  target.style.height = 'auto'
+  target.style.height = Math.min(target.scrollHeight, 200) + 'px'
+}
 
 const submitPost = async () => {
-  if ((!content.value.trim() && selectedImages.value.length === 0) || isSubmitting.value) return;
-  
-  isSubmitting.value = true;
+  if ((!content.value.trim() && selectedImages.value.length === 0) || isSubmitting.value) return
+
+  isSubmitting.value = true
   try {
-    await postsStore.createPost({ 
-      content: content.value, 
+    await postsStore.createPost({
+      content: content.value,
       visibility: 'public',
       images: selectedImages.value
-    });
-    content.value = '';
-    imagePreviews.value.forEach(url => URL.revokeObjectURL(url));
-    selectedImages.value = [];
-    imagePreviews.value = [];
-    isFocused.value = false;
+    })
+    content.value = ''
+    imagePreviews.value.forEach((url) => URL.revokeObjectURL(url))
+    selectedImages.value = []
+    imagePreviews.value = []
+    isFocused.value = false
     // Reset textarea height
-    await nextTick();
+    await nextTick()
     if (textareaRef.value) {
-      textareaRef.value.style.height = 'auto';
+      textareaRef.value.style.height = 'auto'
     }
   } catch (error) {
-    console.error('Failed to create post', error);
+    console.error('Failed to create post', error)
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 </script>
 
 <style scoped>
@@ -334,8 +409,12 @@ const submitPost = async () => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Transition for actions */
