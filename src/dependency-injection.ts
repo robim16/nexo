@@ -64,6 +64,8 @@ import { EditPostUseCase } from './core/use-cases/posts/EditPostUseCase'
 import { GetTrendingHashtagsUseCase } from './core/use-cases/posts/GetTrendingHashtagsUseCase'
 import { SharePostUseCase } from './core/use-cases/posts/SharePostUseCase'
 import { GetPostByIdUseCase } from './core/use-cases/posts/GetPostByIdUseCase'
+import { SavePostUseCase } from './core/use-cases/posts/SavePostUseCase'
+import { GetSavedPostsUseCase } from './core/use-cases/posts/GetSavedPostsUseCase'
 import { FollowUserUseCase } from './core/use-cases/social/FollowUserUseCase'
 import { UnfollowUserUseCase } from './core/use-cases/social/UnfollowUserUseCase'
 import { GetFollowersUseCase } from './core/use-cases/social/GetFollowersUseCase'
@@ -134,6 +136,8 @@ container.register('EditPostUseCase', new EditPostUseCase(postRepository, eventB
 container.register('GetTrendingHashtagsUseCase', new GetTrendingHashtagsUseCase(postRepository))
 container.register('SharePostUseCase', new SharePostUseCase(postRepository))
 container.register('GetPostByIdUseCase', new GetPostByIdUseCase(postRepository, userRepository))
+container.register('SavePostUseCase', new SavePostUseCase(postRepository))
+container.register('GetSavedPostsUseCase', new GetSavedPostsUseCase(postRepository))
 
 container.register(
   'FollowUserUseCase',

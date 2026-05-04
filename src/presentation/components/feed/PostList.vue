@@ -28,6 +28,8 @@
           @unlike="$emit('unlike', $event)"
           @comment="$emit('comment', $event)"
           @share="$emit('share', $event)"
+          @save="$emit('save', $event)"
+          @unsave="$emit('unsave', $event)"
         />
       </TransitionGroup>
 
@@ -55,7 +57,7 @@ defineProps<{
   skeletonCount?: number
 }>()
 
-defineEmits(['like', 'unlike', 'comment', 'share'])
+defineEmits(['like', 'unlike', 'comment', 'share', 'save', 'unsave'])
 </script>
 
 <style scoped>

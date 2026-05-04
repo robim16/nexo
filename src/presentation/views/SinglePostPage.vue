@@ -24,6 +24,8 @@
         @like="postsStore.toggleLike"
         @comment="handleComment"
         @share="handleShare"
+        @save="postsStore.toggleSave"
+        @unsave="postsStore.toggleSave"
       />
 
       <div class="comments-section">

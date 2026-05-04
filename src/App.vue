@@ -6,12 +6,14 @@
       </transition>
     </component>
   </router-view>
+  <ToastManager />
 </template>
 
 <script setup lang="ts">
 import { markRaw } from 'vue'
 import DefaultLayout from '@/presentation/layouts/DefaultLayout.vue'
 import AuthLayout from '@/presentation/layouts/AuthLayout.vue'
+import ToastManager from '@/presentation/components/common/ToastManager.vue'
 
 // Resolve layout based on route metadata
 const resolveLayout = (route: any) => {

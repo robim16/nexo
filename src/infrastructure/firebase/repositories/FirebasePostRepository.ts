@@ -13,9 +13,12 @@ import {
   arrayRemove,
   Timestamp,
   getCountFromServer,
-  onSnapshot
+  onSnapshot,
+  setDoc,
+  deleteDoc,
+  collection
 } from 'firebase/firestore'
-import { collections } from '../config/firebase.config'
+import { collections, db } from '../config/firebase.config'
 import { FirebaseBaseRepository } from './FirebaseBaseRepository'
 import {
   IPostRepository,
@@ -306,6 +309,67 @@ export class FirebasePostRepository
       return snapshot.docs.map((doc) => doc.data() as Post)
     } catch (error) {
       this.handleError('search', error)
+      return []
+    }
+  }
+
+  async savePost(postId: PostId, userId: UserId): Promise<void> {
+    try {
+      const savedPostRef = doc(db, collections.users, userId.value, 'saved_posts', postId.value)
+      await setDoc(savedPostRef, {
+        postId: postId.value,
+        savedAt: Timestamp.now()
+      })
+    } catch (error) {
+      this.handleError('savePost', error)
+      throw error
+    }
+  }
+
+  async unsavePost(postId: PostId, userId: UserId): Promise<void> {
+    try {
+      const savedPostRef = doc(db, collections.users, userId.value, 'saved_posts', postId.value)
+      await deleteDoc(savedPostRef)
+    } catch (error) {
+      this.handleError('unsavePost', error)
+      throw error
+    }
+  }
+
+  async isPostSaved(postId: PostId, userId: UserId): Promise<boolean> {
+    try {
+      const savedPostRef = doc(db, collections.users, userId.value, 'saved_posts', postId.value)
+      const docSnap = await getDoc(savedPostRef)
+      return docSnap.exists()
+    } catch (error) {
+      this.handleError('isPostSaved', error)
+      return false
+    }
+  }
+
+  async getSavedPosts(userId: UserId, options?: FeedOptions): Promise<Post[]> {
+    try {
+      const savedPostsRef = query(
+        collection(db, collections.users, userId.value, 'saved_posts'),
+        orderBy('savedAt', 'desc'),
+        fbLimit(options?.limit || 20)
+      )
+      const snapshot = await getDocs(savedPostsRef)
+      const postIds = snapshot.docs.map((doc) => doc.data().postId)
+
+      if (postIds.length === 0) return []
+
+      // Firebase 'in' query limit is 30, for now we stick to it as we use limit 20
+      const postsQuery = query(this.collection, where('__name__', 'in', postIds))
+      const postsSnapshot = await getDocs(postsQuery)
+      const posts = postsSnapshot.docs.map((doc) => doc.data() as Post)
+
+      // Ordenar por el orden de los IDs guardados (por fecha de guardado desc)
+      return postIds
+        .map((id) => posts.find((p) => p.id.value === id))
+        .filter((p): p is Post => p !== undefined)
+    } catch (error) {
+      this.handleError('getSavedPosts', error)
       return []
     }
   }

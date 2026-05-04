@@ -8,10 +8,13 @@ import type { DeletePostUseCase } from '../../core/use-cases/posts/DeletePostUse
 import type { EditPostUseCase } from '../../core/use-cases/posts/EditPostUseCase'
 import type { SharePostUseCase } from '../../core/use-cases/posts/SharePostUseCase'
 import type { GetPostByIdUseCase } from '../../core/use-cases/posts/GetPostByIdUseCase'
+import type { SavePostUseCase } from '../../core/use-cases/posts/SavePostUseCase'
+import type { GetSavedPostsUseCase } from '../../core/use-cases/posts/GetSavedPostsUseCase'
 import { container } from '../../dependency-injection'
 import { PostMapper } from '../mappers/PostMapper'
 import { CreatePostSchema, type CreatePostInput } from '../validators/PostValidator'
 import { useAuthStore } from './auth.store'
+import { useUIStore } from './ui.store'
 import { UserId } from '../../core/value-objects/UserId'
 
 export const usePostsStore = defineStore('posts', () => {
@@ -26,12 +29,64 @@ export const usePostsStore = defineStore('posts', () => {
   const lastDoc = ref<any>(null) // Para paginación Firebase
   const feedSubscription = ref<(() => void) | null>(null)
 
+  const savedPostIds = ref<Set<string>>(new Set())
+  const savedFeed = ref<PostPlainObject[]>([])
+
   // --- Getters ---
   const sortedFeed = computed(() =>
     [...feed.value].sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
   )
+
+  const enrichedFeed = computed(() => {
+    const userId = authStore.currentUserId
+    return sortedFeed.value.map((post) => ({
+      ...post,
+      isLiked: userId ? post.likes.includes(userId) : false,
+      isSaved: savedPostIds.value.has(post.id)
+    }))
+  })
+
+  const enrichedSavedFeed = computed(() => {
+    return savedFeed.value.map((post) => ({
+      ...post,
+      isSaved: true
+    }))
+  })
+
+  const enrichedCurrentPost = computed(() => {
+    if (!currentPost.value) return null
+    const userId = authStore.currentUserId
+    return {
+      ...currentPost.value,
+      isLiked: userId ? currentPost.value.likes.includes(userId) : false,
+      isSaved: savedPostIds.value.has(currentPost.value.id)
+    }
+  })
+
+  // --- Helpers ---
+
+  async function enrichPostsWithAuthors(posts: any[]) {
+    if (!posts || posts.length === 0) return
+    try {
+      const userRepository = container.get<any>('IUserRepository')
+      const authorIds = [...new Set(posts.map((p: any) => p.authorId.value))]
+      const authors = await userRepository.findManyByIds(
+        authorIds.map((id: string) => UserId.reconstitute(id))
+      )
+      const authorMap = new Map<string, any>(authors.map((u: any) => [u.id.value, u]))
+
+      for (const post of posts) {
+        const author = authorMap.get(post.authorId.value)
+        if (author) {
+          post.setAuthorInfo(author.displayName.value, author.avatar)
+        }
+      }
+    } catch (err) {
+      console.error('Error enriching posts:', err)
+    }
+  }
 
   // --- Acciones ---
 
@@ -134,6 +189,8 @@ export const usePostsStore = defineStore('posts', () => {
         limit: 20
       })
 
+      await enrichPostsWithAuthors(result.posts)
+
       if (refresh) {
         feed.value = PostMapper.toPlainList(result.posts)
       } else {
@@ -169,6 +226,7 @@ export const usePostsStore = defineStore('posts', () => {
       const result = await useCase.execute({ postId })
 
       if (result.post) {
+        await enrichPostsWithAuthors([result.post])
         currentPost.value = PostMapper.toPlain(result.post)
       } else {
         currentPost.value = null
@@ -203,6 +261,8 @@ export const usePostsStore = defineStore('posts', () => {
         limit: 10
         // lastPostId: refresh ? undefined : feed.value[feed.value.length - 1]?.id
       })
+
+      await enrichPostsWithAuthors(result.posts)
 
       if (refresh) {
         feed.value = PostMapper.toPlainList(result.posts)
@@ -358,9 +418,100 @@ export const usePostsStore = defineStore('posts', () => {
     }
   }
 
+  /**
+   * Guarda o quita de guardados una publicación.
+   */
+  async function toggleSave(postId: string) {
+    const userId = authStore.currentUserId
+    if (!userId) return
+
+    const uiStore = useUIStore()
+    const useCase = container.get<SavePostUseCase>('SavePostUseCase')
+
+    // Optimista
+    const wasSaved = savedPostIds.value.has(postId)
+    if (wasSaved) {
+      savedPostIds.value.delete(postId)
+      savedPostIds.value = new Set(savedPostIds.value) // Forzar reactividad
+      savedFeed.value = savedFeed.value.filter((p) => p.id !== postId)
+    } else {
+      savedPostIds.value.add(postId)
+      savedPostIds.value = new Set(savedPostIds.value) // Forzar reactividad
+      const postInFeed = feed.value.find((p) => p.id === postId)
+      if (postInFeed && !savedFeed.value.find((p) => p.id === postId)) {
+        savedFeed.value.unshift(postInFeed)
+      }
+    }
+
+    try {
+      const result = await useCase.execute({ postId, userId })
+      uiStore.showToast(
+        result.saved ? 'Publicación guardada' : 'Publicación eliminada de guardados',
+        'success',
+        2000
+      )
+    } catch (err) {
+      // Rollback
+      if (wasSaved) {
+        savedPostIds.value.add(postId)
+      } else {
+        savedPostIds.value.delete(postId)
+        savedFeed.value = savedFeed.value.filter((p) => p.id !== postId)
+      }
+      savedPostIds.value = new Set(savedPostIds.value) // Forzar reactividad en rollback
+
+      uiStore.showToast('Error al actualizar guardados', 'error')
+      throw err
+    }
+  }
+
+  /**
+   * Carga los posts guardados por el usuario.
+   */
+  async function fetchSavedPosts(refresh = true) {
+    if (loading.value && !refresh) return
+
+    loading.value = true
+    error.value = null
+
+    try {
+      const useCase = container.get<GetSavedPostsUseCase>('GetSavedPostsUseCase')
+      const userId = authStore.currentUserId
+      if (!userId) throw new Error('Usuario no autenticado')
+
+      const result = await useCase.execute(userId, { limit: 50 })
+      await enrichPostsWithAuthors(result)
+      const plainPosts = PostMapper.toPlainList(result)
+
+      if (refresh) {
+        savedFeed.value = plainPosts
+      } else {
+        savedFeed.value.push(...plainPosts)
+      }
+
+      // Actualizar set de IDs para el estado visual del icono
+      plainPosts.forEach((p) => savedPostIds.value.add(p.id))
+      savedPostIds.value = new Set(savedPostIds.value) // Forzar reactividad
+    } catch (err: any) {
+      error.value = err.message || 'Error al cargar posts guardados'
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
+   * Verifica si un post está guardado.
+   */
+  function isSaved(postId: string): boolean {
+    return savedPostIds.value.has(postId)
+  }
+
   return {
-    feed: sortedFeed,
-    currentPost,
+    feed: enrichedFeed,
+    savedFeed: enrichedSavedFeed,
+    currentPost: enrichedCurrentPost,
+    rawFeed: sortedFeed,
+    rawCurrentPost: currentPost,
     trendingTags,
     loading,
     loadingTrends,
@@ -370,8 +521,11 @@ export const usePostsStore = defineStore('posts', () => {
     fetchUserPosts,
     fetchPostById,
     fetchTrendingTags,
+    fetchSavedPosts,
     createPost,
     toggleLike,
+    toggleSave,
+    isSaved,
     incrementCommentsCount,
     sharePost,
     deletePost,

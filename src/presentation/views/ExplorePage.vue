@@ -64,6 +64,8 @@
               @like="postsStore.toggleLike"
               @comment="handleComment"
               @share="handleShare"
+              @save="postsStore.toggleSave"
+              @unsave="postsStore.toggleSave"
             />
           </section>
         </div>
@@ -78,6 +80,8 @@
           @like="postsStore.toggleLike"
           @comment="handleComment"
           @share="handleShare"
+          @save="postsStore.toggleSave"
+          @unsave="postsStore.toggleSave"
         />
       </div>
 

@@ -104,11 +104,16 @@
         </span>
       </button>
 
-      <button class="action-btn action-btn--bookmark" title="Save" @click.stop>
+      <button
+        class="action-btn action-btn--bookmark"
+        :class="{ 'action-btn--active': post.isSaved }"
+        :title="post.isSaved ? 'Unsave' : 'Save'"
+        @click.stop="toggleSave"
+      >
         <span class="icon-wrap">
           <svg
             viewBox="0 0 24 24"
-            fill="none"
+            :fill="post.isSaved ? 'currentColor' : 'none'"
             stroke="currentColor"
             stroke-width="2"
             stroke-linecap="round"
@@ -139,6 +144,7 @@ export interface PostDisplay {
   likesCount: number
   commentsCount: number
   isLiked?: boolean
+  isSaved?: boolean
   isEdited?: boolean
 }
 
@@ -146,13 +152,21 @@ const props = defineProps<{
   post: PostDisplay
 }>()
 
-const emit = defineEmits(['like', 'unlike', 'comment', 'share'])
+const emit = defineEmits(['like', 'unlike', 'comment', 'share', 'save', 'unsave'])
 
 const toggleLike = () => {
   if (props.post.isLiked) {
     emit('unlike', props.post.id)
   } else {
     emit('like', props.post.id)
+  }
+}
+
+const toggleSave = () => {
+  if (props.post.isSaved) {
+    emit('unsave', props.post.id)
+  } else {
+    emit('save', props.post.id)
   }
 }
 
@@ -422,5 +436,25 @@ const formatDate = (date: Date | string | number) => {
 .action-btn--bookmark:hover {
   background-color: rgba(var(--color-secondary-rgb), 0.08);
   color: var(--color-secondary);
+}
+
+.action-btn--active.action-btn--bookmark {
+  color: var(--color-secondary);
+}
+
+.action-btn--active.action-btn--bookmark .icon-wrap {
+  animation: bookmark-pop 0.3s var(--ease-out);
+}
+
+@keyframes bookmark-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>

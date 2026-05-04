@@ -74,6 +74,15 @@ export const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/saved',
+    name: 'Saved',
+    component: () => import('@/presentation/views/SavedPostsPage.vue'),
+    meta: {
+      requiresAuth: true,
+      layout: 'DefaultLayout'
+    }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     redirect: '/'
