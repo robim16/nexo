@@ -49,8 +49,10 @@ export const usePostsStore = defineStore('posts', () => {
   })
 
   const enrichedSavedFeed = computed(() => {
+    const userId = authStore.currentUserId
     return savedFeed.value.map((post) => ({
       ...post,
+      isLiked: userId ? post.likes.includes(userId) : false,
       isSaved: true
     }))
   })
@@ -66,6 +68,21 @@ export const usePostsStore = defineStore('posts', () => {
   })
 
   // --- Helpers ---
+
+  function updatePostInState(postId: string, updater: (post: PostPlainObject) => void) {
+    // Update in feed
+    const postInFeed = feed.value.find((p) => p.id === postId)
+    if (postInFeed) updater(postInFeed)
+
+    // Update in savedFeed
+    const postInSaved = savedFeed.value.find((p) => p.id === postId)
+    if (postInSaved) updater(postInSaved)
+
+    // Update currentPost
+    if (currentPost.value?.id === postId) {
+      updater(currentPost.value)
+    }
+  }
 
   async function enrichPostsWithAuthors(posts: any[]) {
     if (!posts || posts.length === 0) return
@@ -321,33 +338,47 @@ export const usePostsStore = defineStore('posts', () => {
    * Da o quita like a una publicación.
    */
   async function toggleLike(postId: string) {
-    const postIndex = feed.value.findIndex((p) => p.id === postId)
-    if (postIndex === -1) return
-
     const userId = authStore.currentUserId
     if (!userId) return
 
     const useCase = container.get<LikePostUseCase>('LikePostUseCase')
 
-    // Actualización optimista
-    const post = feed.value[postIndex]
-    const originalLikes = [...post.likes]
-    const isLiked = post.likes.includes(userId)
+    // Actualización optimista en todas las referencias
+    const affectedPosts: PostPlainObject[] = []
+    const postInFeed = feed.value.find((p) => p.id === postId)
+    if (postInFeed) affectedPosts.push(postInFeed)
+    const postInSaved = savedFeed.value.find((p) => p.id === postId)
+    if (postInSaved) affectedPosts.push(postInSaved)
+    if (currentPost.value?.id === postId) affectedPosts.push(currentPost.value)
 
-    if (isLiked) {
-      post.likes = post.likes.filter((id) => id !== userId)
-      post.likesCount--
-    } else {
-      post.likes.push(userId)
-      post.likesCount++
-    }
+    if (affectedPosts.length === 0) return
+
+    // Guardar estados originales para rollback
+    const snapshots = affectedPosts.map((p) => ({
+      post: p,
+      likes: [...p.likes],
+      likesCount: p.likesCount
+    }))
+
+    affectedPosts.forEach((post) => {
+      const isLiked = post.likes.includes(userId)
+      if (isLiked) {
+        post.likes = post.likes.filter((id) => id !== userId)
+        post.likesCount--
+      } else {
+        post.likes.push(userId)
+        post.likesCount++
+      }
+    })
 
     try {
       await useCase.execute({ postId, userId })
     } catch (err) {
       // Rollback
-      feed.value[postIndex].likes = originalLikes
-      feed.value[postIndex].likesCount = originalLikes.length
+      snapshots.forEach((snap) => {
+        snap.post.likes = snap.likes
+        snap.post.likesCount = snap.likesCount
+      })
       throw err
     }
   }
@@ -356,28 +387,30 @@ export const usePostsStore = defineStore('posts', () => {
    * Incrementa el contador de comentarios localmente.
    */
   function incrementCommentsCount(postId: string) {
-    const postIndex = feed.value.findIndex((p) => p.id === postId)
-    if (postIndex !== -1) {
-      feed.value[postIndex].commentsCount++
-    }
+    updatePostInState(postId, (post) => {
+      post.commentsCount++
+    })
   }
 
   /**
    * Comparte una publicación, actualizando optimistamente el contador.
    */
   async function sharePost(postId: string) {
-    const postIndex = feed.value.findIndex((p) => p.id === postId)
-    if (postIndex === -1) return
-
     // Actualización optimista
-    feed.value[postIndex].sharesCount++
+    const affectedPosts: PostPlainObject[] = []
+    updatePostInState(postId, (p) => {
+      p.sharesCount++
+      affectedPosts.push(p)
+    })
+
+    if (affectedPosts.length === 0) return
 
     try {
       const useCase = container.get<SharePostUseCase>('SharePostUseCase')
       await useCase.execute({ postId })
     } catch (err) {
       // Rollback
-      feed.value[postIndex].sharesCount--
+      affectedPosts.forEach((p) => p.sharesCount--)
       console.error('Error sharing post:', err)
       error.value = 'Error al registrar el share'
     }
@@ -396,7 +429,17 @@ export const usePostsStore = defineStore('posts', () => {
     const useCase = container.get<DeletePostUseCase>('DeletePostUseCase')
     try {
       await useCase.execute({ postId, requesterId: userId })
+
+      // Eliminar de todos los estados
       feed.value = feed.value.filter((p) => p.id !== postId)
+      savedFeed.value = savedFeed.value.filter((p) => p.id !== postId)
+      if (currentPost.value?.id === postId) {
+        currentPost.value = null
+      }
+      if (savedPostIds.value.has(postId)) {
+        savedPostIds.value.delete(postId)
+        savedPostIds.value = new Set(savedPostIds.value)
+      }
     } catch (err: any) {
       error.value = err.message || 'Error al eliminar la publicación'
       throw err
