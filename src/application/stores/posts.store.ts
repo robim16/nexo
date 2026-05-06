@@ -447,6 +447,61 @@ export const usePostsStore = defineStore('posts', () => {
   }
 
   /**
+   * Edita una publicación.
+   */
+  async function editPost(postId: string, newContent: string, images?: string[]) {
+    const userId = authStore.currentUserId
+    if (!userId) return
+
+    const useCase = container.get<EditPostUseCase>('EditPostUseCase')
+
+    // Actualización optimista
+    const affectedPosts: PostPlainObject[] = []
+    const postInFeed = feed.value.find((p) => p.id === postId)
+    if (postInFeed) affectedPosts.push(postInFeed)
+    const postInSaved = savedFeed.value.find((p) => p.id === postId)
+    if (postInSaved) affectedPosts.push(postInSaved)
+    if (currentPost.value?.id === postId) affectedPosts.push(currentPost.value)
+
+    if (affectedPosts.length === 0) return
+
+    // Guardar contenido original para rollback
+    const originalStates = affectedPosts.map((p) => ({
+      post: p,
+      content: p.content,
+      images: [...p.images],
+      isEdited: p.isEdited
+    }))
+
+    // Aplicar cambio optimista
+    affectedPosts.forEach((post) => {
+      post.content = newContent
+      if (images) {
+        post.images = [...images]
+      }
+      post.isEdited = true
+    })
+
+    try {
+      await useCase.execute({
+        postId,
+        requesterId: userId,
+        newContent,
+        newImages: images
+      })
+    } catch (err: any) {
+      // Rollback
+      originalStates.forEach((snap) => {
+        snap.post.content = snap.content
+        snap.post.images = snap.images
+        snap.post.isEdited = snap.isEdited
+      })
+      error.value = err.message || 'Error al editar la publicación'
+      throw err
+    }
+  }
+
+  /**
    * Carga los hashtags populares.
    */
   async function fetchTrendingTags() {
@@ -572,6 +627,7 @@ export const usePostsStore = defineStore('posts', () => {
     incrementCommentsCount,
     sharePost,
     deletePost,
+    editPost,
     subscribeToFeed,
     subscribeToUserPosts,
     unsubscribe

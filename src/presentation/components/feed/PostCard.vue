@@ -16,14 +16,50 @@
           <span class="post-date">{{ formatDate(post.createdAt) }}</span>
         </div>
       </div>
-      <button class="post-options" aria-label="Post options" @click.stop>
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <circle cx="12" cy="5" r="1.5" />
-          <circle cx="12" cy="12" r="1.5" />
-          <circle cx="12" cy="19" r="1.5" />
-        </svg>
-      </button>
+      
+      <div v-if="isAuthor" class="options-container">
+        <button 
+          class="post-options" 
+          aria-label="Post options" 
+          @click.stop="showMenu = !showMenu"
+          :class="{ 'post-options--active': showMenu }"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="5" r="1.5" />
+            <circle cx="12" cy="12" r="1.5" />
+            <circle cx="12" cy="19" r="1.5" />
+          </svg>
+        </button>
+
+        <Transition name="menu">
+          <div v-if="showMenu" class="options-menu">
+            <button class="menu-item" @click.stop="handleEdit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+              Edit Post
+            </button>
+            <button class="menu-item menu-item--danger" @click.stop="handleDelete">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" />
+                <line x1="14" y1="11" x2="14" y2="17" />
+              </svg>
+              Delete Post
+            </button>
+          </div>
+        </Transition>
+      </div>
     </header>
+
+    <EditPostModal
+      :show="showEditModal"
+      :post="post"
+      @close="showEditModal = false"
+      @save="onSaveEdit"
+    />
 
     <div class="post-card__content">
       <p>{{ post.content }}</p>
@@ -128,9 +164,13 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue'
+import EditPostModal from './EditPostModal.vue'
+import { useAuthStore } from '@/application/stores/auth.store'
+import { usePostsStore } from '@/application/stores/posts.store'
+import { useUIStore } from '@/application/stores/ui.store'
 
 export interface PostDisplay {
   id: string
@@ -143,6 +183,7 @@ export interface PostDisplay {
   likes: string[]
   likesCount: number
   commentsCount: number
+  sharesCount: number
   isLiked?: boolean
   isSaved?: boolean
   isEdited?: boolean
@@ -153,6 +194,15 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['like', 'unlike', 'comment', 'share', 'save', 'unsave'])
+
+const authStore = useAuthStore()
+const postsStore = usePostsStore()
+const uiStore = useUIStore()
+const router = useRouter()
+
+const isAuthor = computed(() => authStore.currentUserId === props.post.authorId)
+const showMenu = ref(false)
+const showEditModal = ref(false)
 
 const toggleLike = () => {
   if (props.post.isLiked) {
@@ -170,7 +220,32 @@ const toggleSave = () => {
   }
 }
 
-const router = useRouter()
+const handleEdit = () => {
+  showMenu.value = false
+  showEditModal.value = true
+}
+
+const handleDelete = async () => {
+  showMenu.value = false
+  if (confirm('Are you sure you want to delete this post?')) {
+    try {
+      await postsStore.deletePost(props.post.id)
+      uiStore.showToast('Post deleted', 'success')
+    } catch (error) {
+      uiStore.showToast('Failed to delete post', 'error')
+    }
+  }
+}
+
+const onSaveEdit = async (newContent: string, newImages?: string[]) => {
+  try {
+    await postsStore.editPost(props.post.id, newContent, newImages)
+    showEditModal.value = false
+    uiStore.showToast('Post updated', 'success')
+  } catch (error: any) {
+    uiStore.showToast(error.message || 'Failed to update post', 'error')
+  }
+}
 
 const goToPost = () => {
   if (router.currentRoute.value.path !== `/post/${props.post.id}`) {
@@ -199,6 +274,24 @@ const formatDate = (date: Date | string | number) => {
   if (diffDay < 7) return `${diffDay}d`
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
+
+// Simple click outside implementation
+const handleClickOutside = (event: MouseEvent) => {
+  if (showMenu.value) {
+    const target = event.target as HTMLElement
+    if (!target.closest('.options-container')) {
+      showMenu.value = false
+    }
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style scoped>
@@ -275,6 +368,10 @@ const formatDate = (date: Date | string | number) => {
   color: var(--text-tertiary);
 }
 
+.options-container {
+  position: relative;
+}
+
 .post-options {
   background: transparent;
   border: none;
@@ -284,9 +381,13 @@ const formatDate = (date: Date | string | number) => {
   border-radius: var(--radius-lg);
   transition: var(--transition-base);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.post-options:hover {
+.post-options:hover,
+.post-options--active {
   background-color: rgba(255, 255, 255, 0.04);
   color: var(--text-secondary);
 }
@@ -294,6 +395,61 @@ const formatDate = (date: Date | string | number) => {
 .post-options svg {
   width: 18px;
   height: 18px;
+}
+
+.options-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--surface-overlay);
+  backdrop-filter: var(--backdrop-blur-md);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-1);
+  min-width: 160px;
+  box-shadow: var(--shadow-xl);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+  transition: var(--transition-base);
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.menu-item svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+}
+
+.menu-item--danger {
+  color: var(--color-error);
+}
+
+.menu-item--danger:hover {
+  background: rgba(var(--color-error-rgb), 0.08);
+  color: var(--color-error);
+}
+
+.menu-item--danger svg {
+  color: inherit;
 }
 
 .post-card__content {
@@ -409,15 +565,9 @@ const formatDate = (date: Date | string | number) => {
 }
 
 @keyframes like-pop {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.3);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
 }
 
 /* Comment */
@@ -447,14 +597,19 @@ const formatDate = (date: Date | string | number) => {
 }
 
 @keyframes bookmark-pop {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.3);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* Transitions */
+.menu-enter-active,
+.menu-leave-active {
+  transition: all 0.2s var(--ease-out);
+}
+.menu-enter-from,
+.menu-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
 }
 </style>
