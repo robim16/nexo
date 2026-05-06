@@ -9,8 +9,6 @@ import { PostVisibility } from '../value-objects/PostVisibility'
 import { Timestamp } from '../value-objects/Timestamp'
 import { PostDomainError } from '../errors/PostDomainError'
 
-/** Máximo de horas para poder editar un post */
-const EDIT_WINDOW_HOURS = 24
 /** Máximo de imágenes por publicación */
 const MAX_IMAGES = 4
 /** Tamaño máximo de imagen en MB */
@@ -168,21 +166,22 @@ export class Post {
   }
 
   /**
-   * Edita el contenido del post.
-   * Regla de negocio: solo el autor puede editar, dentro de las 24 horas.
+   * Edita el post (contenido y opcionalmente imágenes).
+   * Regla de negocio: solo el autor puede editar.
    */
-  edit(newContent: PostContent, requesterId: UserId): void {
+  edit(newContent: PostContent, requesterId: UserId, newImages?: string[]): void {
     if (!this.isAuthor(requesterId)) {
       throw PostDomainError.unauthorizedAction('editar')
     }
 
-    const hoursSinceCreation = (Date.now() - this.createdAt.value.getTime()) / (1000 * 60 * 60)
-
-    if (hoursSinceCreation > EDIT_WINDOW_HOURS) {
-      throw PostDomainError.editWindowExpired(EDIT_WINDOW_HOURS)
-    }
-
     this._content = newContent
+    if (newImages) {
+      if (newImages.length > MAX_IMAGES) {
+        throw PostDomainError.tooManyImages(MAX_IMAGES)
+      }
+      this._images = [...newImages]
+    }
+    
     this._isEdited = true
     this._updatedAt = Timestamp.now()
   }
@@ -219,9 +218,7 @@ export class Post {
   }
 
   canBeEditedBy(userId: UserId): boolean {
-    if (!this.isAuthor(userId)) return false
-    const hoursSinceCreation = (Date.now() - this.createdAt.value.getTime()) / (1000 * 60 * 60)
-    return hoursSinceCreation <= EDIT_WINDOW_HOURS
+    return this.isAuthor(userId)
   }
 
   canBeDeletedBy(userId: UserId): boolean {

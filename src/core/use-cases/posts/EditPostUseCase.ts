@@ -1,6 +1,6 @@
 /**
  * EditPostUseCase — Caso de uso: editar el contenido de una publicación.
- * Reglas de negocio: solo el autor, dentro de las primeras 24 horas.
+ * Reglas de negocio: solo el autor puede editar.
  */
 import { IPostRepository } from '../../ports/repositories/IPostRepository'
 import { IEventBus } from '../../ports/events/IEventBus'
@@ -15,6 +15,7 @@ export interface EditPostDTO {
   postId: string
   requesterId: string
   newContent: string
+  newImages?: string[]
 }
 
 export interface EditPostResult {
@@ -41,8 +42,7 @@ export class EditPostUseCase {
     const newContent = PostContent.create(dto.newContent)
 
     // 3. Delegar reglas de negocio a la entidad
-    // Lanza PostDomainError si no es el autor o venció la ventana de edición
-    post.edit(newContent, requesterId)
+    post.edit(newContent, requesterId, dto.newImages)
 
     // 4. Persistir cambios
     await this.postRepository.update(post)
@@ -54,7 +54,8 @@ export class EditPostUseCase {
       payload: {
         postId: dto.postId,
         authorId: post.authorId.value,
-        newContent: newContent.value
+        newContent: newContent.value,
+        images: dto.newImages || post.images
       }
     })
 

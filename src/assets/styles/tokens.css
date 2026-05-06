@@ -137,7 +137,17 @@
   --transition-base: all var(--duration-base) var(--ease-out);
 
   /* ── Layout ──────────────────────────────────────────────── */
-  --container-max: 1280px;
+  --container-xs: 400px;
+  --container-sm: 520px;
+  --container-md: 640px;
+  --container-lg: 768px;
+  --container-xl: 1024px;
+  --container-2xl: 1280px;
+  --container-3xl: 1440px;
+  --container-4xl: 1680px;
+  --container-5xl: 1920px;
+  
+  --container-max: var(--container-2xl);
   --nav-width: 280px;
   --header-height: 72px;
 
