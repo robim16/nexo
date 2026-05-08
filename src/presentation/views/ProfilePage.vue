@@ -112,6 +112,7 @@ import { usePostsStore } from '@/application/stores/posts.store'
 import { useAuthStore } from '@/application/stores/auth.store'
 import { useUsersStore } from '@/application/stores/users.store'
 import { useCommentsStore } from '@/application/stores/comments.store'
+import { useUIStore } from '@/application/stores/ui.store'
 import ProfileHeader from '@/presentation/components/profile/ProfileHeader.vue'
 import ProfileStats from '@/presentation/components/profile/ProfileStats.vue'
 import UserListItem from '@/presentation/components/profile/UserListItem.vue'
@@ -125,6 +126,7 @@ const postsStore = usePostsStore()
 const authStore = useAuthStore()
 const usersStore = useUsersStore()
 const commentsStore = useCommentsStore()
+const uiStore = useUIStore()
 
 const activeTab = ref('posts')
 const loading = ref(true)
@@ -187,7 +189,7 @@ const handleShare = async (id: string) => {
   } else {
     try {
       await navigator.clipboard.writeText(url)
-      alert('Enlace copiado al portapapeles')
+      uiStore.showToast('Enlace copiado al portapapeles', 'success')
       await postsStore.sharePost(id)
     } catch (err) {
       console.error('Error copying to clipboard', err)

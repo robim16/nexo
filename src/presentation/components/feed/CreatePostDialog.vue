@@ -148,9 +148,11 @@ import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue'
 import BaseButton from '@/presentation/components/common/BaseButton.vue'
 import { useAuthStore } from '@/application/stores/auth.store'
 import { usePostsStore } from '@/application/stores/posts.store'
+import { useUIStore } from '@/application/stores/ui.store'
 
 const authStore = useAuthStore()
 const postsStore = usePostsStore()
+const uiStore = useUIStore()
 
 const content = ref('')
 const isSubmitting = ref(false)
@@ -184,7 +186,7 @@ const handleFileSelected = (e: Event) => {
 
   filesToAdd.forEach((file) => {
     if (file.size > 10 * 1024 * 1024) {
-      alert(`El archivo ${file.name} es muy grande. Máximo 10MB.`)
+      uiStore.showToast(`El archivo ${file.name} es muy grande. Máximo 10MB.`, 'error')
       return
     }
     selectedImages.value.push(file)
@@ -192,7 +194,7 @@ const handleFileSelected = (e: Event) => {
   })
 
   if (target.files.length > remainingSlots) {
-    alert(`Solo puedes subir hasta 4 imágenes por publicación.`)
+    uiStore.showToast(`Solo puedes subir hasta 4 imágenes por publicación.`, 'warning')
   }
 
   target.value = ''

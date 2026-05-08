@@ -82,6 +82,7 @@ import type { PostDisplay } from './PostCard.vue'
 import { container } from '@/dependency-injection'
 import type { IStorageService } from '@/core/ports/services/IStorageService'
 import { useAuthStore } from '@/application/stores/auth.store'
+import { useUIStore } from '@/application/stores/ui.store'
 
 interface ImageItem {
   url: string
@@ -97,6 +98,7 @@ const props = defineProps<{
 const emit = defineEmits(['close', 'save'])
 
 const authStore = useAuthStore()
+const uiStore = useUIStore()
 const content = ref(props.post.content)
 const isSubmitting = ref(false)
 const textareaRef = ref<HTMLTextAreaElement | null>(null)
@@ -158,7 +160,7 @@ const handleFileSelected = (e: Event) => {
 
   filesToAdd.forEach((file) => {
     if (file.size > 10 * 1024 * 1024) {
-      alert(`The file ${file.name} is too large. Maximum 10MB.`)
+      uiStore.showToast(`The file ${file.name} is too large. Maximum 10MB.`, 'error')
       return
     }
     const url = URL.createObjectURL(file)
@@ -199,7 +201,7 @@ const handleSave = async () => {
     emit('save', content.value, finalImageUrls)
   } catch (error: any) {
     console.error('Error saving post:', error)
-    alert('Failed to save post. Please try again.')
+    uiStore.showToast('Failed to save post. Please try again.', 'error')
   } finally {
     isSubmitting.value = false
   }

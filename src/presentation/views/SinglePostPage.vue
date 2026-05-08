@@ -58,6 +58,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePostsStore } from '@/application/stores/posts.store'
 import { useCommentsStore } from '@/application/stores/comments.store'
+import { useUIStore } from '@/application/stores/ui.store'
 import PostCard from '@/presentation/components/feed/PostCard.vue'
 import CommentItem from '@/presentation/components/feed/CommentItem.vue'
 import CommentDialog from '@/presentation/components/feed/CommentDialog.vue'
@@ -67,6 +68,7 @@ import LoadingSpinner from '@/presentation/components/common/LoadingSpinner.vue'
 const route = useRoute()
 const postsStore = usePostsStore()
 const commentsStore = useCommentsStore()
+const uiStore = useUIStore()
 
 const isCommentDialogOpen = ref(false)
 const isCommenting = ref(false)
@@ -133,7 +135,7 @@ const handleShare = async (id: string) => {
   } else {
     try {
       await navigator.clipboard.writeText(url)
-      alert('Enlace copiado al portapapeles')
+      uiStore.showToast('Enlace copiado al portapapeles', 'success')
       await postsStore.sharePost(id)
     } catch (err) {
       console.error('Error copying to clipboard', err)

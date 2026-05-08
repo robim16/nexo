@@ -34,10 +34,12 @@ import CommentDialog from './CommentDialog.vue'
 import { usePostsStore } from '@/application/stores/posts.store'
 import { useCommentsStore } from '@/application/stores/comments.store'
 import { useAuthStore } from '@/application/stores/auth.store'
+import { useUIStore } from '@/application/stores/ui.store'
 
 const postsStore = usePostsStore()
 const commentsStore = useCommentsStore()
 const authStore = useAuthStore()
+const uiStore = useUIStore()
 
 const posts = computed(() => {
   return postsStore.feed.map((post) => ({
@@ -129,7 +131,7 @@ const handleShare = async (id: string) => {
   } else {
     try {
       await navigator.clipboard.writeText(url)
-      alert('Enlace copiado al portapapeles')
+      uiStore.showToast('Enlace copiado al portapapeles', 'success')
       await postsStore.sharePost(id)
     } catch (err) {
       console.error('Error copying to clipboard', err)
