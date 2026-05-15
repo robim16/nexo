@@ -225,17 +225,29 @@ const handleEdit = () => {
   showEditModal.value = true
 }
 
-const handleDelete = async () => {
+const handleDelete = () => {
   showMenu.value = false
-  if (confirm('Are you sure you want to delete this post?')) {
-    try {
-      await postsStore.deletePost(props.post.id)
-      uiStore.showToast('Post deleted', 'success')
-    } catch (error) {
-      uiStore.showToast('Failed to delete post', 'error')
+  uiStore.showConfirm('Delete this post?', [
+    {
+      label: 'Cancel',
+      variant: 'primary',
+      handler: () => {}
+    },
+    {
+      label: 'Delete',
+      variant: 'danger',
+      handler: async () => {
+        try {
+          await postsStore.deletePost(props.post.id)
+          uiStore.showToast('Post deleted', 'success')
+        } catch {
+          uiStore.showToast('Failed to delete post', 'error')
+        }
+      }
     }
-  }
+  ])
 }
+
 
 const onSaveEdit = async (newContent: string, newImages?: string[]) => {
   try {

@@ -105,11 +105,13 @@ import UserSearchResult from '@/presentation/components/search/UserSearchResult.
 import { useCommentsStore } from '@/application/stores/comments.store'
 import { usePostsStore } from '@/application/stores/posts.store'
 import { useSearchStore } from '@/application/stores/search.store'
+import { useUIStore } from '@/application/stores/ui.store'
 import { useDebounce } from '@/application/composables/utils'
 
 const postsStore = usePostsStore()
 const commentsStore = useCommentsStore()
 const searchStore = useSearchStore()
+const uiStore = useUIStore()
 
 const searchQuery = ref('')
 const debouncedSearch = useDebounce(searchQuery, 400)
@@ -143,7 +145,7 @@ const handleShare = async (id: string) => {
   } else {
     try {
       await navigator.clipboard.writeText(url)
-      alert('Enlace copiado al portapapeles')
+      uiStore.showToast('Enlace copiado al portapapeles', 'success')
       await postsStore.sharePost(id)
     } catch (err) {
       console.error('Error copying to clipboard', err)

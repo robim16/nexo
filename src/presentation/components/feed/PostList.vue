@@ -44,7 +44,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
 import PostCard from './PostCard.vue'
 import type { PostDisplay } from './PostCard.vue'
 import SkeletonLoader from '@/presentation/components/common/SkeletonLoader.vue'

@@ -1,13 +1,20 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export type ToastType = 'success' | 'error' | 'info' | 'warning'
+export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'confirm'
+
+export interface ToastAction {
+  label: string
+  handler: () => void | Promise<void>
+  variant?: 'primary' | 'danger'
+}
 
 export interface Toast {
   id: string
   message: string
   type: ToastType
   duration?: number
+  actions?: ToastAction[]
 }
 
 export const useUIStore = defineStore(
@@ -42,6 +49,15 @@ export const useUIStore = defineStore(
       }
     }
 
+    function showConfirm(
+      message: string,
+      actions: ToastAction[]
+    ) {
+      const id = Math.random().toString(36).substring(2, 9)
+      const toast: Toast = { id, message, type: 'confirm', duration: 0, actions }
+      toasts.value.push(toast)
+    }
+
     function removeToast(id: string) {
       toasts.value = toasts.value.filter((t) => t.id !== id)
     }
@@ -64,6 +80,7 @@ export const useUIStore = defineStore(
       toggleSidebar,
       setTheme,
       showToast,
+      showConfirm,
       removeToast,
       openModal,
       closeModal

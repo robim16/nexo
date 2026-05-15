@@ -77,6 +77,7 @@ import { ref, defineProps } from 'vue'
 import { useUsersStore } from '@/application/stores/users.store'
 import BaseAvatar from '@/presentation/components/common/BaseAvatar.vue'
 import BaseButton from '@/presentation/components/common/BaseButton.vue'
+import { useUIStore } from '@/application/stores/ui.store'
 import FollowButton from './FollowButton.vue'
 
 const props = defineProps<{
@@ -86,6 +87,7 @@ const props = defineProps<{
 }>()
 
 const usersStore = useUsersStore()
+const uiStore = useUIStore()
 
 const avatarInput = ref<HTMLInputElement | null>(null)
 const isUploadingAvatar = ref(false)
@@ -103,7 +105,7 @@ const handleAvatarSelected = async (e: Event) => {
 
   const file = target.files[0]
   if (file.size > 5 * 1024 * 1024) {
-    alert('El avatar debe pesar menos de 5MB')
+    uiStore.showToast('El avatar debe pesar menos de 5MB', 'error')
     return
   }
 
@@ -116,7 +118,7 @@ const handleAvatarSelected = async (e: Event) => {
     })
   } catch (error) {
     console.error('Failed to update avatar:', error)
-    alert('Error al actualizar el avatar')
+    uiStore.showToast('Error al actualizar el avatar', 'error')
   } finally {
     isUploadingAvatar.value = false
     uploadProgress.value = 0
